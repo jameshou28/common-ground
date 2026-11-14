@@ -87,7 +87,8 @@ export function useCesiumViewer({ world, el, credits, onStatus, onAltitude }: Op
         useBrowserRecommendedResolution: false,
         // transparent canvas, the page draws the stars
         skyBox: false as const,
-        contextOptions: { webgl: { alpha: true } },
+        // keep the last frame readable so the field sheet can capture it
+        contextOptions: { webgl: { alpha: true, preserveDrawingBuffer: true } },
       };
 
       let tileset: CesiumNS.Cesium3DTileset | null = null;
