@@ -20,7 +20,7 @@ The click flow is the same: same call, same two live reads. The response and a f
 - `best[].contributions` has 12 names instead of 19 (7 terrain features plus 5 block differences). Don't hard-code the list; read the keys.
 - The Moon tab finally has all 4 regions. South polar matches have an `href` pointing to the polar LOLA file on `pgda.gsfc.nasa.gov` (a cloud-optimised GeoTIFF), so drawing those blocks live needs outbound HTTPS to that host too.
 - `model.npz` grows to roughly 20–60 MB at v1. Measure memory on Render after the first deploy.
-- About-page credits to add: LOLA polar DEMs (NASA GSFC PGDA, Barker et al.), and ShadowAstra Atlas site lists (CC BY 4.0, credit "Team ShadowAstra, ShadowAstra Atlas").
+- About-page credit to add: LOLA polar DEMs (NASA GSFC PGDA, Barker et al.).
 
 ## What a click reads
 
@@ -70,7 +70,6 @@ No raw Moon, Mars or Earth DEMs are hosted.
 | ESA WorldCover 2021 | Earth | Land cover for the conditions score | No, range-read |
 | WorldClim 2.1 rainfall | Earth | Rainfall for the conditions score | Yes (7 MB) |
 | Smithsonian GVP volcanoes | Earth | Cross-world volcano test | Yes (1 MB) |
-| ShadowAstra Atlas site lists (CC BY 4.0) | Earth | 66 more published analog sites, merged with ours | Yes (6 KB) |
 | Hand lists | Earth | 61 analog sites, 28 craters, 9 featured sites | No, they're in the notebook |
 
 So you don't download all of them. `download_datasets.ipynb` gets the required ones (about 3.3 GB now, mostly the polar LOLA file). Set `GET_BIG_DEMS = True` for the two optional global DEMs, or copy James's files into `ml/datasets/dem/`. Most of the required files are also already in `spaceapps_planning/data/raw/` if copying is quicker.
@@ -96,7 +95,7 @@ Training still needs internet for the per-block reads (Kaguya, CTX, GLO-30, Worl
 
 ## To check
 
-- [ ] Analog-site coordinates are still approximate. v1.1 auto-nudges sites whose block is mostly trees, crops, buildings or water, and drops the ones with nothing clean within 6 km (the notebook prints the list). Still worth a look on a map before quoting conditions numbers.
+- [ ] Analog sites come only from our hand list (no third-party lists). The coordinates are still approximate. v1.1 auto-nudges sites whose block is mostly trees, crops, buildings or water, and drops the ones with nothing clean within 6 km (the notebook prints the list). Still worth a look on a map before quoting conditions numbers.
 - [ ] Memory on Render with the v1 model, after ~20 scores.
 - [ ] Outbound requests from Render to the AWS, USGS and PGDA hosts are allowed and fast enough.
-- [ ] Licences for the About page: Copernicus DEM (ESA, attribution), WorldCover (CC BY 4.0), WorldClim (non-commercial, cite Fick and Hijmans 2017), USGS and IAU (public domain), Robbins (public domain, cite the papers), GVP (cite the database), LOLA polar DEMs (NASA PGDA, cite Barker et al.), ShadowAstra site lists (CC BY 4.0).
+- [ ] Licences for the About page: Copernicus DEM (ESA, attribution), WorldCover (CC BY 4.0), WorldClim (non-commercial, cite Fick and Hijmans 2017), USGS and IAU (public domain), Robbins (public domain, cite the papers), GVP (cite the database), LOLA polar DEMs (NASA PGDA, cite Barker et al.).
