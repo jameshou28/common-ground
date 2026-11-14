@@ -25,3 +25,10 @@ export const RELIEF_SUN = { azimuthDeg: 315, elevationDeg: 28 }; // nw, the hill
 export const BLOCK_RANGE_M: Record<World, number> = { earth: 8_500, moon: 22_000, mars: 26_000 };
 
 export type GlobeStatus = { state: "loading" | "ready" | "error"; message?: string };
+
+// camera floor over moon and mars tiles, checked only below the tallest relief
+export const MIN_CLEARANCE_M = 300;
+export const CLAMP_BELOW_M = 40_000;
+
+// the brand token as hex, cesium cannot read css variables
+export const FOOTPRINT_COLOR = "#8f9cf0";

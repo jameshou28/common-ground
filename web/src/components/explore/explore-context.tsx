@@ -1,7 +1,7 @@
 "use client";
 
 import { createContext, useContext } from "react";
-import type { World } from "@/lib/tiles";
+import type { Tile, World } from "@/lib/tiles";
 import type { GlobeStatus } from "@/components/globe/config";
 
 export type ExploreState = {
@@ -9,6 +9,8 @@ export type ExploreState = {
   status: GlobeStatus;
   // camera height in metres
   altitude: number;
+  // block under the pointer
+  hoverTile: Tile | null;
 };
 
 export const ExploreContext = createContext<ExploreState | null>(null);

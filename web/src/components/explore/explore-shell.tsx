@@ -2,9 +2,13 @@
 
 import dynamic from "next/dynamic";
 import { useSearchParams } from "next/navigation";
-import { useMemo, useState } from "react";
-import { WORLDS, type World } from "@/lib/tiles";
+import { useCallback, useMemo, useState } from "react";
+import { fmtAltitude, fmtLatLon } from "@/lib/format";
+import { WORLDS, type Tile, type World } from "@/lib/tiles";
 import { WORLD_LABEL, type GlobeStatus } from "@/components/globe/config";
+import type { LatLon } from "@/components/globe/use-globe-controls";
+import { WorldSwitcher } from "@/components/globe/world-switcher";
+import { StatusItems } from "@/components/shell/status-bar";
 import { ExploreContext } from "./explore-context";
 
 // cesium needs the browser
@@ -17,13 +21,19 @@ export function ExploreShell({ children }: { children: React.ReactNode }) {
   const world = parseWorld(useSearchParams().get("world"));
   const [status, setStatus] = useState<GlobeStatus>({ state: "loading" });
   const [altitude, setAltitude] = useState(0);
-  const value = useMemo(() => ({ world, status, altitude }), [world, status, altitude]);
+  const [hovered, setHover] = useState<{ at: LatLon; tile: Tile } | null>(null);
+  // a hover left over from the previous world is not shown
+  const hover = hovered?.tile.world === world ? hovered : null;
+  const hoverTile = hover?.tile ?? null;
+  const value = useMemo(() => ({ world, status, altitude, hoverTile }), [world, status, altitude, hoverTile]);
+  const onHover = useCallback((at: LatLon | null, tile: Tile | null) => setHover(at && tile ? { at, tile } : null), []);
 
   return (
     <ExploreContext.Provider value={value}>
       <div className="grid min-h-0 flex-1 grid-cols-[minmax(0,1fr)_420px] max-md:grid-cols-1 max-md:grid-rows-[minmax(260px,42vh)_minmax(0,1fr)]">
         <section aria-label={`${WORLD_LABEL[world]} globe`} className="sky relative min-h-[260px] overflow-hidden">
-          <GlobeView world={world} onStatus={setStatus} onAltitude={setAltitude} />
+          <GlobeView world={world} onStatus={setStatus} onAltitude={setAltitude} onHover={onHover} />
+          <WorldSwitcher world={world} />
           {status.state === "loading" && (
             <p role="status" className="absolute bottom-3 left-3 rounded-md border border-line bg-panel px-2.5 py-1.5 text-xs text-text-2">
               Loading {WORLD_LABEL[world]}…
@@ -38,6 +48,12 @@ export function ExploreShell({ children }: { children: React.ReactNode }) {
         </section>
         {children}
       </div>
+      <StatusItems>
+        <span>{WORLD_LABEL[world]}</span>
+        {hover && <span className="tabular-nums">{fmtLatLon(hover.at.lat, hover.at.lon)}</span>}
+        {hover && <span className="max-md:hidden">Block {hover.tile.id}</span>}
+        <span className="tabular-nums">Altitude {fmtAltitude(altitude)}</span>
+      </StatusItems>
     </ExploreContext.Provider>
   );
 }
