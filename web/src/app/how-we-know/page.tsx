@@ -15,7 +15,7 @@ function Num({ value, unit = "" }: { value: Maybe; unit?: string }) {
 export default function Page() {
   const placeholder = v.status === "placeholder";
   return (
-    <main className="flex-1 overflow-y-auto p-6">
+    <main className="relative flex-1 overflow-y-auto p-6">
       <article className="mx-auto max-w-3xl [&_h2]:mt-8 [&_h2]:text-base [&_h2]:font-semibold [&_section>p]:mt-2 [&_section>p]:text-text-2">
         <h1 className="text-xl leading-tight font-semibold">How we know the score means something</h1>
         <p className="mt-2 text-text-2">
