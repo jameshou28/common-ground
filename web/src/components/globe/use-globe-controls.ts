@@ -42,8 +42,9 @@ export async function flyToBlock({ C, v, world, ellipsoid, motion, terrainReady 
 const typing = (t: EventTarget | null) => t instanceof HTMLElement && (t.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName));
 
 // cesium's tilt orbits the point under the pointer, rotate spins the planet under it
-export function globeControls(C: CesiumLib, ctl: CesiumNS.ScreenSpaceCameraController) {
+export function globeControls(C: CesiumLib, ctl: CesiumNS.ScreenSpaceCameraController, maxZoom?: number) {
   const T = C.CameraEventType;
+  if (maxZoom) ctl.maximumZoomDistance = maxZoom;
   ctl.zoomEventTypes = [T.WHEEL, T.PINCH];
   ctl.tiltEventTypes = [T.RIGHT_DRAG, T.PINCH];
   ctl.rotateEventTypes = [T.LEFT_DRAG, T.MIDDLE_DRAG];
@@ -64,7 +65,8 @@ export function useGlobeControls(
     if (!handle) return;
     const { C, v, ellipsoid, inBlock } = handle;
     const scene = v.scene;
-    globeControls(C, scene.screenSpaceCameraController);
+    // stop scroll-out at twice the opening view so the world never shrinks to a dot
+    globeControls(C, scene.screenSpaceCameraController, START[handle.world].height * 2);
 
     // the terrain under a screen point, the same for hover and click so the outline shows what a click scores
     const surfaceAt = (px: CesiumNS.Cartesian2): LatLon | null => {
