@@ -22,6 +22,15 @@ The click flow is the same: same call, same two live reads. The response and a f
 - `model.npz` grows to roughly 20–60 MB at v1. Measure memory on Render after the first deploy.
 - About-page credit to add: LOLA polar DEMs (NASA GSFC PGDA, Barker et al.).
 
+## What changes for James in v1.2 (not trained yet)
+
+- `model_version` will be `regions-1.2-v1`.
+- `overall` is now `landscape score × conditions.score / 100` (the 0.4 floor is gone, because farmland was getting through).
+- `conditions.terms` keys change to tree, crop, built, water, open, precip. "open" is bare ground plus snow and ice. `env` in the response still has the raw shares, including snow and bare.
+- `best[].contributions` still has 12 names; `rough_coarse` is always 0 at the 4 km scale now.
+- Scoring a click takes a bit longer (roughly 0.3 s to 0.45 s) because the best matches are re-ranked with both scales.
+- `analog_runtime.py` has one extra helper, `region_logits_task`. The server doesn't need it.
+
 ## What a click reads
 
 | Step | Data | Source | Stored by us | Time |
