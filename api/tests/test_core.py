@@ -3,8 +3,8 @@ import math
 import numpy as np
 import pytest
 
-from analog_core import grid
-from analog_core.dem import WINDOW_PX, center, local_xy
+from analog_core import grid, scorer
+from analog_core.dem import WINDOW_PX, Window, center, local_xy
 from analog_core.features import features, slope_deg
 from analog_core.tiles import TILE_RE, tile_center, tile_id
 
@@ -53,3 +53,22 @@ def test_wall_shadows_low_sun():
     assert features(z, sun_el_deg=1.5)["shadow"] == pytest.approx((0.475 + 2 * 0.3285) / 8, abs=0.01)
     # sun above the wall's angular height (atan(500 / 100 m) = 79 deg) casts nothing
     assert features(z, sun_el_deg=80)["shadow"] == 0
+
+
+def hill_window():
+    return Window((200 * np.exp(-(X ** 2 + Y ** 2) / (2 * 900 ** 2))).astype(np.float32), 30.0, "synthetic", 1.0)
+
+
+def test_contributions_sum_to_logit():
+    for target in scorer.TARGETS:
+        r = scorer.score_window(hill_window(), target)
+        eta = r["bias"] + sum(c["contribution"] for c in r["contributions"])
+        assert eta == pytest.approx(math.log(r["score"] / (100 - r["score"])), abs=1e-6)
+        assert 0 < r["score"] < 100
+
+
+def test_target_scores_itself_at_the_bias(monkeypatch):
+    for tid, tgt in scorer.TARGETS.items():
+        monkeypatch.setattr(scorer, "features", lambda *a, tgt=tgt, **k: tgt["features"])
+        r = scorer.score_window(hill_window(), tid)
+        assert r["score"] == pytest.approx(100 / (1 + math.exp(-scorer.BIAS)))
