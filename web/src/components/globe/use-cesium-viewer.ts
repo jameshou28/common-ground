@@ -25,6 +25,10 @@ export type GlobeHandle = {
   ellipsoid: CesiumNS.Ellipsoid;
   tileset: CesiumNS.Cesium3DTileset | null;
   motion: { current: Motion };
+  // true while a block is pulled out, the globe controls stand down
+  inBlock: { current: boolean };
+  // settles once real terrain heights can be sampled, before that every height reads as 0
+  terrainReady: Promise<void>;
 };
 
 type Options = {
@@ -84,11 +88,16 @@ export function useCesiumViewer({ world, el, credits, onStatus, onAltitude }: Op
       };
 
       let tileset: CesiumNS.Cesium3DTileset | null = null;
+      let terrainReady = Promise.resolve();
       try {
         if (world === "earth") {
           const terrain = C.Terrain.fromWorldTerrain();
           terrain.errorEvent.addEventListener((e: Error) => cb.current.onStatus({ state: "error", message: e.message }));
           terrain.readyEvent.addEventListener(() => cb.current.onStatus({ state: "ready" }));
+          terrainReady = new Promise<void>((done) => {
+            terrain.readyEvent.addEventListener(() => done());
+            terrain.errorEvent.addEventListener(() => done());
+          });
           v = new C.Viewer(el.current, { ...common, terrain });
           const g = v.scene.globe;
           g.showGroundAtmosphere = true;
@@ -188,7 +197,7 @@ export function useCesiumViewer({ world, el, credits, onStatus, onAltitude }: Op
       emitAlt();
 
       if (process.env.NODE_ENV !== "production") (window as unknown as { __viewer: unknown }).__viewer = viewer;
-      setHandle({ C, v: viewer, world, ellipsoid, tileset, motion });
+      setHandle({ C, v: viewer, world, ellipsoid, tileset, motion, inBlock: { current: false }, terrainReady });
     })();
 
     return () => {

@@ -1,6 +1,7 @@
 "use client";
 
 import dynamic from "next/dynamic";
+import Link from "next/link";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useTargets } from "@/lib/queries";
@@ -12,6 +13,7 @@ import type { Pin } from "@/components/globe/pins";
 import type { LatLon } from "@/components/globe/use-globe-controls";
 import { WorldSwitcher } from "@/components/globe/world-switcher";
 import { StatusItems } from "@/components/shell/status-bar";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { TargetList } from "@/components/site/target-list";
 import { ExploreContext } from "./explore-context";
 
@@ -46,6 +48,7 @@ export function ExploreShell({ children }: { children: React.ReactNode }) {
   const readout = hover ?? (selected ? { at: selected.center, tile: selected } : null);
   const hoverTile = hover?.tile ?? null;
   const [activePin, setActivePin] = useState<string | null>(null);
+  const [relief, setRelief] = useState(1);
   // tagged with its world so a rebuilt viewer does not replay an old flight
   const [focus, setFocus] = useState<(LatLon & { key: number; world: World }) | null>(null);
   const flyTo = useCallback((p: LatLon) => setFocus((f) => ({ lat: p.lat, lon: p.lon, world, key: (f?.key ?? 0) + 1 })), [world]);
@@ -94,8 +97,36 @@ export function ExploreShell({ children }: { children: React.ReactNode }) {
       >
         {selected && <TargetList />}
         <section aria-label={`${WORLD_LABEL[world]} globe`} className="sky relative min-h-[260px] overflow-hidden">
-          <GlobeView world={world} onStatus={setStatus} onAltitude={setAltitude} onHover={onHover} onPick={onPick} pins={pins} activePin={activePin} focus={focus?.world === world ? focus : null} selected={selected?.world === world ? selected : null} />
+          <GlobeView world={world} onStatus={setStatus} onAltitude={setAltitude} onHover={onHover} onPick={onPick} pins={pins} activePin={activePin} focus={focus?.world === world ? focus : null} selected={selected?.world === world ? selected : null} relief={relief} />
           <WorldSwitcher world={world} />
+          {selected && (
+            <div role="toolbar" aria-label="Block view" className="absolute top-3 right-3 z-10 flex items-center gap-2 rounded-md border border-line bg-panel py-1 pr-1 pl-2.5 text-xs">
+              {world === "earth" && (
+                <>
+                  <span id="relief-label" className="text-text-2">
+                    Relief
+                  </span>
+                  <ToggleGroup
+                    type="single"
+                    size="sm"
+                    spacing={0}
+                    aria-labelledby="relief-label"
+                    value={String(relief)}
+                    onValueChange={(r) => r && setRelief(Number(r))}
+                  >
+                    {[1, 2, 3].map((r) => (
+                      <ToggleGroupItem key={r} value={String(r)}>
+                        {r}×
+                      </ToggleGroupItem>
+                    ))}
+                  </ToggleGroup>
+                </>
+              )}
+              <Link href={world === "earth" ? "/" : `/?world=${world}`} className="inline-flex h-7 items-center rounded-md px-2 hover:bg-hover hover:no-underline">
+                ← Globe
+              </Link>
+            </div>
+          )}
           {status.state === "loading" && (
             <p role="status" className="absolute bottom-3 left-3 rounded-md border border-line bg-panel px-2.5 py-1.5 text-xs text-text-2">
               Loading {WORLD_LABEL[world]}…

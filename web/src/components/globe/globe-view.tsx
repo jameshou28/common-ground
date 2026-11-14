@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { pointTile, type Tile, type World } from "@/lib/tiles";
+import { BlockPullOut } from "./block-pull-out";
 import type { GlobeStatus } from "./config";
 import { HoverFootprint } from "./hover-footprint";
 import { Pins, type Pin } from "./pins";
@@ -19,11 +20,16 @@ export type GlobeViewProps = {
   activePin: string | null;
   // a new key flies the camera to the place
   focus: (LatLon & { key: number }) | null;
-  // the scored block, outlined and flown to
+  // the scored block, pulled out of the planet
   selected: Tile | null;
+  // vertical exaggeration of the pulled-out block, earth only
+  relief: number;
 };
 
-export default function GlobeView({ world, onStatus, onAltitude, onHover, onPick, pins, activePin, focus, selected }: GlobeViewProps) {
+// pins would float in empty space around a pulled-out block
+const NO_PINS: Pin[] = [];
+
+export default function GlobeView({ world, onStatus, onAltitude, onHover, onPick, pins, activePin, focus, selected, relief }: GlobeViewProps) {
   const el = useRef<HTMLDivElement>(null);
   const credits = useRef<HTMLDivElement>(null);
   const handle = useCesiumViewer({ world, el, credits, onStatus, onAltitude });
@@ -44,17 +50,14 @@ export default function GlobeView({ world, onStatus, onAltitude, onHover, onPick
   useEffect(() => {
     if (handle && focus) void flyToBlock(handle, focus);
   }, [handle, focus]);
-  useEffect(() => {
-    if (handle && selected) void flyToBlock(handle, selected.center);
-  }, [handle, selected]);
 
   return (
     <>
       <div ref={el} className="globe" />
       <div ref={credits} className="globe-credits" />
-      <HoverFootprint handle={handle} tile={tile} />
-      <HoverFootprint handle={handle} tile={selected} />
-      <Pins handle={handle} pins={pins} active={activePin} />
+      <HoverFootprint handle={handle} tile={selected ? null : tile} />
+      <Pins handle={handle} pins={selected ? NO_PINS : pins} active={activePin} />
+      <BlockPullOut handle={handle} tile={selected} relief={relief} />
     </>
   );
 }

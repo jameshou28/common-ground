@@ -21,11 +21,12 @@ export function flyHome({ C, v, world, ellipsoid, motion }: GlobeHandle) {
 }
 
 // fly in at an angle, aimed at the real ground height
-export async function flyToBlock({ C, v, world, ellipsoid, motion }: GlobeHandle, { lat, lon }: LatLon) {
+export async function flyToBlock({ C, v, world, ellipsoid, motion, terrainReady }: GlobeHandle, { lat, lon }: LatLon) {
   motion.current = null;
   const carto = C.Cartographic.fromDegrees(lon, lat);
   let ground = 0;
   try {
+    await terrainReady;
     const [s] = v.scene.globe ? await C.sampleTerrainMostDetailed(v.terrainProvider, [carto]) : await v.scene.sampleHeightMostDetailed([carto]);
     ground = s?.height ?? 0;
   } catch {
@@ -41,7 +42,7 @@ export async function flyToBlock({ C, v, world, ellipsoid, motion }: GlobeHandle
 const typing = (t: EventTarget | null) => t instanceof HTMLElement && (t.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName));
 
 // cesium's tilt orbits the point under the pointer, rotate spins the planet under it
-function globeControls(C: CesiumLib, ctl: CesiumNS.ScreenSpaceCameraController) {
+export function globeControls(C: CesiumLib, ctl: CesiumNS.ScreenSpaceCameraController) {
   const T = C.CameraEventType;
   ctl.zoomEventTypes = [T.WHEEL, T.PINCH];
   ctl.tiltEventTypes = [T.RIGHT_DRAG, T.PINCH];
@@ -61,7 +62,7 @@ export function useGlobeControls(
 
   useEffect(() => {
     if (!handle) return;
-    const { C, v, ellipsoid } = handle;
+    const { C, v, ellipsoid, inBlock } = handle;
     const scene = v.scene;
     globeControls(C, scene.screenSpaceCameraController);
 
@@ -73,9 +74,11 @@ export function useGlobeControls(
     };
     const mouse = new C.ScreenSpaceEventHandler(scene.canvas);
     mouse.setInputAction((m: { endPosition: CesiumNS.Cartesian2 }) => {
-      cb.current(surfaceAt(m.endPosition));
+      cb.current(inBlock.current ? null : surfaceAt(m.endPosition));
     }, C.ScreenSpaceEventType.MOUSE_MOVE);
     mouse.setInputAction((m: { position: CesiumNS.Cartesian2 }) => {
+      // the block view is for looking, not picking
+      if (inBlock.current) return;
       const id: unknown = scene.pick(m.position)?.id?.id;
       if (typeof id === "string" && id.startsWith(PIN_PREFIX)) return pick.current(null, id.slice(PIN_PREFIX.length));
       const at = surfaceAt(m.position);
@@ -86,13 +89,14 @@ export function useGlobeControls(
 
     const key = (e: KeyboardEvent) => {
       if (e.defaultPrevented || e.metaKey || e.ctrlKey || e.altKey || typing(e.target)) return;
-      if (e.key === "Escape" || e.key.toLowerCase() === "h") flyHome(handle);
+      if (!inBlock.current && (e.key === "Escape" || e.key.toLowerCase() === "h")) flyHome(handle);
     };
     window.addEventListener("keydown", key);
 
     // moon and mars have no globe, so nothing stops the camera going through the surface
     const scratch = new C.Cartographic();
     const clamp = () => {
+      if (inBlock.current) return;
       const cam = scene.camera;
       const c = ellipsoid.cartesianToCartographic(cam.positionWC, scratch);
       if (!c || c.height > CLAMP_BELOW_M) return;
