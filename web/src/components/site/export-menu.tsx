@@ -1,5 +1,7 @@
 "use client";
 
+import { ChevronUpIcon } from "lucide-react";
+import { DropdownMenu } from "radix-ui";
 import { useState } from "react";
 import { createPortal } from "react-dom";
 import { Button } from "@/components/ui/button";
@@ -21,17 +23,29 @@ export function ExportMenu(p: Props) {
     requestAnimationFrame(() => requestAnimationFrame(() => window.print()));
   };
   const save = (ext: string, body: string, type: string) => download(exportName(p.result, p.match, ext), body, type);
+  const items: [string, string, () => void][] = [
+    ["Field sheet", "PDF", print],
+    ["Scores", "CSV", () => save("csv", toCsv(p.result, p.match), "text/csv")],
+    ["Everything", "JSON", () => save("json", toJson(p.result, p.match), "application/json")],
+  ];
   return (
     <>
-      <Button size="sm" variant="outline" onClick={print} title="Print or save as PDF">
-        Field sheet
-      </Button>
-      <Button size="sm" variant="outline" onClick={() => save("csv", toCsv(p.result, p.match), "text/csv")}>
-        CSV
-      </Button>
-      <Button size="sm" variant="outline" onClick={() => save("json", toJson(p.result, p.match), "application/json")}>
-        JSON
-      </Button>
+      <DropdownMenu.Root>
+        <DropdownMenu.Trigger asChild>
+          <Button size="sm" variant="outline" className="group ml-auto">
+            Export <ChevronUpIcon className="transition-transform group-data-[state=closed]:rotate-180" />
+          </Button>
+        </DropdownMenu.Trigger>
+        <DropdownMenu.Portal>
+          <DropdownMenu.Content side="top" align="end" sideOffset={6} className="z-50 min-w-48 rounded-lg border border-line bg-panel p-1 text-sm shadow-lg">
+            {items.map(([label, kind, run]) => (
+              <DropdownMenu.Item key={label} onSelect={run} className="flex cursor-pointer items-center justify-between gap-6 rounded-md px-2.5 py-1.5 outline-none data-[highlighted]:bg-hover">
+                {label} <span className="text-xs text-text-2">{kind}</span>
+              </DropdownMenu.Item>
+            ))}
+          </DropdownMenu.Content>
+        </DropdownMenu.Portal>
+      </DropdownMenu.Root>
       {/* straight under body so print css can drop the rest of the app; only after a click, so never on the server */}
       {image !== undefined && createPortal(<Sheet {...p} image={image} />, document.body)}
     </>

@@ -3,7 +3,7 @@
 import { useEffect } from "react";
 import { useLatest } from "@/lib/use-latest";
 import type { CesiumLib, CesiumNS } from "./cesium";
-import { BLOCK_RANGE_M, CLAMP_BELOW_M, MIN_CLEARANCE_M, START } from "./config";
+import { BLOCK_RANGE_M, CLAMP_BELOW_M, MIN_CLEARANCE_M, MIN_ZOOM_M, START } from "./config";
 import { PIN_PREFIX } from "./pins";
 import type { GlobeHandle } from "./use-cesium-viewer";
 
@@ -44,7 +44,10 @@ const typing = (t: EventTarget | null) => t instanceof HTMLElement && (t.isConte
 // cesium's tilt orbits the point under the pointer, rotate spins the planet under it
 export function globeControls(C: CesiumLib, ctl: CesiumNS.ScreenSpaceCameraController, maxZoom?: number) {
   const T = C.CameraEventType;
-  if (maxZoom) ctl.maximumZoomDistance = maxZoom;
+  if (maxZoom) {
+    ctl.maximumZoomDistance = maxZoom;
+    ctl.minimumZoomDistance = MIN_ZOOM_M;
+  }
   ctl.zoomEventTypes = [T.WHEEL, T.PINCH];
   ctl.tiltEventTypes = [T.RIGHT_DRAG, T.PINCH];
   ctl.rotateEventTypes = [T.LEFT_DRAG, T.MIDDLE_DRAG];

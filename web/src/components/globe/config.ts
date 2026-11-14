@@ -28,6 +28,9 @@ export type GlobeStatus = { state: "loading" | "ready" | "error"; message?: stri
 
 // camera floor over moon and mars tiles, checked only below the tallest relief
 export const MIN_CLEARANCE_M = 300;
+
+// closest scroll-in, under the block fly-in range so you can still lean in a bit
+export const MIN_ZOOM_M = 2_000;
 export const CLAMP_BELOW_M = 40_000;
 
 // the brand token as hex, cesium cannot read css variables

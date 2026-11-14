@@ -62,7 +62,7 @@ export function SiteResult() {
             </Notice>
           )}
           {!env.liveScoring && !r && earth && !q.isError && (
-            <Notice title="Live scoring is paused">Only blocks scored before open right now. The check sites still work.</Notice>
+            <Notice title="Live scoring is paused">Right now only places scored before will open. The check sites still work.</Notice>
           )}
           {earth && q.isError && (
             <Notice alert title={describeError(q.error).title}>

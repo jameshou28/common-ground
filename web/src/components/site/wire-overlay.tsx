@@ -47,7 +47,7 @@ export function WireOverlay({
       )}
       {block.data && (
         <p className="pointer-events-none absolute bottom-3 left-3 rounded-md border border-line bg-panel px-2.5 py-1.5 text-xs text-text-2">
-          Solid: this block, {Math.round(block.data.hi - block.data.lo)} m from low to high · Lines: {overName}, {Math.round(over.hi - over.lo)} m
+          Solid: this block, {Math.round(block.data.hi - block.data.lo)} m from low to high · Lines: {overName}, {Math.round(over.hi - over.lo)} m, blue low to yellow high
           {matched ? ", stretched to match" : ""}
         </p>
       )}

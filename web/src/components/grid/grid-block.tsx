@@ -71,11 +71,27 @@ function Surface({ grid, scale, tone, grey }: { grid: Grid; scale: number; tone:
 
 // another surface drawn as lines over the block
 function Wire({ grid, scale }: { grid: Grid; scale: number }) {
-  const geo = useMemo(() => surfaceGeometry(grid, 32, scale), [grid, scale]);
+  const geo = useMemo(() => {
+    const g = surfaceGeometry(grid, 32, scale);
+    // lines colored by height, low blue to high yellow, so altitude reads at a glance
+    const pos = g.attributes.position;
+    let lo = Infinity, hi = -Infinity;
+    for (let k = 0; k < pos.count; k++) {
+      lo = Math.min(lo, pos.getY(k));
+      hi = Math.max(hi, pos.getY(k));
+    }
+    const c = new THREE.Color(), cols = new Float32Array(pos.count * 3);
+    for (let k = 0; k < pos.count; k++) {
+      const t = hi > lo ? (pos.getY(k) - lo) / (hi - lo) : 0.5;
+      c.setHSL(0.66 - t * 0.5, 0.9, 0.45 + t * 0.15).toArray(cols, k * 3);
+    }
+    g.setAttribute("color", new THREE.Float32BufferAttribute(cols, 3));
+    return g;
+  }, [grid, scale]);
   useEffect(() => () => geo.dispose(), [geo]);
   return (
     <mesh geometry={geo} position={[0, 0.004, 0]}>
-      <meshBasicMaterial color="#ffffff" wireframe transparent opacity={0.8} />
+      <meshBasicMaterial vertexColors wireframe transparent opacity={0.9} />
     </mesh>
   );
 }
