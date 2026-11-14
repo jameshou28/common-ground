@@ -43,7 +43,7 @@ function wallGeometry(surface: THREE.BufferGeometry, segs: number, base: number)
   return geo;
 }
 
-function Surface({ grid, scale, tone }: { grid: Grid; scale: number; tone: Tone }) {
+function Surface({ grid, scale, tone, grey }: { grid: Grid; scale: number; tone: Tone; grey: boolean }) {
   const segs = grid.n - 1;
   const [surface, walls] = useMemo(() => {
     const s = surfaceGeometry(grid, segs, scale);
@@ -59,8 +59,8 @@ function Surface({ grid, scale, tone }: { grid: Grid; scale: number; tone: Tone 
   );
   return (
     <>
-      <mesh geometry={surface}>
-        <meshStandardMaterial color={TONE[tone]} roughness={1} />
+      <mesh geometry={surface} castShadow receiveShadow>
+        <meshStandardMaterial color={grey ? "#b4b4b4" : TONE[tone]} roughness={1} />
       </mesh>
       <mesh geometry={walls}>
         <meshStandardMaterial color="#3b3530" roughness={1} side={THREE.DoubleSide} />
@@ -131,16 +131,36 @@ export type GridBlockProps = {
   label: string;
   // share the camera with the other blocks on the page
   link?: CameraLink;
+  // moon light: grey ground lit from this many degrees above the horizon, with cast shadows
+  moonSun?: number | null;
 };
 
 // a 4 km block from a height grid: displaced mesh, walls, fixed light from the north-west, orbit camera
-export default function GridBlock({ grid, relief = 1, tone, wire, label, link }: GridBlockProps) {
+export default function GridBlock({ grid, relief = 1, tone, wire, label, link, moonSun = null }: GridBlockProps) {
   const top = ((grid.hi - grid.lo) * relief) / 1000;
   return (
-    <Canvas frameloop="demand" dpr={[1, 2]} camera={{ position: [-3.4, 4.4, 7.4], fov: 35 }} role="img" aria-label={label}>
-      <ambientLight intensity={0.45} />
-      <directionalLight position={[-5, 4, -5]} intensity={2.4} />
-      <Surface grid={grid} scale={relief} tone={tone} />
+    <Canvas shadows frameloop="demand" dpr={[1, 2]} camera={{ position: [-3.4, 4.4, 7.4], fov: 35 }} role="img" aria-label={label}>
+      {moonSun === null ? (
+        <>
+          <ambientLight intensity={0.45} />
+          <directionalLight position={[-5, 4, -5]} intensity={2.4} />
+        </>
+      ) : (
+        <>
+          <ambientLight intensity={0.03} />
+          {/* from the north-west like the normal light, the shadow box covers the whole block */}
+          <directionalLight
+            castShadow
+            position={[-8.5 * Math.cos((moonSun * Math.PI) / 180), 12 * Math.sin((moonSun * Math.PI) / 180) + top / 2, -8.5 * Math.cos((moonSun * Math.PI) / 180)]}
+            intensity={3.2}
+            shadow-mapSize={[2048, 2048]}
+            shadow-normalBias={0.03}
+          >
+            <orthographicCamera attach="shadow-camera" args={[-3.2, 3.2, 3.2, -3.2, 0.1, 30]} />
+          </directionalLight>
+        </>
+      )}
+      <Surface grid={grid} scale={relief} tone={tone} grey={moonSun !== null} />
       {wire && <Wire grid={wire.grid} scale={wire.scale} />}
       {/* linked blocks orbit one shared point, or the same camera would frame each differently */}
       <OrbitControls makeDefault enablePan={false} target={[0, link ? 0.2 : top / 2, 0]} minDistance={3} maxDistance={16} maxPolarAngle={Math.PI * 0.49} />

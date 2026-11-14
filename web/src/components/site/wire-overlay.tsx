@@ -10,7 +10,7 @@ import { targetGridUrl } from "./target-block";
 const GridBlock = dynamic(() => import("@/components/grid/grid-block"), { ssr: false });
 
 // the block's own height grid with the target's surface drawn over it as lines
-export function WireOverlay({ gridUrl, target, relief, matched }: { gridUrl: string | undefined; target: Target | undefined; relief: number; matched: boolean }) {
+export function WireOverlay({ gridUrl, target, relief, matched, moonSun }: { gridUrl: string | undefined; target: Target | undefined; relief: number; matched: boolean; moonSun: number | null }) {
   const block = useGrid(gridUrl);
   const over = useGrid(targetGridUrl(target));
   const ready = block.data && over.data && target;
@@ -21,6 +21,7 @@ export function WireOverlay({ gridUrl, target, relief, matched }: { gridUrl: str
           grid={block.data}
           relief={relief}
           tone="earth"
+          moonSun={moonSun}
           // matched relief stretches the target onto the block's height range
           wire={{ grid: over.data, scale: relief * (matched ? matchScale(block.data, over.data) : 1) }}
           label={`This block with ${target.name} drawn over it as a wireframe`}

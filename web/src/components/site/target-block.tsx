@@ -13,11 +13,11 @@ const GridBlock = dynamic(() => import("@/components/grid/grid-block"), { ssr: f
 export const targetGridUrl = (t: Target | undefined) => (t ? `/grids/${t.tile_id}.bin` : null);
 
 // the target's own 4 km block, under the earth block it is compared with
-export function TargetBlock({ target, relief }: { target: Target | undefined; relief: number }) {
+export function TargetBlock({ target, relief, moonSun }: { target: Target | undefined; relief: number; moonSun: number | null }) {
   const grid = useGrid(targetGridUrl(target));
   return (
     <section aria-label="Target block" className="relative min-h-[180px] overflow-hidden border-t border-line bg-space">
-      {grid.data && target && <GridBlock grid={grid.data} relief={relief} tone={target.world} label={`${target.name} as a 4 km block of terrain`} />}
+      {grid.data && target && <GridBlock grid={grid.data} relief={relief} tone={target.world} moonSun={moonSun} label={`${target.name} as a 4 km block of terrain`} />}
       {target && grid.isPending && <Skeleton className="absolute inset-6" />}
       {grid.isError && (
         <p role="alert" className="absolute inset-x-3 top-12 max-w-sm rounded-md border border-line bg-panel px-2.5 py-1.5 text-xs">

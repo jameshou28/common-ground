@@ -124,7 +124,7 @@ export function describeError(e: unknown): { title: string; body: string } {
     case "paused":
       return { title: "Live scoring is paused", body: "New places can't be scored right now. The check sites and every block scored before still open." };
     case "network":
-      return { title: "Scoring service unreachable", body: "New places can't be scored right now. The check sites and every block scored before still open." };
+      return { title: "Live scoring is paused", body: "New places can't be scored right now. The check sites and every block scored before still open." };
     case "busy":
     case "rate_limited":
       return { title: "The service is busy", body: "Too many blocks are being scored at once. Wait a few seconds and click again." };

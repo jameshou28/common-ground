@@ -29,6 +29,9 @@ export type GlobeHandle = {
   inBlock: { current: boolean };
   // settles once real terrain heights can be sampled, before that every height reads as 0
   terrainReady: Promise<void>;
+  // elevation of the relief sun in degrees, call relight after changing it
+  sun: { current: number };
+  relight: () => void;
 };
 
 type Options = {
@@ -159,9 +162,9 @@ export function useCesiumViewer({ world, el, credits, onStatus, onAltitude }: Op
       // relief light: a fixed low sun in the camera's local frame
       const sunLight = viewer.scene.light;
       const sunAz = C.Math.toRadians(RELIEF_SUN.azimuthDeg);
-      const sunEl = C.Math.toRadians(RELIEF_SUN.elevationDeg);
+      // sun height in degrees, moon light lowers it to the target's
+      const sun = { current: RELIEF_SUN.elevationDeg };
       // light travels sun to ground, so negate the sun vector
-      const lightEnu = new C.Cartesian3(-Math.cos(sunEl) * Math.sin(sunAz), -Math.cos(sunEl) * Math.cos(sunAz), -Math.sin(sunEl));
       const relief = (heightM: number) => {
         const near = heightM < RELIEF_BELOW_M;
         if (viewer.scene.globe) viewer.scene.globe.enableLighting = near;
@@ -171,6 +174,8 @@ export function useCesiumViewer({ world, el, credits, onStatus, onAltitude }: Op
         }
         const c = viewer.camera.positionCartographic;
         const enu = C.Transforms.eastNorthUpToFixedFrame(C.Cartesian3.fromRadians(c.longitude, c.latitude, 0, ellipsoid), ellipsoid);
+        const sunEl = C.Math.toRadians(sun.current);
+        const lightEnu = new C.Cartesian3(-Math.cos(sunEl) * Math.sin(sunAz), -Math.cos(sunEl) * Math.cos(sunAz), -Math.sin(sunEl));
         const dir = C.Matrix4.multiplyByPointAsVector(enu, lightEnu, new C.Cartesian3());
         viewer.scene.light = new C.DirectionalLight({ direction: C.Cartesian3.normalize(dir, dir), intensity: 2.2 });
         viewer.scene.requestRender();
@@ -197,7 +202,7 @@ export function useCesiumViewer({ world, el, credits, onStatus, onAltitude }: Op
       emitAlt();
 
       if (process.env.NODE_ENV !== "production") (window as unknown as { __viewer: unknown }).__viewer = viewer;
-      setHandle({ C, v: viewer, world, ellipsoid, tileset, motion, inBlock: { current: false }, terrainReady });
+      setHandle({ C, v: viewer, world, ellipsoid, tileset, motion, inBlock: { current: false }, terrainReady, sun, relight: emitAlt });
     })();
 
     return () => {

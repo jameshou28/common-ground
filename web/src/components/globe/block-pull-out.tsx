@@ -258,18 +258,49 @@ function liftBlock(
   };
 }
 
+// the block as the target would light it: grey ground, a sun just above the horizon, real cast shadows
+function moonLight(handle: GlobeHandle, elevationDeg: number): () => void {
+  const { C, v, sun, relight } = handle;
+  const scene = v.scene;
+  const before = { sun: sun.current, shadows: v.shadows, terrain: v.terrainShadows, soft: scene.shadowMap.softShadows, far: scene.shadowMap.maximumDistance };
+  const layers = Array.from({ length: v.imageryLayers.length }, (_, i) => v.imageryLayers.get(i));
+  const saturation = layers.map((l) => l.saturation);
+  layers.forEach((l) => (l.saturation = 0));
+  sun.current = elevationDeg;
+  v.shadows = true;
+  v.terrainShadows = C.ShadowMode.ENABLED;
+  scene.shadowMap.softShadows = true;
+  scene.shadowMap.maximumDistance = 20_000;
+  relight();
+  scene.requestRender();
+  return () => {
+    if (v.isDestroyed()) return;
+    layers.forEach((l, i) => (l.saturation = saturation[i]));
+    sun.current = before.sun;
+    v.shadows = before.shadows;
+    v.terrainShadows = before.terrain;
+    scene.shadowMap.softShadows = before.soft;
+    scene.shadowMap.maximumDistance = before.far;
+    relight();
+    scene.requestRender();
+  };
+}
+
 // lifts the 4 km block out of the planet: crop, strata walls, an orbiting camera, a scale bar and a north arrow
 export function BlockPullOut({
   handle,
   tile,
   relief,
   points,
+  moonSun,
 }: {
   handle: GlobeHandle | null;
   tile: Tile | null;
   relief: number;
   // the scored cells, shown once the block is out
   points: Point[];
+  // sun elevation in degrees for moon light, null for the normal look
+  moonSun: number | null;
 }) {
   const [lifted, setLifted] = useState<Lifted | null>(null);
   const bar = useRef<SVGPathElement>(null);
@@ -281,6 +312,10 @@ export function BlockPullOut({
     if (!handle || !tile) return;
     return liftBlock(handle, tile, setLifted);
   }, [handle, tile]);
+
+  useEffect(() => {
+    if (handle && lifted && moonSun !== null) return moonLight(handle, moonSun);
+  }, [handle, lifted, moonSun]);
 
   // walls, base and cut edge, rebuilt when the relief changes
   useEffect(() => {

@@ -8,12 +8,14 @@ import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { AddToCompare } from "@/components/compare/add-to-compare";
 import { useExplore } from "@/components/explore/explore-context";
 import { describeError } from "@/lib/api";
+import { env } from "@/lib/env";
 import { useScore, useTargets } from "@/lib/queries";
 import { CHECK_SITES } from "@/lib/sites";
 import { CannotCopy } from "./cannot-copy";
 import { ChartsDialog } from "./charts-dialog";
 import { ContributionBars } from "./contribution-bars";
 import { FactsTable } from "./facts-table";
+import { FieldSheet } from "./field-sheet";
 import { ScoreGauge, type Mode } from "./score-gauge";
 import { Section } from "./section";
 
@@ -29,7 +31,7 @@ function Notice({ title, children, alert }: { title: string; children: React.Rea
 // the right-hand panel for one scored block
 export function SiteResult() {
   const { tileId } = useParams<{ tileId: string }>();
-  const { selected, targetId } = useExplore();
+  const { selected, targetId, capture } = useExplore();
   const earth = selected?.world === "earth";
   const q = useScore(earth ? selected.id : null, targetId);
   const target = useTargets().data?.find((t) => t.id === targetId);
@@ -58,6 +60,9 @@ export function SiteResult() {
             <Notice alert title="Only Earth is scored live">
               Moon and Mars blocks are fixed targets. Click Earth to score a place.
             </Notice>
+          )}
+          {!env.liveScoring && !r && earth && !q.isError && (
+            <Notice title="Live scoring is paused">Only blocks scored before open right now. The check sites still work.</Notice>
           )}
           {earth && q.isError && (
             <Notice alert title={describeError(q.error).title}>
@@ -117,6 +122,7 @@ export function SiteResult() {
       {earth && r && (
         <div className="flex gap-2 border-t border-line p-3">
           <AddToCompare tileId={selected.id} targetId={targetId} />
+          {target && <FieldSheet tile={selected} name={site?.name ?? "Clicked block"} target={target} result={r} capture={capture} />}
         </div>
       )}
     </aside>

@@ -190,3 +190,29 @@
   width: auto !important;
   vertical-align: middle;
 }
+
+/* print shows only the field sheet, on one a4 page */
+@media print {
+  @page {
+    size: A4;
+    margin: 12mm;
+  }
+  html,
+  body {
+    height: auto !important;
+    background: white !important;
+  }
+  body * {
+    visibility: hidden;
+  }
+  .field-sheet,
+  .field-sheet * {
+    visibility: visible;
+  }
+  .field-sheet {
+    display: block !important;
+    position: absolute;
+    inset: 0 auto auto 0;
+    width: 100%;
+  }
+}

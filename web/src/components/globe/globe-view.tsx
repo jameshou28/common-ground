@@ -27,12 +27,23 @@ export type GlobeViewProps = {
   relief: number;
   // feature points of the scored block
   points: Point[];
+  // sun elevation for moon light on the block, null when off
+  moonSun: number | null;
+  // filled with a function that returns the current view as a jpeg data url
+  capture: { current: (() => string | null) | null };
 };
+
+function shareCapture(slot: GlobeViewProps["capture"], fn: () => string | null) {
+  slot.current = fn;
+  return () => {
+    slot.current = null;
+  };
+}
 
 // pins would float in empty space around a pulled-out block
 const NO_PINS: Pin[] = [];
 
-export default function GlobeView({ world, onStatus, onAltitude, onHover, onPick, pins, activePin, focus, selected, relief, points }: GlobeViewProps) {
+export default function GlobeView({ world, onStatus, onAltitude, onHover, onPick, pins, activePin, focus, selected, relief, points, moonSun, capture }: GlobeViewProps) {
   const el = useRef<HTMLDivElement>(null);
   const credits = useRef<HTMLDivElement>(null);
   const handle = useCesiumViewer({ world, el, credits, onStatus, onAltitude });
@@ -54,13 +65,22 @@ export default function GlobeView({ world, onStatus, onAltitude, onHover, onPick
     if (handle && focus) void flyToBlock(handle, focus);
   }, [handle, focus]);
 
+  useEffect(() => {
+    if (!handle) return;
+    return shareCapture(capture, () => {
+      // the drawing buffer is only readable straight after a render
+      handle.v.scene.render();
+      return handle.v.scene.canvas.toDataURL("image/jpeg", 0.9);
+    });
+  }, [handle, capture]);
+
   return (
     <>
       <div ref={el} className="globe" />
       <div ref={credits} className="globe-credits" />
       <HoverFootprint handle={handle} tile={selected ? null : tile} />
       <Pins handle={handle} pins={selected ? NO_PINS : pins} active={activePin} />
-      <BlockPullOut handle={handle} tile={selected} relief={relief} points={points} />
+      <BlockPullOut handle={handle} tile={selected} relief={relief} points={points} moonSun={moonSun} />
     </>
   );
 }

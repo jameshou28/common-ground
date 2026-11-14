@@ -3,7 +3,7 @@
 import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { Point } from "@/lib/api";
 import { useScore, useTargets } from "@/lib/queries";
 import { CHECK_SITES, siteHref } from "@/lib/sites";
@@ -97,6 +97,11 @@ export function ExploreShell({ children }: { children: React.ReactNode }) {
   // the earth pane as a plain height grid with the target drawn over it
   const [wire, setWire] = useState(false);
   const [matched, setMatched] = useState(false);
+  // light both blocks the way the target is lit
+  const [moon, setMoon] = useState(false);
+  const moonSun = moon && target ? target.sun_elevation_deg : null;
+  const captureSlot = useRef<(() => string | null) | null>(null);
+  const capture = useCallback(() => captureSlot.current?.() ?? null, []);
   const pins = useMemo<Pin[]>(
     () =>
       world === "earth"
@@ -124,6 +129,7 @@ export function ExploreShell({ children }: { children: React.ReactNode }) {
       flyTo,
       targetId,
       selected,
+      capture,
     }),
     [
       world,
@@ -135,6 +141,7 @@ export function ExploreShell({ children }: { children: React.ReactNode }) {
       flyTo,
       targetId,
       selected,
+      capture,
     ],
   );
   const onPick = useCallback(
@@ -199,6 +206,8 @@ export function ExploreShell({ children }: { children: React.ReactNode }) {
               selected={selected?.world === world ? selected : null}
               relief={relief}
               points={points}
+              moonSun={moonSun}
+              capture={captureSlot}
             />
             <WorldSwitcher world={world} />
             {selected && (
@@ -249,6 +258,11 @@ export function ExploreShell({ children }: { children: React.ReactNode }) {
                     )}
                   </>
                 )}
+                {world === "earth" && (
+                  <Toggle size="sm" pressed={moon} onPressedChange={setMoon} disabled={!target}>
+                    Moon light on both
+                  </Toggle>
+                )}
                 <Link
                   href={world === "earth" ? "/" : `/?world=${world}`}
                   className="inline-flex h-7 items-center rounded-md px-2 hover:bg-hover hover:no-underline"
@@ -284,6 +298,7 @@ export function ExploreShell({ children }: { children: React.ReactNode }) {
                 target={target}
                 relief={relief}
                 matched={matched}
+                moonSun={moonSun}
               />
             )}
           </section>
@@ -291,6 +306,7 @@ export function ExploreShell({ children }: { children: React.ReactNode }) {
             <TargetBlock
               target={target}
               relief={world === "earth" ? relief : 1}
+              moonSun={moonSun}
             />
           )}
         </div>

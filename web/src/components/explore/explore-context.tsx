@@ -21,6 +21,8 @@ export type ExploreState = {
   targetId: string | null;
   // the scored block when a site page is open
   selected: Tile | null;
+  // the current globe view as a jpeg data url, for the field sheet
+  capture: () => string | null;
 };
 
 export const ExploreContext = createContext<ExploreState | null>(null);
