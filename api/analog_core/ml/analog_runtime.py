@@ -327,7 +327,7 @@ def to_logit(score_0_100: float) -> float:
 
 
 def region_scores(model: Model, emb: dict, world: str, exclude: np.ndarray | None = None,
-                  n_best: int = 3, with_cells: bool = False):
+                  n_best: int = 5, with_cells: bool = False):
     out = []
     for r, key in enumerate(model.region_keys):
         if model.region_world[r] != world:
@@ -399,7 +399,7 @@ def conditions(model: Model, env: dict):
     return float(model.gate_bias + h.sum()), {n: float(v) for n, v in zip(model.gate_names, h)}
 
 
-def score_click(model: Model, dems: dict, env: dict, worlds=WORLDS, n_best: int = 3) -> dict:
+def score_click(model: Model, dems: dict, env: dict, worlds=WORLDS, n_best: int = 5) -> dict:
     # Everything the API returns for one Earth click: one entry per world (the two tabs).
     emb = embed(model, dems, RADIUS_M["earth"])
     G, terms = conditions(model, env)
