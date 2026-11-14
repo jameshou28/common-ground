@@ -1,11 +1,11 @@
 import math
 import re
 
-# tile id: earth:g:i:j below 80 deg, moon:ps:s:ix:iy on the polar grid above it
+# tile id: earth:g:i:j below 80 deg, moon:ps:s:ix:iy on the polar grid above it, earth:p:lat:lon centred on a point
 RADIUS_M = {"earth": 6_371_000.0, "moon": 1_737_400.0, "mars": 3_389_500.0}
 STEP_M = 4000.0 # 4 km tiles
 POLAR_LAT = 80.0
-TILE_RE = re.compile(r"^(earth|moon|mars):(g:-?\d{1,5}:-?\d{1,5}|ps:[ns]:-?\d{1,4}:-?\d{1,4})$")
+TILE_RE = re.compile(r"^(earth|moon|mars):(g:-?\d{1,5}:-?\d{1,5}|ps:[ns]:-?\d{1,4}:-?\d{1,4}|p:-?\d{1,2}\.\d{4}:-?\d{1,3}\.\d{4})$")
 
 
 def _round(x: float) -> int:
@@ -49,6 +49,13 @@ def tile_center(tid: str) -> tuple[str, float, float]:
         if abs(lat) >= 90:
             raise ValueError(f"tile off the planet: {tid}")
         return world, lat, _wrap(j * dphi / math.cos(math.radians(lat)))
+
+    if kind == "p":
+        # the block is centred on the clicked point, 4 decimals is about 11 m
+        lat, lon = float(rest[0]), float(rest[1])
+        if abs(lat) >= 90 or abs(lon) > 180:
+            raise ValueError(f"tile off the planet: {tid}")
+        return world, lat, lon
 
     south = rest[0] == "s"
     x, y = int(rest[1]) * STEP_M, int(rest[2]) * STEP_M
