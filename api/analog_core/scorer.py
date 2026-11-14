@@ -1,94 +1,73 @@
-import json
 import math
 import os
+import urllib.request
+from functools import lru_cache
 from pathlib import Path
 
 import numpy as np
 
-from .dem import BLOCK_PX, RES_M, Window, read_window
-from .features import features, slope_deg
+from .dem import NoTerrain, UpstreamError
+from .ml import readers, runtime
 from .tiles import tile_center
 
-# @victor add ur model when its done
-MODEL_VERSION = os.environ.get("MODEL_VERSION", "stub-0.1")
-TARGETS: dict = json.loads((Path(__file__).resolve().parents[1] / "targets.json").read_text())
-CELLS = 8
-BIAS = 2.0 # a block identical to the target scores sigmoid(2) = 88
-
-# key: (label, unit, group, kind, weight)
-# ratio = |ln(value / target)|, diff = |value - target|
-TERMS = {
-    "relief_m": ("Relief", "m", "shape", "ratio", 0.6),
-    "slope_med_deg": ("Median slope", "deg", "slope", "ratio", 0.6),
-    "slope_p90_deg": ("Steep slopes (p90)", "deg", "slope", "ratio", 0.6),
-    "rms_150m": ("Roughness at 150 m", "m", "roughness", "ratio", 0.4),
-    "rms_1500m": ("Roughness at 1.5 km", "m", "roughness", "ratio", 0.4),
-    "hypsometric": ("Hypsometric integral", "", "shape", "diff", 3.0),
-    "shadow": ("Shadow at target Sun", "share", "light", "diff", 3.0),
-}
+# model.npz comes from MODEL_PATH, or MODEL_URL (r2) downloaded once into the cache
+CACHE = Path(os.environ.get("CACHE_DIR") or Path(__file__).resolve().parents[1] / "cache")
+MODEL_PATH = Path(os.environ.get("MODEL_PATH") or CACHE / "model.npz")
+MODEL_URL = os.environ.get("MODEL_URL", "")
+SITE_BLOCK = slice(64, 192) # the 4 km block inside the padded site window
 
 
-class UnknownTarget(Exception):
+class NoModel(Exception):
     pass
 
 
-def _landform(slope_mean: float, relief: float) -> str:
-    if slope_mean < 3:
-        return "flat plain"
-    if slope_mean > 25:
-        return "steep slope"
-    return "ridge or rim" if relief > 150 else "mixed slopes"
+@lru_cache(maxsize=1)
+def model() -> runtime.Model:
+    if not MODEL_PATH.exists():
+        if not MODEL_URL:
+            raise NoModel(f"no model at {MODEL_PATH} and MODEL_URL is empty")
+        MODEL_PATH.parent.mkdir(parents=True, exist_ok=True)
+        tmp = MODEL_PATH.with_suffix(".part")
+        urllib.request.urlretrieve(MODEL_URL, tmp)
+        tmp.replace(MODEL_PATH)
+    return runtime.load(MODEL_PATH)
 
 
-def score_window(win: Window, target_id: str) -> dict:
-    # takes already read window so tests and bakes need no network
-    if target_id not in TARGETS:
-        raise UnknownTarget(target_id)
-    tgt = TARGETS[target_id]
-    f = features(win.dem, tgt["sun_elevation_deg"])
-
-    # every term pulls the score down by weight * distance, so the bars sum to the logit
-    contributions, eta = [], BIAS
-    for key, (label, unit, group, kind, w) in TERMS.items():
-        v, t = f[key], tgt["features"][key]
-        d = abs(math.log((v + 0.1) / (t + 0.1))) if kind == "ratio" else abs(v - t)
-        eta -= w * d
-        contributions.append(dict(key=key, label=label, group=group, value=v, target_value=t,
-                                  distance=d, percentile=None, contribution=-w * d, unit=unit))
-    score = 100.0 / (1.0 + math.exp(-eta))
-
-    # CELLS: 8 x 8 cells of 500 m, cost = how far the cell's slope is from the target's median slope
-    px = BLOCK_PX // CELLS
-    cell = lambda a, fn: fn(a.reshape(CELLS, px, CELLS, px), axis=(1, 3))
-    s_mean = cell(_center_slope(win), np.mean)
-    relief = cell(win.block, np.max) - cell(win.block, np.min)
-    cost = np.abs(s_mean - tgt["features"]["slope_med_deg"])
-
-    return dict(
-        target_id=target_id, model_version=MODEL_VERSION,
-        score=score, score_range=dict(low=score, high=score),
-        percentile=None, typicality=None, typicality_percentile=None,
-        physics_score=score, bias=BIAS, contributions=contributions,
-        cell_cost=cost.tolist(),
-        cell_landform=[[_landform(s_mean[r, c], relief[r, c]) for c in range(CELLS)] for r in range(CELLS)],
-        cell_local=[[dict(slope_mean=round(float(s_mean[r, c]), 2), cell_relief=round(float(relief[r, c]), 1))
-                     for c in range(CELLS)] for r in range(CELLS)],
-        nearest_analog=None,
-        confidence="lower" if (win.resolution_m > 1.1 * RES_M or win.valid_share < 0.9) else "normal",
-        ood=False,
-        dem_source=win.source, resolution_m=win.resolution_m,
-    )
+def _clean(o):
+    # json has no nan, precip is nan where worldclim has no value
+    if isinstance(o, float):
+        return None if math.isnan(o) else o
+    if isinstance(o, dict):
+        return {k: _clean(v) for k, v in o.items()}
+    if isinstance(o, list):
+        return [_clean(v) for v in o]
+    return o
 
 
-def _center_slope(win: Window) -> np.ndarray:
-    p = (win.dem.shape[0] - BLOCK_PX) // 2
-    return slope_deg(win.dem)[p:p + BLOCK_PX, p:p + BLOCK_PX]
+def score_tile(tile_id: str) -> tuple[dict, np.ndarray]:
+    # raises NoTerrain for ocean or lakes, UpstreamError when a bucket read fails
+    m = model()
+    _, lat, lon = tile_center(tile_id)
+    try:
+        dems, env = readers.fetch_earth(m, lat, lon)
+    except ValueError as e:
+        if str(e).startswith("no_terrain"):
+            raise NoTerrain(str(e)) from e
+        raise UpstreamError(str(e)) from e
+    except Exception as e: # rasterio, urllib, ssl
+        raise UpstreamError(f"{type(e).__name__}: {e}") from e
+    result = runtime.score_click(m, dems, env)
+    result["env"] = env
+    # fetch_earth already refused blocks without site terrain
+    return _clean(result), dems["site"][SITE_BLOCK, SITE_BLOCK].astype(np.float32)
 
 
-def score_tile(tile_id: str, target_id: str) -> tuple[dict, np.ndarray]:
-    # raises NoTerrain (ocean or mostly water) or UnknownTarget
-    if target_id not in TARGETS:
-        raise UnknownTarget(target_id)
-    world, lat, lon = tile_center(tile_id)
-    win = read_window(world, lat, lon)
-    return score_window(win, target_id), win.block.astype(np.float32)
+def library_block(index: int) -> np.ndarray:
+    # the matched moon or mars block as a 128 px grid, read live from its source dem (about 1 s)
+    m = model()
+    if not 0 <= index < len(m.lib_world):
+        raise IndexError(index)
+    try:
+        return readers.library_block_dem(m, index).astype(np.float32)
+    except Exception as e:
+        raise UpstreamError(f"{type(e).__name__}: {e}") from e

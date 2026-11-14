@@ -1,14 +1,19 @@
+import json
 import math
+from pathlib import Path
 
 import numpy as np
 import pytest
 from fastapi.testclient import TestClient
 
 from analog_core import dem, grid, scorer
-from analog_core.dem import WINDOW_PX, Window, center, local_xy
+from analog_core.dem import WINDOW_PX, center, local_xy
 from analog_core.features import features, slope_deg
+from analog_core.ml import readers, runtime
 from analog_core.tiles import TILE_RE, tile_center, tile_id
+from app import store
 from app.main import app
+from app.schemas import ScoreResult
 
 X, Y = local_xy()
 client = TestClient(app)
@@ -62,50 +67,80 @@ def test_wall_shadows_low_sun():
     assert features(z, sun_el_deg=80)["shadow"] == 0
 
 
-def hill_window():
-    return Window((200 * np.exp(-(X ** 2 + Y ** 2) / (2 * 900 ** 2))).astype(np.float32), 30.0, "synthetic", 1.0)
+def fake_fetch(model, lat, lon, scales=None):
+    # a 200 m hill at both scales, dry and bare, so no bucket reads
+    n = runtime.WINDOW_PX
+    yy, xx = np.mgrid[:n, :n] - n / 2
+    hill = 200 * np.exp(-(xx ** 2 + yy ** 2) / (2 * 30 ** 2))
+    env = dict(tree=0.0, crop=0.0, built=0.0, water=0.0, snow=0.0, bare=0.9, precip=float("nan"))
+    return {s: hill.copy() for s in model.scales}, env
 
 
-def test_contributions_sum_to_logit():
-    for target in scorer.TARGETS:
-        r = scorer.score_window(hill_window(), target)
-        eta = r["bias"] + sum(c["contribution"] for c in r["contributions"])
-        assert eta == pytest.approx(math.log(r["score"] / (100 - r["score"])), abs=1e-6)
-        assert 0 < r["score"] < 100
+def test_example_response_fits_the_contract():
+    # victors meteor crater response plus our wrapper fields
+    r = json.loads((Path(__file__).parent / "example_response.json").read_text())
+    r.update(tile_id="earth:g:974:-2527", center=dict(lat=35.027, lon=-111.022), cached=False,
+             env=dict(bare=0.9, precip=None), grid_url="/grids/x.bin")
+    out = ScoreResult(**r).model_dump()
+    assert set(out["worlds"]) == {"moon", "mars"}
+    assert out["worlds"]["moon"]["best_match"]["contributions"] # passes through whatever keys the model has
 
 
-def test_target_scores_itself_at_the_bias(monkeypatch):
-    for tid, tgt in scorer.TARGETS.items():
-        monkeypatch.setattr(scorer, "features", lambda *a, tgt=tgt, **k: tgt["features"])
-        r = scorer.score_window(hill_window(), tid)
-        assert r["score"] == pytest.approx(100 / (1 + math.exp(-scorer.BIAS)))
+needs_model = pytest.mark.skipif(not scorer.MODEL_PATH.exists(), reason="set MODEL_PATH to victors model.npz")
 
 
-def test_ocean_needs_no_request(monkeypatch):
-    monkeypatch.setattr(dem, "glo30_tiles", lambda: frozenset()) # nothing listed, all ocean
-    monkeypatch.setattr(dem, "_sample", lambda *a, **k: pytest.fail("made a request for ocean"))
-    with pytest.raises(dem.NoTerrain):
-        dem.read_window("earth", 0.0, -30.0)
+@needs_model
+def test_score_tile_offline(monkeypatch):
+    monkeypatch.setattr(readers, "fetch_earth", fake_fetch)
+    r, block = scorer.score_tile("earth:g:974:-2527")
+    assert block.shape == (128, 128)
+    assert r["env"]["precip"] is None # nan cleaned for json
+    for w in ("moon", "mars"):
+        regs = r["worlds"][w]["regions"]
+        assert regs and all(0 <= g["score"] <= 100 for g in regs)
+        assert [g["score"] for g in regs] == sorted((g["score"] for g in regs), reverse=True)
 
 
+def test_api_without_model(monkeypatch):
+    def gone():
+        raise scorer.NoModel("none")
+    monkeypatch.setattr(scorer, "model", gone)
+    assert client.get("/health").json()["ok"] is False
+    assert client.post("/score", json=dict(tile_id="earth:g:974:-2527")).status_code == 503
+
+
+@needs_model
 def test_api(monkeypatch):
     assert client.get("/health").json()["ok"] is True
-    ok = dict(tile_id="earth:g:974:-2527", target_id="connecting_ridge")
-    assert client.post("/score", json={**ok, "tile_id": "earth:nope"}).status_code == 422
-    assert client.post("/score", json={**ok, "target_id": "nope"}).json()["error"] == "unknown_target"
-    assert client.post("/score", json={**ok, "tile_id": "moon:ps:s:0:0"}).json()["error"] == "not_scorable"
-    assert client.post("/match", json={"tile_id": ok["tile_id"]}).status_code == 501
+    ok = dict(tile_id="earth:g:974:-2527")
+    assert client.post("/score", json={"tile_id": "earth:nope"}).status_code == 422
+    assert client.post("/score", json={"tile_id": "moon:ps:s:0:0"}).json()["error"] == "not_scorable"
 
-    def no_terrain(*a, **k):
-        raise dem.NoTerrain("ocean")
-    monkeypatch.setattr(scorer, "read_window", no_terrain)
+    def ocean(*a, **k):
+        raise ValueError("no_terrain: the block is mostly ocean")
+    monkeypatch.setattr(readers, "fetch_earth", ocean)
     r = client.post("/score", json=ok)
     assert r.status_code == 422 and r.json()["error"] == "no_terrain"
 
-    monkeypatch.setattr(scorer, "read_window", lambda *a, **k: hill_window())
+    def offline(*a, **k):
+        raise OSError("bucket down")
+    monkeypatch.setattr(readers, "fetch_earth", offline)
+    assert client.post("/score", json=ok).json()["error"] == "dem_read_failed"
+
+    monkeypatch.setattr(readers, "fetch_earth", fake_fetch)
     first = client.post("/score", json=ok)
     assert first.status_code == 200, first.text
     a, b = first.json(), client.post("/score", json=ok).json()
     assert (a["cached"], b["cached"]) == (False, True)
-    assert a["score"] == b["score"] and len(a["points"]) == 6
+    assert a["worlds"] == b["worlds"]
     assert len(client.get(a["grid_url"]).content) == 32776
+
+    idx = a["worlds"]["moon"]["best_match"]["index"]
+    (store.LOCAL_GRIDS / f"lib/{a['model_version']}/{idx}.bin").unlink(missing_ok=True) # left by an earlier run
+    calls = []
+    monkeypatch.setattr(readers, "library_block_dem", lambda m, i: calls.append(i) or np.zeros((128, 128)))
+    lib = client.get(f"/library/{idx}").json()
+    assert lib["world"] == "moon" and client.get(f"/library/{idx}").json() == lib
+    assert calls == [idx] # second call served from the stored grid
+    assert len(client.get(lib["grid_url"]).content) == 32776
+    assert client.get("/library/999999").status_code == 404
