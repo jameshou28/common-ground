@@ -3,7 +3,8 @@
 import { useEffect } from "react";
 import { useLatest } from "@/lib/use-latest";
 import type { CesiumLib, CesiumNS } from "./cesium";
-import { CLAMP_BELOW_M, MIN_CLEARANCE_M, START } from "./config";
+import { BLOCK_RANGE_M, CLAMP_BELOW_M, MIN_CLEARANCE_M, START } from "./config";
+import { PIN_PREFIX } from "./pins";
 import type { GlobeHandle } from "./use-cesium-viewer";
 
 export type LatLon = { lat: number; lon: number };
@@ -19,6 +20,24 @@ export function flyHome({ C, v, world, ellipsoid, motion }: GlobeHandle) {
   });
 }
 
+// fly in at an angle, aimed at the real ground height
+export async function flyToBlock({ C, v, world, ellipsoid, motion }: GlobeHandle, { lat, lon }: LatLon) {
+  motion.current = null;
+  const carto = C.Cartographic.fromDegrees(lon, lat);
+  let ground = 0;
+  try {
+    const [s] = v.scene.globe ? await C.sampleTerrainMostDetailed(v.terrainProvider, [carto]) : await v.scene.sampleHeightMostDetailed([carto]);
+    ground = s?.height ?? 0;
+  } catch {
+    // the camera still flies with the height at 0
+  }
+  if (v.isDestroyed()) return;
+  v.camera.flyToBoundingSphere(new C.BoundingSphere(C.Cartesian3.fromDegrees(lon, lat, ground, ellipsoid), 2000), {
+    offset: new C.HeadingPitchRange(C.Math.toRadians(25), C.Math.toRadians(-30), BLOCK_RANGE_M[world]),
+    duration: 2.8,
+  });
+}
+
 const typing = (t: EventTarget | null) => t instanceof HTMLElement && (t.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName));
 
 // cesium's tilt orbits the point under the pointer, rotate spins the planet under it
@@ -31,8 +50,14 @@ function globeControls(C: CesiumLib, ctl: CesiumNS.ScreenSpaceCameraController) 
 }
 
 // scroll zooms, right-drag orbits, drag pans, esc and h go back to the full globe
-export function useGlobeControls(handle: GlobeHandle | null, onHover: (p: LatLon | null) => void) {
+export function useGlobeControls(
+  handle: GlobeHandle | null,
+  onHover: (p: LatLon | null) => void,
+  // a click on a pin gives its id, a click on the surface gives the place
+  onPick: (p: LatLon | null, pinId: string | null) => void,
+) {
   const cb = useLatest(onHover);
+  const pick = useLatest(onPick);
 
   useEffect(() => {
     if (!handle) return;
@@ -46,6 +71,13 @@ export function useGlobeControls(handle: GlobeHandle | null, onHover: (p: LatLon
       const c = p && ellipsoid.cartesianToCartographic(p);
       cb.current(c ? { lat: C.Math.toDegrees(c.latitude), lon: C.Math.toDegrees(c.longitude) } : null);
     }, C.ScreenSpaceEventType.MOUSE_MOVE);
+    mouse.setInputAction((m: { position: CesiumNS.Cartesian2 }) => {
+      const id: unknown = scene.pick(m.position)?.id?.id;
+      if (typeof id === "string" && id.startsWith(PIN_PREFIX)) return pick.current(null, id.slice(PIN_PREFIX.length));
+      const p = (scene.pickPositionSupported && scene.pickPosition(m.position)) || v.camera.pickEllipsoid(m.position, ellipsoid);
+      const c = p && ellipsoid.cartesianToCartographic(p);
+      if (c) pick.current({ lat: C.Math.toDegrees(c.latitude), lon: C.Math.toDegrees(c.longitude) }, null);
+    }, C.ScreenSpaceEventType.LEFT_CLICK);
     const leave = () => cb.current(null);
     scene.canvas.addEventListener("pointerleave", leave);
 
@@ -78,5 +110,5 @@ export function useGlobeControls(handle: GlobeHandle | null, onHover: (p: LatLon
       scene.preRender.removeEventListener(clamp);
       if (!mouse.isDestroyed()) mouse.destroy();
     };
-  }, [handle, cb]);
+  }, [handle, cb, pick]);
 }

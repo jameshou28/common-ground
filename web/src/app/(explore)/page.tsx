@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { SiteList } from "@/components/explore/site-list";
 
 export default function Home() {
   return (
@@ -15,6 +16,7 @@ export default function Home() {
           or start from the places the model already found
         </p>
       </div>
+      <SiteList />
     </aside>
   );
 }

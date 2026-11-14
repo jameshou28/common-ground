@@ -3,6 +3,7 @@
 import { createContext, useContext } from "react";
 import type { Tile, World } from "@/lib/tiles";
 import type { GlobeStatus } from "@/components/globe/config";
+import type { Pin } from "@/components/globe/pins";
 
 export type ExploreState = {
   world: World;
@@ -11,6 +12,11 @@ export type ExploreState = {
   altitude: number;
   // block under the pointer
   hoverTile: Tile | null;
+  // check sites on earth, targets on the moon and mars
+  pins: Pin[];
+  activePin: string | null;
+  setActivePin: (id: string | null) => void;
+  flyTo: (p: { lat: number; lon: number }) => void;
 };
 
 export const ExploreContext = createContext<ExploreState | null>(null);

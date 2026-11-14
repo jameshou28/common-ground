@@ -32,3 +32,6 @@ export const CLAMP_BELOW_M = 40_000;
 
 // the brand token as hex, cesium cannot read css variables
 export const FOOTPRINT_COLOR = "#8f9cf0";
+
+// pins skip the depth test only up close, so terrain cannot hide them but the far side still does
+export const PIN_NO_DEPTH_M = 60_000;

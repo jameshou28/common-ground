@@ -198,5 +198,6 @@ export function useCesiumViewer({ world, el, credits, onStatus, onAltitude }: Op
     };
   }, [world, el, credits, cb]);
 
-  return handle;
+  // on a world switch the old viewer is destroyed before the new one exists
+  return handle?.world === world ? handle : null;
 }

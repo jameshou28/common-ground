@@ -1,0 +1,11 @@
+[
+  { "id": "dutch-farmland", "name": "Dutch farmland", "region": "Flevoland, Netherlands", "lat": 52.53, "lon": 5.6, "note": "Flat, green and wet. Every measurement should say no.", "rank": 1 },
+  { "id": "amazon", "name": "Amazon rainforest", "region": "Amazonas, Brazil", "lat": -2.6, "lon": -60.2, "note": "A trap: the elevation model includes the tree canopy.", "rank": 1 },
+  { "id": "himalaya", "name": "Himalayan ridge", "region": "Khumbu, Nepal", "lat": 27.99, "lon": 86.93, "note": "Rough, but snowy and too steep.", "rank": 2 },
+  { "id": "utah-mdrs", "name": "Utah badlands", "region": "Near MDRS, United States", "lat": 38.406, "lon": -110.792, "note": "Mars-like sediments, terrain only partly similar.", "rank": 3 },
+  { "id": "meteor-crater", "name": "Meteor Crater", "region": "Arizona, United States", "lat": 35.027, "lon": -111.022, "note": "A simple 1.2 km impact crater. Apollo crews trained nearby.", "rank": 4 },
+  { "id": "holuhraun", "name": "Holuhraun lava field", "region": "Iceland", "lat": 64.87, "lon": -16.83, "note": "Fresh basalt from 2014 and 2015.", "rank": 4 },
+  { "id": "timanfaya", "name": "Timanfaya", "region": "Lanzarote, Spain", "lat": 29.01, "lon": -13.76, "note": "Volcanic fields and lava tubes. ESA trains astronauts here.", "rank": 4 },
+  { "id": "haughton", "name": "Haughton crater", "region": "Devon Island, Canada", "lat": 75.38, "lon": -89.68, "note": "Polar desert impact crater, a long-running NASA Mars analog.", "rank": 5 },
+  { "id": "dry-valleys", "name": "McMurdo Dry Valleys", "region": "Antarctica", "lat": -77.47, "lon": 161.8, "note": "Cold, dry and windswept. The classic Mars analog.", "rank": 5 }
+]
