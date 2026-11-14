@@ -26,6 +26,10 @@ def test_tile_ids_round_trip():
             assert tile_id(w, clat, clon) == t
     with pytest.raises(ValueError):
         tile_center("earth:g:99999:0")
+    assert tile_center("earth:p:35.0270:-111.0220") == ("earth", 35.027, -111.022) # centred on the click
+    assert not TILE_RE.match("earth:p:35.027:-111.022")
+    with pytest.raises(ValueError):
+        tile_center("earth:p:95.0000:0.0000")
 
 
 def test_grid_round_trip():
