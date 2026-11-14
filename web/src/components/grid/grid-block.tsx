@@ -147,7 +147,7 @@ export default function GridBlock({ grid, relief = 1, tone, wire, label, link, m
         </>
       ) : (
         <>
-          <ambientLight intensity={0.03} />
+          <ambientLight intensity={0.18} />
           {/* from the north-west like the normal light, the shadow box covers the whole block */}
           <directionalLight
             castShadow

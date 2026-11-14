@@ -262,7 +262,7 @@ function liftBlock(
 function moonLight(handle: GlobeHandle, elevationDeg: number): () => void {
   const { C, v, sun, relight } = handle;
   const scene = v.scene;
-  const before = { sun: sun.current, shadows: v.shadows, terrain: v.terrainShadows, soft: scene.shadowMap.softShadows, far: scene.shadowMap.maximumDistance };
+  const before = { sun: sun.current, shadows: v.shadows, terrain: v.terrainShadows, soft: scene.shadowMap.softShadows, far: scene.shadowMap.maximumDistance, dark: scene.shadowMap.darkness };
   const layers = Array.from({ length: v.imageryLayers.length }, (_, i) => v.imageryLayers.get(i));
   const saturation = layers.map((l) => l.saturation);
   layers.forEach((l) => (l.saturation = 0));
@@ -271,6 +271,8 @@ function moonLight(handle: GlobeHandle, elevationDeg: number): () => void {
   v.terrainShadows = C.ShadowMode.ENABLED;
   scene.shadowMap.softShadows = true;
   scene.shadowMap.maximumDistance = 20_000;
+  // shadows stay readable against black space
+  scene.shadowMap.darkness = 0.55;
   relight();
   scene.requestRender();
   return () => {
@@ -281,6 +283,7 @@ function moonLight(handle: GlobeHandle, elevationDeg: number): () => void {
     v.terrainShadows = before.terrain;
     scene.shadowMap.softShadows = before.soft;
     scene.shadowMap.maximumDistance = before.far;
+    scene.shadowMap.darkness = before.dark;
     relight();
     scene.requestRender();
   };
