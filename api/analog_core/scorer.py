@@ -10,9 +10,10 @@ from .dem import NoTerrain, UpstreamError
 from .ml import readers, runtime
 from .tiles import tile_center
 
-# model.npz comes from MODEL_PATH, or MODEL_URL (r2) downloaded once into the cache
+# model.npz comes from MODEL_PATH, the repo's ml/export, or MODEL_URL (r2) downloaded once into the cache
 CACHE = Path(os.environ.get("CACHE_DIR") or Path(__file__).resolve().parents[1] / "cache")
-MODEL_PATH = Path(os.environ.get("MODEL_PATH") or CACHE / "model.npz")
+REPO_MODEL = Path(__file__).resolve().parents[2] / "ml/export/model.npz"
+MODEL_PATH = Path(os.environ.get("MODEL_PATH") or (REPO_MODEL if REPO_MODEL.exists() else CACHE / "model.npz"))
 MODEL_URL = os.environ.get("MODEL_URL", "")
 SITE_BLOCK = slice(64, 192) # the 4 km block inside the padded site window
 
