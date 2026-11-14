@@ -43,7 +43,7 @@ const CHECK_PINS: Pin[] = CHECK_SITES.map((s) => ({
 
 const NO_POINTS: CellPoint[] = [];
 // a low sun for moon light, the library blocks carry no sun angle of their own
-const MOON_SUN_DEG = 1.5;
+const MOON_SUN_DEG = 8;
 
 function parseTile(id: string | undefined): Tile | null {
   try {
