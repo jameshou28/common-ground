@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
-import { PageStub } from "@/components/shell/page-stub";
+import { SiteResult } from "@/components/site/site-result";
 
 export const metadata: Metadata = { title: "Result" };
 
 export default function Page() {
-  return <PageStub title="Result">A scored block.</PageStub>;
+  return <SiteResult />;
 }

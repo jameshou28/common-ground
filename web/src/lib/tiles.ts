@@ -1,4 +1,4 @@
-// 4 km tile ids, mirror of api/analog_core/tiles.py: lat/lon grid below 80 deg, polar stereographic above
+// 4 km tile ids, mirror of api/analog_core/tiles.py: lat/lon grid below 80 deg, polar stereographic above, p ids centred on a point
 export type World = "earth" | "moon" | "mars";
 export const WORLDS = ["earth", "moon", "mars"] as const satisfies readonly World[];
 
@@ -7,7 +7,7 @@ export const TILE_SIZE_M = 4000;
 const POLAR_LAT = 80;
 const DEG = Math.PI / 180;
 
-export const TILE_RE = /^(earth|moon|mars):(g:-?\d{1,5}:-?\d{1,5}|ps:[ns]:-?\d{1,4}:-?\d{1,4})$/;
+export const TILE_RE = /^(earth|moon|mars):(g:-?\d{1,5}:-?\d{1,5}|ps:[ns]:-?\d{1,4}:-?\d{1,4}|p:-?\d{1,2}\.\d{4}:-?\d{1,3}\.\d{4})$/;
 
 export type LonLat = [lon: number, lat: number];
 export type Tile = {
@@ -71,6 +71,15 @@ export function tileFor(world: World, lat: number, lon: number): Tile {
   return tileFromId(`${world}:ps:${south ? "s" : "n"}:${Math.round(x / TILE_SIZE_M)}:${Math.round(y / TILE_SIZE_M)}`);
 }
 
+// 4 decimals is about 11 m, "|| 0" keeps -0 out of the id
+const fix4 = (v: number) => (Math.round(v * 1e4) / 1e4 || 0).toFixed(4);
+
+// the 4 km block centred on a point, this is what a click scores
+export function pointTile(world: World, lat: number, lon: number): Tile {
+  const clat = Math.min(89.9999, Math.max(-89.9999, lat));
+  return tileFromId(`${world}:p:${fix4(clat)}:${fix4(wrapLon(lon))}`);
+}
+
 // throws on a malformed id or a tile off the planet
 export function tileFromId(id: string): Tile {
   if (!isTileId(id)) throw new Error(`bad tile id: ${id}`);
@@ -84,6 +93,23 @@ export function tileFromId(id: string): Tile {
     const corners = gridCorners(world, i, j);
     const clon = (corners[0][0] + corners[1][0]) / 2;
     return { id, world, center: { lat, lon: wrapLon(clon) }, corners };
+  }
+  if (kind === "p") {
+    const [lat, lon] = [Number(rest[0]), Number(rest[1])];
+    if (Math.abs(lat) >= 90 || Math.abs(lon) > 180) throw new Error(`tile off the planet: ${id}`);
+    const dlat = TILE_SIZE_M / 2 / RADIUS_M[world] / DEG;
+    const dlon = dlat / Math.max(Math.cos(lat * DEG), 1e-6);
+    return {
+      id,
+      world,
+      center: { lat, lon },
+      corners: [
+        [lon - dlon, lat - dlat],
+        [lon + dlon, lat - dlat],
+        [lon + dlon, lat + dlat],
+        [lon - dlon, lat + dlat],
+      ],
+    };
   }
   const south = rest[0] === "s";
   const [ix, iy] = [Number(rest[1]), Number(rest[2])];
