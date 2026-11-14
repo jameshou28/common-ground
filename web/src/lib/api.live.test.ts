@@ -1,5 +1,6 @@
 // runs only when API_URL is set
 import { describe, expect, it } from "vitest";
+import { totals } from "./contributions";
 import { terrainStats } from "./terrain";
 import { decodeGrid } from "./grid";
 
@@ -18,6 +19,8 @@ describe.skipIf(!API)("live api", () => {
     const g = decodeGrid(await (await fetch(url)).arrayBuffer());
     const s = terrainStats(g);
     const value = (key: string) => r.contributions.find((c: { key: string }) => c.key === key).value as number;
+    // the bars have to add up to the score
+    expect(Math.abs(totals(r).gap)).toBeLessThan(1e-3);
     expect(g.n).toBe(128);
     expect(s.reliefM).toBeCloseTo(value("relief_m"), -0.5); // within about 1 m
     expect(Math.abs(s.slopeMedDeg - value("slope_med_deg")) / value("slope_med_deg")).toBeLessThan(0.03);

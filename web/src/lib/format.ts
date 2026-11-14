@@ -9,3 +9,12 @@ export function fmtLatLon(lat: number, lon: number): string {
 export function fmtAltitude(m: number): string {
   return m < 10_000 ? `${fmtNum(m)} m` : `${fmtNum(m / 1000)} km`;
 }
+
+// a measured value with its unit, three significant figures or so
+export function fmtValue(v: number, unit: string): string {
+  const n = fmtNum(v, Math.abs(v) >= 100 ? 0 : Math.abs(v) >= 10 ? 1 : 2);
+  return unit === "deg" ? `${n}°` : unit === "m" ? `${n} m` : n;
+}
+
+// +0.38 or −0.47, with a real minus sign
+export const fmtSigned = (v: number) => `${v < 0 ? "−" : "+"}${Math.abs(v).toFixed(2)}`;
