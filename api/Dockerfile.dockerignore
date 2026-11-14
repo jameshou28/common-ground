@@ -1,5 +1,5 @@
-cache
-.venv
-__pycache__
 .git
-tests
+**/__pycache__
+**/.venv
+api/cache
+api/tests
