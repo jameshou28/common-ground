@@ -65,6 +65,8 @@ export function useGlobeControls(
     const { C, v, ellipsoid, inBlock } = handle;
     const scene = v.scene;
     globeControls(C, scene.screenSpaceCameraController);
+    // stop scroll-out at twice the opening view so the world never shrinks to a dot
+    scene.screenSpaceCameraController.maximumZoomDistance = START[handle.world].height * 2;
 
     // the terrain under a screen point, the same for hover and click so the outline shows what a click scores
     const surfaceAt = (px: CesiumNS.Cartesian2): LatLon | null => {
