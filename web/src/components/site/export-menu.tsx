@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { createPortal } from "react-dom";
 import { Button } from "@/components/ui/button";
 import { WORLD_LABEL } from "@/components/globe/config";
 import type { ScoreResult } from "@/lib/api";
@@ -13,7 +14,7 @@ type Props = { tile: Tile; name: string; result: ScoreResult; match: Match; capt
 
 // field sheet to print or save as pdf, plus csv and json for research use
 export function ExportMenu(p: Props) {
-  const [image, setImage] = useState<string | null>(null);
+  const [image, setImage] = useState<string | null | undefined>(undefined);
   const print = () => {
     setImage(p.capture());
     // let react put the image in before the print dialog freezes the page
@@ -31,7 +32,8 @@ export function ExportMenu(p: Props) {
       <Button size="sm" variant="outline" onClick={() => save("json", toJson(p.result, p.match), "application/json")}>
         JSON
       </Button>
-      <Sheet {...p} image={image} />
+      {/* straight under body so print css can drop the rest of the app; only after a click, so never on the server */}
+      {image !== undefined && createPortal(<Sheet {...p} image={image} />, document.body)}
     </>
   );
 }

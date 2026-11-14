@@ -71,7 +71,8 @@ export default function GlobeView({ world, onStatus, onAltitude, onHover, onPick
     return shareCapture(capture, () => {
       // the drawing buffer is only readable straight after a render
       handle.v.scene.render();
-      return handle.v.scene.canvas.toDataURL("image/jpeg", 0.9);
+      // png keeps the transparent sky, jpeg would paint it black
+      return handle.v.scene.canvas.toDataURL("image/png");
     });
   }, [handle, capture]);
 

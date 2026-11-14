@@ -202,17 +202,11 @@
     height: auto !important;
     background: white !important;
   }
-  body * {
-    visibility: hidden;
-  }
-  .field-sheet,
-  .field-sheet * {
-    visibility: visible;
+  /* display, not visibility, so the hidden app takes no pages */
+  body > :not(.field-sheet) {
+    display: none !important;
   }
   .field-sheet {
     display: block !important;
-    position: absolute;
-    inset: 0 auto auto 0;
-    width: 100%;
   }
 }
