@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import "./globals.css";
-import { TooltipProvider } from "@/components/ui/tooltip";
+import { Header } from "@/components/shell/header";
+import { Providers } from "@/components/shell/providers";
+import { StatusBar } from "@/components/shell/status-bar";
 
 export const metadata: Metadata = {
   title: { default: "Analog Explorer", template: "%s · Analog Explorer" },
@@ -12,7 +15,14 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html lang="en" className="h-full antialiased">
       <body className="flex h-full flex-col">
-        <TooltipProvider>{children}</TooltipProvider>
+        <Providers>
+          {/* usepathname needs a suspense boundary */}
+          <Suspense fallback={<div className="h-11 shrink-0 border-b border-line bg-panel" />}>
+            <Header />
+          </Suspense>
+          <div className="flex min-h-0 flex-1 flex-col">{children}</div>
+          <StatusBar />
+        </Providers>
       </body>
     </html>
   );
