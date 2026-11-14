@@ -141,12 +141,12 @@ export function describeError(e: unknown): { title: string; body: string } {
     case "rate_limited":
       return { title: "The service is busy", body: "Too many blocks are being scored at once. Wait a few seconds and click again." };
     case "dem_read_failed":
-      return { title: "Elevation data did not load", body: "The elevation source did not answer. Try again in a moment." };
+      return { title: "Elevation data didn't load", body: "The elevation server didn't answer. Try again in a moment." };
     case "no_model":
       return { title: "Scoring isn't available yet", body: "The scoring model isn't loaded on the server yet. The globe, the block view and the check sites still work." };
     case "not_scorable":
-      return { title: "Only Earth is scored live", body: "Moon and Mars blocks are fixed targets. Click Earth to score a place." };
+      return { title: "Only Earth is scored live", body: "The Moon and Mars side is already inside the model. Click a place on Earth to score it." };
     default:
-      return { title: "Something went wrong", body: e instanceof Error ? e.message : "The block could not be scored." };
+      return { title: "Something went wrong", body: e instanceof Error ? e.message : "This block couldn't be scored." };
   }
 }

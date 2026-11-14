@@ -5,7 +5,7 @@ import { CompareView } from "@/components/compare/compare-view";
 export const metadata: Metadata = { title: "Compare" };
 
 export default function Page() {
-  // the ?tiles= and ?target= params need a suspense boundary
+  // the ?tiles= and ?tab= params need a suspense boundary
   return (
     <Suspense fallback={<main className="flex-1" />}>
       <CompareView />

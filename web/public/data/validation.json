@@ -8,37 +8,110 @@
     {
       "title": "In the top 10",
       "rows": [
-        { "name": "Trained model", "value": null, "low": null, "high": null, "ours": true },
-        { "name": "Physics baseline", "value": null, "low": null, "high": null },
-        { "name": "Aridity only", "value": null, "low": null, "high": null },
-        { "name": "Latitude only", "value": null, "low": null, "high": null },
-        { "name": "Random order", "value": null, "low": null, "high": null }
+        {
+          "name": "Trained model",
+          "value": null,
+          "low": null,
+          "high": null,
+          "ours": true
+        },
+        {
+          "name": "Physics baseline",
+          "value": null,
+          "low": null,
+          "high": null
+        },
+        {
+          "name": "Aridity only",
+          "value": null,
+          "low": null,
+          "high": null
+        },
+        {
+          "name": "Latitude only",
+          "value": null,
+          "low": null,
+          "high": null
+        },
+        {
+          "name": "Random order",
+          "value": null,
+          "low": null,
+          "high": null
+        }
       ]
     },
     {
       "title": "In the top 50",
       "rows": [
-        { "name": "Trained model", "value": null, "low": null, "high": null, "ours": true },
-        { "name": "Physics baseline", "value": null, "low": null, "high": null },
-        { "name": "Aridity only", "value": null, "low": null, "high": null },
-        { "name": "Latitude only", "value": null, "low": null, "high": null },
-        { "name": "Random order", "value": null, "low": null, "high": null }
+        {
+          "name": "Trained model",
+          "value": null,
+          "low": null,
+          "high": null,
+          "ours": true
+        },
+        {
+          "name": "Physics baseline",
+          "value": null,
+          "low": null,
+          "high": null
+        },
+        {
+          "name": "Aridity only",
+          "value": null,
+          "low": null,
+          "high": null
+        },
+        {
+          "name": "Latitude only",
+          "value": null,
+          "low": null,
+          "high": null
+        },
+        {
+          "name": "Random order",
+          "value": null,
+          "low": null,
+          "high": null
+        }
       ]
     }
   ],
   "held_out": [
-    { "programme": "ESA PANGAEA", "sites": null, "median_percentile": null, "random_percentile": null },
-    { "programme": "AMADEE, Austrian Space Forum", "sites": null, "median_percentile": null, "random_percentile": null },
-    { "programme": "Europlanet field sites", "sites": null, "median_percentile": null, "random_percentile": null }
+    {
+      "programme": "ESA PANGAEA",
+      "sites": null,
+      "median_percentile": null,
+      "random_percentile": null
+    },
+    {
+      "programme": "AMADEE, Austrian Space Forum",
+      "sites": null,
+      "median_percentile": null,
+      "random_percentile": null
+    },
+    {
+      "programme": "Europlanet field sites",
+      "sites": null,
+      "median_percentile": null,
+      "random_percentile": null
+    }
   ],
-  "planet_check": { "ours": null, "chance": 33.3, "worlds": 3 },
-  "check_sites": { "rank_correlation": null },
+  "planet_check": {
+    "ours": null,
+    "chance": 33.3,
+    "worlds": 3
+  },
+  "check_sites": {
+    "rank_correlation": null
+  },
   "limits": [
-    "Until the trained model lands, both scores on the result page come from the same physics measurements, so they are equal.",
-    "Few lunar analog sites exist, so any Moon result rests on a handful of sites.",
-    "Only about 9% of the pixels in the lunar 5 m elevation data are measured. The rest are filled in, and are smoother than the real ground.",
-    "Earth is scored from 30 m elevation data. Features smaller than that are invisible to the model.",
-    "The bars add up before the score is squashed to 0 to 100, so a bar's length is not a number of score points.",
-    "No Earth site reproduces lunar gravity, vacuum or radiation. The score is about terrain and light, nothing else."
+    "The model running now is a test version. Every score will change when the final one ships.",
+    "There aren't many known lunar analog sites, so any Moon result leans on a handful of them.",
+    "Only about 9% of the pixels in the 5 m lunar elevation data are real measurements. The rest is filled in, and it's smoother than the actual ground.",
+    "Earth is scored from 30 m elevation data, so anything smaller than that is invisible to the model.",
+    "A bar shows how much one measurement pushes the match up or down. It isn't a number of score points.",
+    "No place on Earth has lunar gravity, vacuum or radiation. The score is about the ground and the surface, nothing else."
   ]
 }

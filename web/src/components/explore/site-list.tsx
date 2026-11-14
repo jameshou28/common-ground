@@ -11,7 +11,7 @@ import { useExplore } from "./explore-context";
 
 type Row = { id: string; name: string; sub: string; end: string; lat: number; lon: number; tileId?: string };
 
-// check sites on earth, the fixed targets on the moon and mars
+// check sites on earth, featured places on the moon and mars
 export function SiteList() {
   const { world, activePin, setActivePin, flyTo } = useExplore();
   const router = useRouter();
@@ -27,19 +27,19 @@ export function SiteList() {
   return (
     <section aria-labelledby="site-list" className="p-4">
       <h2 id="site-list" className="flex items-baseline justify-between font-semibold">
-        {earth ? "Check sites" : `${WORLD_LABEL[world]} targets`}
+        {earth ? "Check sites" : `Places to look at on the ${WORLD_LABEL[world]}`}
         {earth && <span className="text-xs font-normal text-text-2">expected, worst to best</span>}
       </h2>
       <p className="mt-1 text-xs text-text-2">
         {earth
           ? "Places whose answer we wrote down before scoring. The model has to get their order right."
-          : "The places Earth blocks are scored against."}
+          : "Landing sites and other spots worth a close look. Earth blocks are scored against all of the Moon and Mars, not only these."}
       </p>
       {!earth && targets.isPending && <Skeleton className="mt-3 h-10" />}
       {!earth && targets.isError && (
         <p role="alert" className="mt-3 text-xs">
           <b className="block font-semibold">{describeError(targets.error).title}</b>
-          <span className="text-text-2">The target list did not load.</span>
+          <span className="text-text-2">The list of places didn&apos;t load.</span>
         </p>
       )}
       {!earth && targets.isSuccess && !rows.length && <p className="mt-3 text-xs text-text-2">No {WORLD_LABEL[world]} target yet.</p>}

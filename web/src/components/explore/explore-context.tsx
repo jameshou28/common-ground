@@ -12,7 +12,7 @@ export type ExploreState = {
   altitude: number;
   // block under the pointer
   hoverTile: Tile | null;
-  // check sites on earth, targets on the moon and mars
+  // check sites on earth, featured places on the moon and mars
   pins: Pin[];
   activePin: string | null;
   setActivePin: (id: string | null) => void;

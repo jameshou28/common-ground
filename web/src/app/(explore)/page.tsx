@@ -7,7 +7,7 @@ export default function Home() {
       <div className="border-b border-line p-4">
         <h1 className="text-xl leading-tight font-semibold">Where on Earth is like this?</h1>
         <p className="mt-2 text-text-2">
-          Click any land on Earth. The 4 km block under the click is scored against the Moon and Mars targets, with the reasons.
+          Click any land on Earth. We cut out the 4 km square around your click and score it against every kind of Moon and Mars terrain we know about, then show you the closest real place and what drives the match.
         </p>
         <p className="mt-3 flex items-center gap-3 text-text-2">
           <Link href="/best" className="inline-flex h-7 shrink-0 items-center rounded-md whitespace-nowrap bg-brand px-3 font-semibold text-on-brand hover:bg-brand-hover hover:no-underline">
