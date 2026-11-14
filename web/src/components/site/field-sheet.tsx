@@ -1,0 +1,128 @@
+"use client";
+
+import { ChevronUpIcon } from "lucide-react";
+import { DropdownMenu } from "radix-ui";
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { WORLD_LABEL } from "@/components/globe/config";
+import type { ScoreResult } from "@/lib/api";
+import { fmtLatLon, fmtSigned } from "@/lib/format";
+import { bars, conditionLabel, contributionLabel, type Bar, type Match } from "@/lib/regions";
+import type { Tile } from "@/lib/tiles";
+
+type Props = { tile: Tile; name: string; result: ScoreResult; match: Match; capture: () => string | null };
+
+// a one-page print of the block: image, facts, scores and bars
+export function FieldSheet(p: Props) {
+  const [image, setImage] = useState<string | null>(null);
+  const print = () => {
+    setImage(p.capture());
+    // let react put the image in before the print dialog freezes the page
+    requestAnimationFrame(() => requestAnimationFrame(() => window.print()));
+  };
+  const file = (body: string, type: string, ext: string) => {
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(new Blob([body], { type }));
+    a.download = `${p.name.replace(/[^\w-]+/g, "-").toLowerCase()}.${ext}`;
+    a.click();
+    URL.revokeObjectURL(a.href);
+  };
+  const items: [string, string, () => void][] = [
+    ["Field sheet", "PDF", print],
+    ["Scores", "CSV", () => file(scoresCsv(p), "text/csv", "csv")],
+    ["Everything", "JSON", () => file(JSON.stringify(p.result, null, 2), "application/json", "json")],
+  ];
+  return (
+    <>
+      <DropdownMenu.Root>
+        <DropdownMenu.Trigger asChild>
+          <Button size="sm" variant="outline" className="group ml-auto">
+            Export <ChevronUpIcon className="transition-transform group-data-[state=closed]:rotate-180" />
+          </Button>
+        </DropdownMenu.Trigger>
+        <DropdownMenu.Portal>
+          <DropdownMenu.Content side="top" align="end" sideOffset={6} className="z-50 min-w-48 rounded-lg border border-line bg-panel p-1 text-sm shadow-lg">
+            {items.map(([label, kind, run]) => (
+              <DropdownMenu.Item key={label} onSelect={run} className="flex cursor-pointer items-center justify-between gap-6 rounded-md px-2.5 py-1.5 outline-none data-[highlighted]:bg-hover">
+                {label} <span className="text-xs text-text-2">{kind}</span>
+              </DropdownMenu.Item>
+            ))}
+          </DropdownMenu.Content>
+        </DropdownMenu.Portal>
+      </DropdownMenu.Root>
+      <Sheet {...p} image={image} />
+    </>
+  );
+}
+
+// one row per number shown on the page
+function scoresCsv({ tile, name, result: r, match }: Props) {
+  const q = (v: string | number) => `"${String(v).replace(/"/g, '""')}"`;
+  const rows: (string | number)[][] = [
+    ["section", "name", "value"],
+    ["block", name, tile.id],
+    ["overall", WORLD_LABEL[match.tab], Math.round(match.world.overall)],
+    ["overall", "terrain", Math.round(match.world.landscape_score)],
+    ["overall", "surface", Math.round(r.conditions.score)],
+    ...match.world.regions.map((g) => ["region", g.title, Math.round(g.score)]),
+    ["closest match", match.site.name, Math.round(match.site.pair_score)],
+    ...bars(match.site.contributions, contributionLabel).rows.map((b) => ["why it matches", b.label, b.value.toFixed(3)]),
+    ...bars(r.conditions.terms, conditionLabel).rows.map((b) => ["surface and climate", b.label, b.value.toFixed(3)]),
+  ];
+  return rows.map((row) => row.map(q).join(",")).join("\n");
+}
+
+function Rows({ rows }: { rows: Bar[] }) {
+  const max = Math.max(...rows.map((c) => Math.abs(c.value)), 1e-9);
+  return rows.map((c) => (
+    <div key={c.key} className="grid grid-cols-[1fr_60mm_12mm] items-center gap-2 break-inside-avoid">
+      <span>{c.label}</span>
+      <span className="relative h-2 border-x border-black">
+        <i
+          className="absolute inset-y-0 bg-black print:[print-color-adjust:exact]"
+          style={{ [c.value < 0 ? "right" : "left"]: "50%", width: `${(Math.abs(c.value) / max) * 50}%`, opacity: c.value < 0 ? 0.45 : 1 }}
+        />
+      </span>
+      <span className="text-right">{fmtSigned(c.value)}</span>
+    </div>
+  ));
+}
+
+function Sheet({ tile, name, result: r, match, image }: Props & { image: string | null }) {
+  const { site, world, tab } = match;
+  return (
+    <article className="field-sheet hidden text-[11px] leading-snug text-black">
+      <header className="flex items-baseline justify-between border-b-2 border-black pb-1">
+        <h1 className="text-lg font-semibold">{name}</h1>
+        <span>Analog Explorer field sheet · model {r.model_version}</span>
+      </header>
+      {/* a data url from the canvas, next/image has nothing to optimise */}
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      {image && <img src={image} alt={`${name} as a 4 km block`} className="mt-2 max-h-[90mm] w-full object-contain" />}
+      <div className="mt-2 grid grid-cols-2 gap-4">
+        <dl className="grid grid-cols-[auto_1fr] gap-x-3">
+          <dt className="font-semibold">Block</dt>
+          <dd>4 × 4 km, {tile.id}</dd>
+          <dt className="font-semibold">Centre</dt>
+          <dd>{fmtLatLon(tile.center.lat, tile.center.lon)}</dd>
+          <dt className="font-semibold">Closest match</dt>
+          <dd className="first-letter:uppercase">
+            {site.name}, {fmtLatLon(site.lat, site.lon)}
+          </dd>
+          <dt className="font-semibold">Region</dt>
+          <dd>{match.region.title}</dd>
+        </dl>
+        <p>
+          <b className="text-3xl font-semibold">{Math.round(world.overall)}</b> out of 100 as a {WORLD_LABEL[tab]} stand-in
+          <br />
+          Terrain {Math.round(world.landscape_score)} · Surface {Math.round(r.conditions.score)}
+        </p>
+      </div>
+      <h2 className="mt-3 border-b border-black font-semibold">Why it matches</h2>
+      <Rows rows={bars(site.contributions, contributionLabel).rows} />
+      <h2 className="mt-3 border-b border-black font-semibold">Surface and climate</h2>
+      <Rows rows={bars(r.conditions.terms, conditionLabel).rows} />
+      <p className="mt-3 border-t border-black pt-1">Dark bars help the match, light bars hurt it. This covers terrain and surface only. No Earth site has lunar or Martian gravity, air or radiation.</p>
+    </article>
+  );
+}
