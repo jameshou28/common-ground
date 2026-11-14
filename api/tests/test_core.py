@@ -2,13 +2,16 @@ import math
 
 import numpy as np
 import pytest
+from fastapi.testclient import TestClient
 
 from analog_core import dem, grid, scorer
 from analog_core.dem import WINDOW_PX, Window, center, local_xy
 from analog_core.features import features, slope_deg
 from analog_core.tiles import TILE_RE, tile_center, tile_id
+from app.main import app
 
 X, Y = local_xy()
+client = TestClient(app)
 
 
 def test_tile_ids_round_trip():
@@ -79,3 +82,26 @@ def test_ocean_needs_no_request(monkeypatch):
     monkeypatch.setattr(dem, "_sample", lambda *a, **k: pytest.fail("made a request for ocean"))
     with pytest.raises(dem.NoTerrain):
         dem.read_window("earth", 0.0, -30.0)
+
+
+def test_api(monkeypatch):
+    assert client.get("/health").json()["ok"] is True
+    ok = dict(tile_id="earth:g:974:-2527", target_id="connecting_ridge")
+    assert client.post("/score", json={**ok, "tile_id": "earth:nope"}).status_code == 422
+    assert client.post("/score", json={**ok, "target_id": "nope"}).json()["error"] == "unknown_target"
+    assert client.post("/score", json={**ok, "tile_id": "moon:ps:s:0:0"}).json()["error"] == "not_scorable"
+    assert client.post("/match", json={"tile_id": ok["tile_id"]}).status_code == 501
+
+    def no_terrain(*a, **k):
+        raise dem.NoTerrain("ocean")
+    monkeypatch.setattr(scorer, "read_window", no_terrain)
+    r = client.post("/score", json=ok)
+    assert r.status_code == 422 and r.json()["error"] == "no_terrain"
+
+    monkeypatch.setattr(scorer, "read_window", lambda *a, **k: hill_window())
+    first = client.post("/score", json=ok)
+    assert first.status_code == 200, first.text
+    a, b = first.json(), client.post("/score", json=ok).json()
+    assert (a["cached"], b["cached"]) == (False, True)
+    assert a["score"] == b["score"] and len(a["points"]) == 6
+    assert len(client.get(a["grid_url"]).content) == 32776
