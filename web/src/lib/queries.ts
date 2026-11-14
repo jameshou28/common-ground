@@ -1,5 +1,5 @@
 import { queryOptions, useQueries, useQuery } from "@tanstack/react-query";
-import { ApiError, cachedScore, fetchGrid, getTargets, score } from "./api";
+import { ApiError, cachedScore, fetchGrid, getTargets, library, score } from "./api";
 import { env } from "./env";
 
 // only transient failures are worth a second try
@@ -9,28 +9,41 @@ export function useTargets() {
   return useQuery({ queryKey: ["targets"], queryFn: () => getTargets(), retry: retryOnce });
 }
 
-// a score is fixed by tile, target and model version, so cache it for the session
-const scoreQuery = (tileId: string | null, targetId: string | null) =>
+// a score is fixed by tile and model version, so cache it for the session
+const scoreQuery = (tileId: string | null) =>
   queryOptions({
-    queryKey: ["score", env.modelVersion, tileId, targetId],
+    queryKey: ["score", env.modelVersion, tileId],
     // a block scored before comes from supabase without waking the api
-    queryFn: async ({ signal }) => (await cachedScore(tileId!, targetId!, signal)) ?? score(tileId!, targetId!, signal),
-    enabled: !!tileId && !!targetId,
+    queryFn: async ({ signal }) => (await cachedScore(tileId!, signal)) ?? score(tileId!, signal),
+    enabled: !!tileId,
     retry: retryOnce,
   });
 
-export function useScore(tileId: string | null, targetId: string | null) {
-  return useQuery(scoreQuery(tileId, targetId));
+export function useScore(tileId: string | null) {
+  return useQuery(scoreQuery(tileId));
 }
 
-// one block against several targets at once, sharing the cache with useScore
-export function useScores(tileId: string | null, targetIds: string[]) {
-  return useQueries({ queries: targetIds.map((id) => scoreQuery(tileId, id)) });
+// several blocks at once, for the compare page and the rank strip
+export function useTileScores(tileIds: string[]) {
+  return useQueries({ queries: tileIds.map((id) => scoreQuery(id)) });
 }
 
-// several blocks against one target, for the compare page and the rank strip
-export function useTileScores(tileIds: string[], targetId: string | null) {
-  return useQueries({ queries: tileIds.map((id) => scoreQuery(id, targetId)) });
+const libraryQuery = (index: number | null | undefined) =>
+  queryOptions({
+    queryKey: ["library", env.modelVersion, index],
+    queryFn: ({ signal }) => library(index!, signal),
+    enabled: index != null,
+    retry: retryOnce,
+  });
+
+// the height grid of a matched moon or mars block, undefined until it has loaded
+export function useLibraryGrid(index: number | null | undefined) {
+  return useGrid(useQuery(libraryQuery(index)).data?.grid_url);
+}
+
+export function useLibraryGrids(indexes: (number | null | undefined)[]) {
+  const blocks = useQueries({ queries: indexes.map((i) => libraryQuery(i)) });
+  return useGrids(blocks.map((b) => b.data?.grid_url));
 }
 
 export function useGrid(url: string | null | undefined) {

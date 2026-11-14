@@ -19,4 +19,11 @@ export const CHECK_SITES: CheckSite[] = raw.map((s) => ({ ...s, tileId: pointTil
 export const RANK_LABEL = ["", "Very bad", "Bad", "Medium", "Good", "Very good"] as const;
 
 // tile ids go in the path as they are, colons are legal there
-export const siteHref = (tileId: string, targetId?: string | null) => `/site/${tileId}${targetId ? `?target=${encodeURIComponent(targetId)}` : ""}`;
+export function siteHref(tileId: string, m: { tab?: string; region?: string; site?: number } = {}) {
+  const q = new URLSearchParams();
+  if (m.tab) q.set("tab", m.tab);
+  if (m.region) q.set("region", m.region);
+  if (m.site != null) q.set("site", String(m.site));
+  const s = q.toString();
+  return `/site/${tileId}${s ? `?${s}` : ""}`;
+}

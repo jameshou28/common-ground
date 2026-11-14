@@ -2,41 +2,52 @@
 
 import dynamic from "next/dynamic";
 import { Skeleton } from "@/components/ui/skeleton";
-import type { Target } from "@/lib/api";
+import type { Grid } from "@/lib/grid";
 import { matchScale } from "@/lib/grid-mesh";
 import { useGrid } from "@/lib/queries";
-import { targetGridUrl } from "./target-block";
 
 const GridBlock = dynamic(() => import("@/components/grid/grid-block"), { ssr: false });
 
-// the block's own height grid with the target's surface drawn over it as lines
-export function WireOverlay({ gridUrl, target, relief, matched, moonSun }: { gridUrl: string | undefined; target: Target | undefined; relief: number; matched: boolean; moonSun: number | null }) {
+// the block's own height grid with the matched block's surface drawn over it as lines
+export function WireOverlay({
+  gridUrl,
+  over,
+  overName,
+  relief,
+  matched,
+  moonSun,
+}: {
+  gridUrl: string | undefined;
+  over: Grid;
+  overName: string;
+  relief: number;
+  matched: boolean;
+  moonSun: number | null;
+}) {
   const block = useGrid(gridUrl);
-  const over = useGrid(targetGridUrl(target));
-  const ready = block.data && over.data && target;
   return (
     <div className="absolute inset-0 z-20 bg-space">
-      {ready && (
+      {block.data && (
         <GridBlock
           grid={block.data}
           relief={relief}
           tone="earth"
           moonSun={moonSun}
-          // matched relief stretches the target onto the block's height range
-          wire={{ grid: over.data, scale: relief * (matched ? matchScale(block.data, over.data) : 1) }}
-          label={`This block with ${target.name} drawn over it as a wireframe`}
+          // matched relief stretches the match onto the block's height range
+          wire={{ grid: over, scale: relief * (matched ? matchScale(block.data, over) : 1) }}
+          label={`This block with ${overName} drawn over it as a wireframe`}
         />
       )}
-      {!ready && !block.isError && !over.isError && <Skeleton className="absolute inset-10" />}
-      {(block.isError || over.isError) && (
+      {block.isPending && <Skeleton className="absolute inset-10" />}
+      {block.isError && (
         <p role="alert" className="absolute top-14 left-3 max-w-sm rounded-md border border-line bg-panel px-2.5 py-1.5 text-xs">
-          <b className="block font-semibold">The overlay did not load</b>
-          <span className="text-text-2">{block.isError ? "This block's" : "The target's"} height grid is missing from the grid store.</span>
+          <b className="block font-semibold">The overlay didn&apos;t load</b>
+          <span className="text-text-2">This block&apos;s height grid is missing from the grid store.</span>
         </p>
       )}
-      {ready && (
+      {block.data && (
         <p className="pointer-events-none absolute bottom-3 left-3 rounded-md border border-line bg-panel px-2.5 py-1.5 text-xs text-text-2">
-          Solid: this block, {Math.round(block.data.hi - block.data.lo)} m low to high · Lines: {target.name}, {Math.round(over.data.hi - over.data.lo)} m
+          Solid: this block, {Math.round(block.data.hi - block.data.lo)} m from low to high · Lines: {overName}, {Math.round(over.hi - over.lo)} m
           {matched ? ", stretched to match" : ""}
         </p>
       )}

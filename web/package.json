@@ -10,7 +10,7 @@
     "postinstall": "node scripts/copy-cesium.mjs",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
-    "gen:types": "openapi-typescript http://localhost:8000/openapi.json -o src/lib/api-types.ts"
+    "gen:types": "openapi-typescript http://localhost:${API_PORT:-8000}/openapi.json -o src/lib/api-types.ts"
   },
   "dependencies": {
     "@react-three/drei": "^10.7.9",

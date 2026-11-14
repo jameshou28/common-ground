@@ -17,8 +17,6 @@ export type ExploreState = {
   activePin: string | null;
   setActivePin: (id: string | null) => void;
   flyTo: (p: { lat: number; lon: number }) => void;
-  // from ?target=, else the first target the api lists
-  targetId: string | null;
   // the scored block when a site page is open
   selected: Tile | null;
   // the current globe view as a jpeg data url, for the field sheet

@@ -55,17 +55,17 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/match": {
+    "/library/{index}": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        get?: never;
+        /** Library */
+        get: operations["library_library__index__get"];
         put?: never;
-        /** Match */
-        post: operations["match_match_post"];
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -76,113 +76,18 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
-        /** BlockResult */
-        BlockResult: {
-            /** Tile Id */
-            tile_id: string;
-            /**
-             * World
-             * @enum {string}
-             */
-            world: "earth" | "moon" | "mars";
-            center: components["schemas"]["LatLon"];
-            /**
-             * Size M
-             * @default 4000
-             */
-            size_m: number;
-            /** Dem Source */
-            dem_source: string;
-            /** Resolution M */
-            resolution_m: number;
-            /**
-             * Confidence
-             * @enum {string}
-             */
-            confidence: "normal" | "lower" | "coarse";
-            /** Measured Share */
-            measured_share?: number | null;
-            /** Target Id */
-            target_id: string;
-            /** Model Version */
-            model_version: string;
-            /** Cached */
-            cached: boolean;
+        /** Conditions */
+        Conditions: {
             /** Score */
             score: number;
-            score_range: components["schemas"]["Range"];
-            /** Percentile */
-            percentile?: number | null;
-            /** Typicality */
-            typicality?: number | null;
-            /** Typicality Percentile */
-            typicality_percentile?: number | null;
-            /** Physics Score */
-            physics_score: number;
-            /** Bias */
-            bias: number;
-            /** Contributions */
-            contributions: components["schemas"]["Contribution"][];
-            /** Nearest Analog */
-            nearest_analog?: {
-                [key: string]: unknown;
-            } | null;
-            /**
-             * Ood
-             * @default false
-             */
-            ood: boolean;
-            /** Points */
-            points: components["schemas"]["Point"][];
-            /** Grid Url */
-            grid_url: string;
-        };
-        /** ClassScore */
-        ClassScore: {
-            /** Class Id */
-            class_id: string;
-            /** Label */
-            label: string;
-            /** Score */
-            score: number;
-            /**
-             * Best
-             * @default []
-             */
-            best: components["schemas"]["MatchedBlock"][];
-        };
-        /** ContextScores */
-        ContextScores: {
-            /**
-             * World
-             * @enum {string}
-             */
-            world: "moon" | "mars";
-            /** Context */
-            context: string;
-            /** Classes */
-            classes: components["schemas"]["ClassScore"][];
-        };
-        /** Contribution */
-        Contribution: {
-            /** Key */
-            key: string;
-            /** Label */
-            label: string;
-            /** Group */
-            group: string;
-            /** Value */
-            value: number;
-            /** Target Value */
-            target_value: number;
-            /** Distance */
-            distance: number;
-            /** Percentile */
-            percentile?: number | null;
-            /** Contribution */
-            contribution: number;
-            /** Unit */
-            unit: string;
+            /** Terms */
+            terms: {
+                [key: string]: number;
+            };
+            /** Discount */
+            discount?: number | null;
+        } & {
+            [key: string]: unknown;
         };
         /** HTTPValidationError */
         HTTPValidationError: {
@@ -196,78 +101,42 @@ export interface components {
             /** Lon */
             lon: number;
         };
-        /** MatchRequest */
-        MatchRequest: {
-            /**
-             * Tile Id
-             * @example earth:g:974:-2527
-             */
-            tile_id: string;
-        };
-        /** MatchResult */
-        MatchResult: {
-            /** Tile Id */
-            tile_id: string;
-            center: components["schemas"]["LatLon"];
+        /** LibraryBlock */
+        LibraryBlock: {
+            /** Index */
+            index: number;
+            /** World */
+            world: string;
             /** Model Version */
             model_version: string;
-            /** Cached */
-            cached: boolean;
-            /** Contexts */
-            contexts: components["schemas"]["ContextScores"][];
-            /** Gate */
-            gate: {
-                [key: string]: number;
-            };
-            /**
-             * Confidence
-             * @enum {string}
-             */
-            confidence: "normal" | "lower" | "coarse";
             /** Grid Url */
             grid_url: string;
         };
-        /** MatchedBlock */
-        MatchedBlock: {
-            /** Name */
-            name: string;
-            /**
-             * World
-             * @enum {string}
-             */
-            world: "moon" | "mars";
-            center: components["schemas"]["LatLon"];
+        /** Region */
+        Region: {
+            /** Region */
+            region: string;
+            /** Title */
+            title: string;
             /** Score */
             score: number;
-        };
-        /** Point */
-        Point: {
-            /** Id */
-            id: string;
-            /** X M */
-            x_m: number;
-            /** Y M */
-            y_m: number;
-            /**
-             * Effect
-             * @enum {string}
-             */
-            effect: "help" | "hurt";
-            /** Landform */
-            landform: string;
-            /** Local */
-            local: {
-                [key: string]: number;
+            /** Overall */
+            overall: number;
+            /** Scales */
+            scales: {
+                [key: string]: components["schemas"]["ScaleScore"];
             };
-            /** Reason */
-            reason: string;
+            /** Best */
+            best: components["schemas"]["Site"][];
+        } & {
+            [key: string]: unknown;
         };
-        /** Range */
-        Range: {
-            /** Low */
-            low: number;
-            /** High */
-            high: number;
+        /** ScaleScore */
+        ScaleScore: {
+            /** Score */
+            score: number;
+        } & {
+            [key: string]: unknown;
         };
         /** ScoreRequest */
         ScoreRequest: {
@@ -276,11 +145,69 @@ export interface components {
              * @example earth:g:974:-2527
              */
             tile_id: string;
+        };
+        /** ScoreResult */
+        ScoreResult: {
+            /** Tile Id */
+            tile_id: string;
+            center: components["schemas"]["LatLon"];
             /**
-             * Target Id
-             * @example connecting_ridge
+             * Size M
+             * @default 4000
              */
-            target_id: string;
+            size_m: number;
+            /** Model Version */
+            model_version: string;
+            /** Cached */
+            cached: boolean;
+            /** Ood */
+            ood: boolean;
+            conditions: components["schemas"]["Conditions"];
+            /** Env */
+            env: {
+                [key: string]: number | null;
+            };
+            /** Block */
+            block: {
+                [key: string]: number;
+            };
+            /** Worlds */
+            worlds: {
+                [key: string]: components["schemas"]["World"];
+            };
+            /** Grid Url */
+            grid_url: string;
+        } & {
+            [key: string]: unknown;
+        };
+        /** Site */
+        Site: {
+            /** Index */
+            index: number;
+            /** Name */
+            name: string;
+            /** Tag */
+            tag: string;
+            /** Region */
+            region: string;
+            /** Lat */
+            lat: number;
+            /** Lon */
+            lon: number;
+            /** Href */
+            href: string;
+            /** Pair Score */
+            pair_score: number;
+            /** Contributions */
+            contributions: {
+                [key: string]: number;
+            };
+            /** Cell Cost */
+            cell_cost: number[][];
+            /** Partner */
+            partner: number[];
+        } & {
+            [key: string]: unknown;
         };
         /** ValidationError */
         ValidationError: {
@@ -294,6 +221,20 @@ export interface components {
             input?: unknown;
             /** Context */
             ctx?: Record<string, never>;
+        };
+        /** World */
+        World: {
+            /** Regions */
+            regions: components["schemas"]["Region"][];
+            /** Best Region */
+            best_region: string;
+            /** Landscape Score */
+            landscape_score: number;
+            /** Overall */
+            overall: number;
+            best_match: components["schemas"]["Site"];
+        } & {
+            [key: string]: unknown;
         };
     };
     responses: never;
@@ -363,7 +304,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["BlockResult"];
+                    "application/json": components["schemas"]["ScoreResult"];
                 };
             };
             /** @description Unprocessable Entity */
@@ -380,20 +321,25 @@ export interface operations {
                 };
                 content?: never;
             };
+            /** @description Service Unavailable */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
         };
     };
-    match_match_post: {
+    library_library__index__get: {
         parameters: {
             query?: never;
             header?: never;
-            path?: never;
+            path: {
+                index: number;
+            };
             cookie?: never;
         };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["MatchRequest"];
-            };
-        };
+        requestBody?: never;
         responses: {
             /** @description Successful Response */
             200: {
@@ -401,8 +347,15 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["MatchResult"];
+                    "application/json": components["schemas"]["LibraryBlock"];
                 };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
             /** @description Validation Error */
             422: {
@@ -413,8 +366,15 @@ export interface operations {
                     "application/json": components["schemas"]["HTTPValidationError"];
                 };
             };
-            /** @description Not Implemented */
-            501: {
+            /** @description Bad Gateway */
+            502: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Service Unavailable */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };

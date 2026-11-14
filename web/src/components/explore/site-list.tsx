@@ -13,7 +13,7 @@ type Row = { id: string; name: string; sub: string; end: string; lat: number; lo
 
 // check sites on earth, the fixed targets on the moon and mars
 export function SiteList() {
-  const { world, activePin, setActivePin, flyTo, targetId } = useExplore();
+  const { world, activePin, setActivePin, flyTo } = useExplore();
   const router = useRouter();
   const targets = useTargets();
   const earth = world === "earth";
@@ -48,7 +48,7 @@ export function SiteList() {
           <li key={r.id}>
             <button
               type="button"
-              onClick={() => (r.tileId ? router.push(siteHref(r.tileId, targetId)) : flyTo(r))}
+              onClick={() => (r.tileId ? router.push(siteHref(r.tileId)) : flyTo(r))}
               onPointerEnter={() => setActivePin(r.id)}
               onPointerLeave={() => setActivePin(null)}
               onFocus={() => setActivePin(r.id)}

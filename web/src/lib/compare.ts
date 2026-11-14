@@ -10,8 +10,8 @@ export function parseTiles(raw: string | null | undefined): string[] {
   return [...new Set(ids)].slice(0, MAX_COMPARE);
 }
 
-export function compareHref(tiles: string[], targetId?: string | null): string {
-  const q = [tiles.length ? `tiles=${tiles.join(",")}` : "", targetId ? `target=${encodeURIComponent(targetId)}` : ""].filter(Boolean).join("&");
+export function compareHref(tiles: string[], tab?: string | null): string {
+  const q = [tiles.length ? `tiles=${tiles.join(",")}` : "", tab ? `tab=${tab}` : ""].filter(Boolean).join("&");
   return q ? `/compare?${q}` : "/compare";
 }
 
