@@ -9,6 +9,7 @@ RUN uv sync --frozen --no-dev --no-install-project
 COPY api/analog_core analog_core
 COPY api/app app
 COPY api/targets.json .
-ENV PATH="/srv/.venv/bin:$PATH" CACHE_DIR=/tmp/cache
+COPY ml/export/model.npz model.npz
+ENV PATH="/srv/.venv/bin:$PATH" CACHE_DIR=/tmp/cache MODEL_PATH=/srv/model.npz
 # 1 worker, gdal reads release the gil and a 2nd worker doubles memory
 CMD ["sh", "-c", "uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8000} --workers 1"]
