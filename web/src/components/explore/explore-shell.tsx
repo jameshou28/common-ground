@@ -4,8 +4,8 @@ import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import type { Point } from "@/lib/api";
-import { useScore, useTargets } from "@/lib/queries";
+import { useLibraryGrid, useTargets } from "@/lib/queries";
+import { cellPoints, type CellPoint } from "@/lib/regions";
 import { CHECK_SITES, siteHref } from "@/lib/sites";
 import { fmtAltitude, fmtLatLon } from "@/lib/format";
 import {
@@ -22,9 +22,10 @@ import { WorldSwitcher } from "@/components/globe/world-switcher";
 import { StatusItems } from "@/components/shell/status-bar";
 import { Toggle } from "@/components/ui/toggle";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
-import { TargetBlock } from "@/components/site/target-block";
+import { MatchedBlock } from "@/components/site/matched-block";
+import { useMatch } from "@/components/site/use-match";
 import { WireOverlay } from "@/components/site/wire-overlay";
-import { TargetList } from "@/components/site/target-list";
+import { RegionList } from "@/components/site/region-list";
 import { ExploreContext } from "./explore-context";
 
 // cesium needs the browser
@@ -40,7 +41,9 @@ const CHECK_PINS: Pin[] = CHECK_SITES.map((s) => ({
   kind: "check",
 }));
 
-const NO_POINTS: Point[] = [];
+const NO_POINTS: CellPoint[] = [];
+// a low sun for moon light, the library blocks carry no sun angle of their own
+const MOON_SUN_DEG = 1.5;
 
 function parseTile(id: string | undefined): Tile | null {
   try {
@@ -86,20 +89,18 @@ export function ExploreShell({ children }: { children: React.ReactNode }) {
     [world],
   );
   const targets = useTargets().data;
-  const targetId = search.get("target") ?? targets?.[0]?.id ?? null;
   // the same cached result the panel shows
-  const result = useScore(
-    selected?.world === "earth" ? selected.id : null,
-    targetId,
-  ).data;
-  const points = result?.points ?? NO_POINTS;
-  const target = targets?.find((t) => t.id === targetId);
-  // the earth pane as a plain height grid with the target drawn over it
+  const { q: score, match } = useMatch(selected);
+  const result = score.data;
+  const points = useMemo(() => (match ? cellPoints(match.site) : NO_POINTS), [match]);
+  // the matched block, the bottom pane exists only once its grid has loaded
+  const matchedGrid = useLibraryGrid(match?.site.index).data;
+  // the earth pane as a plain height grid with the matched block drawn over it
   const [wire, setWire] = useState(false);
   const [matched, setMatched] = useState(false);
-  // light both blocks the way the target is lit
+  // light both blocks with a sun just above the horizon, as at the lunar poles
   const [moon, setMoon] = useState(false);
-  const moonSun = moon && target ? target.sun_elevation_deg : null;
+  const moonSun = moon && match?.tab === "moon" ? MOON_SUN_DEG : null;
   const captureSlot = useRef<(() => string | null) | null>(null);
   const capture = useCallback(() => captureSlot.current?.() ?? null, []);
   const pins = useMemo<Pin[]>(
@@ -127,7 +128,6 @@ export function ExploreShell({ children }: { children: React.ReactNode }) {
       activePin,
       setActivePin,
       flyTo,
-      targetId,
       selected,
       capture,
     }),
@@ -139,7 +139,6 @@ export function ExploreShell({ children }: { children: React.ReactNode }) {
       pins,
       activePin,
       flyTo,
-      targetId,
       selected,
       capture,
     ],
@@ -148,12 +147,12 @@ export function ExploreShell({ children }: { children: React.ReactNode }) {
     (p: LatLon | null, pinId: string | null) => {
       const at = pins.find((x) => x.id === pinId) ?? p;
       if (!at) return;
-      // only earth is scored, the moon and mars pins are the fixed targets
+      // only earth is scored, the moon and mars pins are featured sites
       if (world === "earth")
-        router.push(siteHref(pointTile("earth", at.lat, at.lon).id, targetId));
+        router.push(siteHref(pointTile("earth", at.lat, at.lon).id));
       else if (pinId) flyTo(at);
     },
-    [pins, flyTo, world, router, targetId],
+    [pins, flyTo, world, router],
   );
 
   // esc on a result steps back to the globe, capture so the globe's own esc does not also fire
@@ -182,12 +181,14 @@ export function ExploreShell({ children }: { children: React.ReactNode }) {
             : "grid min-h-0 flex-1 grid-cols-[minmax(0,1fr)_420px] max-md:grid-cols-1 max-md:grid-rows-[minmax(260px,42vh)_minmax(0,1fr)]"
         }
       >
-        {selected && <TargetList />}
+        {selected && <RegionList />}
         <div
           className={
-            selected
+            selected && matchedGrid
               ? "grid min-h-0 grid-rows-[minmax(0,3fr)_minmax(0,2fr)]"
-              : "contents"
+              : selected
+                ? "grid min-h-0"
+                : "contents"
           }
         >
           <section
@@ -206,6 +207,7 @@ export function ExploreShell({ children }: { children: React.ReactNode }) {
               selected={selected?.world === world ? selected : null}
               relief={relief}
               points={points}
+              matchName={match?.site.name ?? "the match"}
               moonSun={moonSun}
               capture={captureSlot}
             />
@@ -243,9 +245,9 @@ export function ExploreShell({ children }: { children: React.ReactNode }) {
                       size="sm"
                       pressed={wire}
                       onPressedChange={setWire}
-                      disabled={!result}
+                      disabled={!result || !matchedGrid}
                     >
-                      Overlay target as wireframe
+                      Overlay the match as wireframe
                     </Toggle>
                     {wire && (
                       <Toggle
@@ -258,8 +260,8 @@ export function ExploreShell({ children }: { children: React.ReactNode }) {
                     )}
                   </>
                 )}
-                {world === "earth" && (
-                  <Toggle size="sm" pressed={moon} onPressedChange={setMoon} disabled={!target}>
+                {world === "earth" && match?.tab === "moon" && (
+                  <Toggle size="sm" pressed={moon} onPressedChange={setMoon}>
                     Moon light on both
                   </Toggle>
                 )}
@@ -292,19 +294,21 @@ export function ExploreShell({ children }: { children: React.ReactNode }) {
                 </span>
               </p>
             )}
-            {selected && wire && (
+            {selected && wire && match && matchedGrid && (
               <WireOverlay
                 gridUrl={result?.grid_url}
-                target={target}
+                over={matchedGrid}
+                overName={match.site.name}
                 relief={relief}
                 matched={matched}
                 moonSun={moonSun}
               />
             )}
           </section>
-          {selected && (
-            <TargetBlock
-              target={target}
+          {selected && match && matchedGrid && (
+            <MatchedBlock
+              grid={matchedGrid}
+              match={match}
               relief={world === "earth" ? relief : 1}
               moonSun={moonSun}
             />

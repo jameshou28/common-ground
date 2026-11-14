@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import type { Point } from "@/lib/api";
+import type { CellPoint } from "@/lib/regions";
 import type { Tile, World } from "@/lib/tiles";
 import { FeaturePoints } from "@/components/site/feature-points";
 import type { CesiumLib, CesiumNS } from "./cesium";
@@ -292,13 +292,16 @@ export function BlockPullOut({
   tile,
   relief,
   points,
+  matchName,
   moonSun,
 }: {
   handle: GlobeHandle | null;
   tile: Tile | null;
   relief: number;
   // the scored cells, shown once the block is out
-  points: Point[];
+  points: CellPoint[];
+  // name of the matched block, for the point cards
+  matchName: string;
   // sun elevation in degrees for moon light, null for the normal look
   moonSun: number | null;
 }) {
@@ -427,6 +430,7 @@ export function BlockPullOut({
           handle={handle}
           tile={tile}
           points={points}
+          matchName={matchName}
           relief={relief}
         />
       )}

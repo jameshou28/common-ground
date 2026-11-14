@@ -6,11 +6,11 @@ import { Button, buttonVariants } from "@/components/ui/button";
 import { compareHref, compareStore, MAX_COMPARE, parseTiles } from "@/lib/compare";
 
 // puts a block on the compare list, then turns into the way there
-export function AddToCompare({ tileId, targetId }: { tileId: string; targetId: string | null }) {
+export function AddToCompare({ tileId, tab }: { tileId: string; tab: string }) {
   const list = parseTiles(useSyncExternalStore(compareStore.subscribe, compareStore.read, () => ""));
   if (list.includes(tileId))
     return (
-      <Link href={compareHref(list, targetId)} className={buttonVariants({ size: "sm" })}>
+      <Link href={compareHref(list, tab)} className={buttonVariants({ size: "sm" })}>
         ✓ In compare · open
       </Link>
     );

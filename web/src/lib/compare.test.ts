@@ -8,8 +8,8 @@ it("keeps valid earth blocks, drops repeats and stops at four", () => {
 });
 
 it("the url reproduces the view", () => {
-  const href = compareHref(["earth:g:1:1", "earth:p:35.0270:-111.0220"], "connecting_ridge");
-  expect(href).toBe("/compare?tiles=earth:g:1:1,earth:p:35.0270:-111.0220&target=connecting_ridge");
+  const href = compareHref(["earth:g:1:1", "earth:p:35.0270:-111.0220"], "mars");
+  expect(href).toBe("/compare?tiles=earth:g:1:1,earth:p:35.0270:-111.0220&tab=mars");
   expect(parseTiles(new URL(href, "http://x").searchParams.get("tiles"))).toHaveLength(2);
   expect(compareHref([])).toBe("/compare");
 });

@@ -1,17 +1,25 @@
-import type { BlockResult, Target } from "@/lib/api";
 import { fmtLatLon } from "@/lib/format";
+import type { Match } from "@/lib/regions";
 import type { Tile } from "@/lib/tiles";
 
-const CONFIDENCE: Record<BlockResult["confidence"], string> = { normal: "normal confidence", lower: "lower confidence", coarse: "coarse data" };
-
 // the survey-sheet facts for one block
-export function FactsTable({ tile, target, result }: { tile: Tile; target?: Target; result?: BlockResult }) {
-  const rows: [string, string][] = [
+export function FactsTable({ tile, match }: { tile: Tile; match: Match | null }) {
+  const rows: [string, React.ReactNode][] = [
     ["Block", `4 × 4 km, ${tile.id}`],
     ["Centre", fmtLatLon(tile.center.lat, tile.center.lon)],
+    ["Elevation", "Copernicus GLO-30, 30 m"],
   ];
-  if (target) rows.push(["Matched to", `${target.name}, ${fmtLatLon(target.lat, target.lon)}`]);
-  if (result) rows.push(["Elevation", `${result.dem_source}, ${result.resolution_m} m · ${CONFIDENCE[result.confidence]}`]);
+  if (match)
+    rows.push([
+      "Closest match",
+      <>
+        <span className="first-letter:uppercase">{match.site.name}</span>, {fmtLatLon(match.site.lat, match.site.lon)}
+        {" · "}
+        <a href={match.site.href} target="_blank" rel="noreferrer" className="text-brand">
+          elevation data
+        </a>
+      </>,
+    ]);
   return (
     <dl className="mt-3 grid grid-cols-[auto_minmax(0,1fr)] gap-x-4 gap-y-1 text-xs">
       {rows.map(([k, v]) => (

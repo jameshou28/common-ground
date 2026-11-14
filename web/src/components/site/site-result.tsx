@@ -2,22 +2,22 @@
 
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import { useState } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
-import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { AddToCompare } from "@/components/compare/add-to-compare";
 import { useExplore } from "@/components/explore/explore-context";
+import { WORLD_LABEL } from "@/components/globe/config";
 import { describeError } from "@/lib/api";
 import { env } from "@/lib/env";
-import { useScore, useTargets } from "@/lib/queries";
+import { bars, conditionLabel, contributionLabel } from "@/lib/regions";
 import { CHECK_SITES } from "@/lib/sites";
 import { CannotCopy } from "./cannot-copy";
 import { ChartsDialog } from "./charts-dialog";
 import { ContributionBars } from "./contribution-bars";
 import { FactsTable } from "./facts-table";
 import { FieldSheet } from "./field-sheet";
-import { ScoreGauge, type Mode } from "./score-gauge";
+import { ScoreGauge } from "./score-gauge";
 import { Section } from "./section";
+import { useMatch } from "./use-match";
 
 function Notice({ title, children, alert }: { title: string; children: React.ReactNode; alert?: boolean }) {
   return (
@@ -31,14 +31,14 @@ function Notice({ title, children, alert }: { title: string; children: React.Rea
 // the right-hand panel for one scored block
 export function SiteResult() {
   const { tileId } = useParams<{ tileId: string }>();
-  const { selected, targetId, capture } = useExplore();
+  const { selected, capture } = useExplore();
   const earth = selected?.world === "earth";
-  const q = useScore(earth ? selected.id : null, targetId);
-  const target = useTargets().data?.find((t) => t.id === targetId);
+  const { q, match } = useMatch(selected);
   const site = CHECK_SITES.find((s) => s.tileId === selected?.id);
-  // which score is the headline, both stay on screen
-  const [mode, setMode] = useState<Mode>("ml");
+  const name = site?.name ?? "This block";
   const r = q.data;
+  const terrain = match ? bars(match.site.contributions, contributionLabel) : null;
+  const surface = r ? bars(r.conditions.terms, conditionLabel) : null;
 
   return (
     <aside aria-label="Result" className="flex min-h-0 flex-col border-l border-line bg-panel max-md:border-t max-md:border-l-0">
@@ -49,16 +49,16 @@ export function SiteResult() {
           </Link>
           <h1 className="mt-2 text-xl leading-tight font-semibold">{site?.name ?? "Clicked block"}</h1>
           {site && <p className="text-text-2">{site.region}</p>}
-          {selected && <FactsTable tile={selected} target={target} result={r} />}
+          {selected && <FactsTable tile={selected} match={match} />}
 
           {!selected && (
-            <Notice alert title="This is not a block">
-              {decodeURIComponent(tileId)} is not a valid block id. Go back and click the globe.
+            <Notice alert title="That isn't a block">
+              {decodeURIComponent(tileId)} isn&apos;t a valid block id. Go back and click the globe.
             </Notice>
           )}
           {selected && !earth && (
             <Notice alert title="Only Earth is scored live">
-              Moon and Mars blocks are fixed targets. Click Earth to score a place.
+              Click a place on Earth to score it.
             </Notice>
           )}
           {!env.liveScoring && !r && earth && !q.isError && (
@@ -69,60 +69,44 @@ export function SiteResult() {
               {describeError(q.error).body}
             </Notice>
           )}
-          {r?.confidence === "lower" && (
-            <Notice title="Lower confidence">Part of this block has no elevation data, such as open water. The score uses the rest.</Notice>
-          )}
-          {r?.confidence === "coarse" && (
-            <Notice title="Coarse elevation data">The only elevation data here is coarser than usual, so the fine roughness is less certain.</Notice>
-          )}
           {r?.ood && (
-            <Notice title="Outside what the model has seen">No training block resembles this one, so treat the score as a rough guide.</Notice>
+            <Notice title="Unlike anything the model has seen">No block the model learned from looks like this one, so take the score as a rough guide.</Notice>
           )}
         </div>
 
         {earth && q.isPending && (
           <div role="status" aria-live="polite" className="p-4">
-            <b className="block font-semibold">Scoring this block{target ? ` against ${target.name}` : ""}</b>
-            <span className="text-text-2">Reading 30 m elevation. A new place takes 2 to 5 seconds; a place scored before opens at once.</span>
+            <b className="block font-semibold">Scoring this block</b>
+            <span className="text-text-2">A new place takes a few seconds. A place scored before opens straight away.</span>
             <Skeleton className="mt-4 h-9 w-2/3" />
             <Skeleton className="mt-2 h-4" />
             <Skeleton className="mt-2 h-4 w-1/2" />
           </div>
         )}
 
-        {r && (
+        {r && match && (
           <>
-            <Section title="Analog score">
-              <ToggleGroup
-                type="single"
-                size="sm"
-                variant="outline"
-                spacing={0}
-                aria-label="Score shown"
-                value={mode}
-                onValueChange={(m) => m && setMode(m as Mode)}
-              >
-                <ToggleGroupItem value="ml">Trained model</ToggleGroupItem>
-                <ToggleGroupItem value="phys">Physics baseline</ToggleGroupItem>
-              </ToggleGroup>
-              <ScoreGauge result={r} mode={mode} />
-              {target && <ChartsDialog result={r} target={target} name={site?.name ?? "This block"} />}
+            <Section title="Analog score" note={`best region: ${match.world.regions.find((g) => g.region === match.world.best_region)?.title ?? ""}`}>
+              <ScoreGauge result={r} match={match} />
+              <ChartsDialog gridUrl={r.grid_url} libraryIndex={match.site.index} name={name} matchName={match.site.name} />
             </Section>
-            <Section title="Why this score" note={mode === "ml" ? "points toward the score" : "block against target"}>
-              <ContributionBars result={r} mode={mode} />
+            <Section title={`Why it matches ${match.region.title.toLowerCase()}`} note={`closest place ${Math.round(match.site.pair_score)}`}>
+              <ContributionBars rows={terrain!.rows} zero={terrain!.zero} note={`Measured against ${match.site.name}. Bars to the right help the match.`} />
             </Section>
-            {target && (
-              <Section title="What no Earth site can copy" open={false}>
-                <CannotCopy world={target.world} />
-              </Section>
-            )}
+            <Section title="Surface and climate" note="the same for both worlds">
+              <ContributionBars rows={surface!.rows} zero={surface!.zero} note="Bare, dry ground helps. Trees, fields and water hurt." />
+            </Section>
+            <Section title={`What no Earth site can copy`} open={false}>
+              <CannotCopy world={match.tab} />
+            </Section>
           </>
         )}
       </div>
-      {earth && r && (
+      {earth && r && match && (
         <div className="flex gap-2 border-t border-line p-3">
-          <AddToCompare tileId={selected.id} targetId={targetId} />
-          {target && <FieldSheet tile={selected} name={site?.name ?? "Clicked block"} target={target} result={r} capture={capture} />}
+          <AddToCompare tileId={selected.id} tab={match.tab} />
+          <FieldSheet tile={selected} name={site?.name ?? "Clicked block"} result={r} match={match} capture={capture} />
+          <span className="sr-only">Showing the {WORLD_LABEL[match.tab]} result</span>
         </div>
       )}
     </aside>

@@ -1,8 +1,14 @@
 import type { Metadata } from "next";
-import { PageStub } from "@/components/shell/page-stub";
+import { Suspense } from "react";
+import { BestSites } from "@/components/best/best-sites";
 
 export const metadata: Metadata = { title: "Best sites" };
 
 export default function Page() {
-  return <PageStub title="Best sites">The best Earth sites the model found for each target.</PageStub>;
+  // the ?tab= and ?region= params need a suspense boundary
+  return (
+    <Suspense fallback={<main className="flex-1" />}>
+      <BestSites />
+    </Suspense>
+  );
 }

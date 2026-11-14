@@ -1,7 +1,7 @@
-import type { Target } from "@/lib/api";
+import type { Tab } from "@/lib/regions";
 
 // what terrain similarity cannot give, so nobody reads the score as "the same place"
-const LIMITS: Record<Target["world"], [string, string][]> = {
+const LIMITS: Record<Tab, [string, string][]> = {
   moon: [
     ["Gravity", "1.62 m/s² on the Moon, 9.81 m/s² here."],
     ["Vacuum", "No air at the lunar surface. No open-air site on Earth comes close."],
@@ -15,7 +15,7 @@ const LIMITS: Record<Target["world"], [string, string][]> = {
   ],
 };
 
-export function CannotCopy({ world }: { world: Target["world"] }) {
+export function CannotCopy({ world }: { world: Tab }) {
   return (
     <dl className="grid grid-cols-[auto_minmax(0,1fr)] gap-x-4 gap-y-1.5 text-xs">
       {LIMITS[world].map(([k, v]) => (

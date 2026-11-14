@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import type { Point } from "@/lib/api";
+import type { CellPoint } from "@/lib/regions";
 import type { Tile } from "@/lib/tiles";
 import type { GlobeHandle } from "@/components/globe/use-cesium-viewer";
 import { PointCard } from "./point-card";
@@ -9,7 +9,7 @@ import { PointCard } from "./point-card";
 type Heights = { key: string; values: number[] };
 
 // the cells that help or hurt most, pinned to the block's surface and placed on screen every frame
-export function FeaturePoints({ handle, tile, points, relief }: { handle: GlobeHandle; tile: Tile; points: Point[]; relief: number }) {
+export function FeaturePoints({ handle, tile, points, relief, matchName }: { handle: GlobeHandle; tile: Tile; points: CellPoint[]; relief: number; matchName: string }) {
   const [heights, setHeights] = useState<Heights | null>(null);
   const [open, setOpen] = useState<string | null>(null);
   const els = useRef<(HTMLDivElement | null)[]>([]);
@@ -95,13 +95,13 @@ export function FeaturePoints({ handle, tile, points, relief }: { handle: GlobeH
                 type="button"
                 aria-expanded={on}
                 aria-controls={on ? `point-${p.id}` : undefined}
-                aria-label={`Point ${i + 1}: ${p.landform}, ${help ? "helps" : "hurts"} the match`}
+                aria-label={`Point ${i + 1}: ${help ? "a close match, helps" : "a poor match, hurts"}`}
                 onClick={() => setOpen(on ? null : p.id)}
                 className={`pointer-events-auto absolute size-6 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-app text-xs font-semibold text-app ${help ? "bg-help" : "bg-hurt"} ${on ? "ring-2 ring-text" : ""}`}
               >
                 {i + 1}
               </button>
-              {on && <PointCard point={p} id={`point-${p.id}`} />}
+              {on && <PointCard point={p} id={`point-${p.id}`} matchName={matchName} />}
             </div>
           );
         })}

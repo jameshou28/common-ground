@@ -8,7 +8,7 @@ import { StatusBar } from "@/components/shell/status-bar";
 export const metadata: Metadata = {
   title: { default: "Analog Explorer", template: "%s · Analog Explorer" },
   description:
-    "Click a 4 km block on Earth and see how well it stands in for a Moon-base or Mars target, and why.",
+    "Click anywhere on Earth and see how much the ground there looks like the Moon or Mars, and why.",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
