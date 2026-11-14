@@ -154,6 +154,39 @@
 .globe {
   position: absolute;
   inset: 0;
+  transition: opacity 0.8s ease;
+}
+[data-loading] .globe {
+  opacity: 0;
+}
+/* wireframe sphere while the first tiles stream in */
+.globe-loader {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: 0.75rem;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.6s ease;
+}
+[data-loading] .globe-loader {
+  opacity: 1;
+}
+/* meridians: each ellipse squashes to a line and back, staggered, which reads as a turning globe */
+.globe-loader-spin ellipse {
+  animation: meridian 6s linear infinite;
+}
+@keyframes meridian {
+  from { rx: 45px; }
+  50% { rx: 0px; }
+  to { rx: 45px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .globe-loader-spin ellipse { animation: none; }
+  .globe { transition: none; }
 }
 .globe .cesium-widget,
 .globe .cesium-viewer,

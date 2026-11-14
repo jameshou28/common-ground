@@ -194,6 +194,7 @@ export function ExploreShell({ children }: { children: React.ReactNode }) {
           <section
             aria-label={`${WORLD_LABEL[world]} globe`}
             className="sky relative min-h-[260px] overflow-hidden"
+            data-loading={status.state === "loading" || undefined}
           >
             <GlobeView
               world={world}
@@ -273,14 +274,21 @@ export function ExploreShell({ children }: { children: React.ReactNode }) {
                 </Link>
               </div>
             )}
-            {status.state === "loading" && (
-              <p
-                role="status"
-                className="absolute bottom-3 left-3 rounded-md border border-line bg-panel px-2.5 py-1.5 text-xs text-text-2"
-              >
-                Loading {WORLD_LABEL[world]}…
-              </p>
-            )}
+            {/* stays mounted so it can fade out */}
+            <div role="status" aria-hidden={status.state !== "loading"} className="globe-loader">
+              <svg viewBox="-50 -50 100 100" className="size-40 text-brand" fill="none" stroke="currentColor" strokeWidth="0.6">
+                <circle r="45" />
+                {[-30, -15, 0, 15, 30].map((y) => (
+                  <ellipse key={y} cy={y} rx={Math.sqrt(45 * 45 - y * y)} ry="3" opacity="0.5" />
+                ))}
+                <g className="globe-loader-spin">
+                  {[0, 1, 2, 3].map((i) => (
+                    <ellipse key={i} rx="45" ry="45" style={{ animationDelay: `${-i * 1.5}s` }} />
+                  ))}
+                </g>
+              </svg>
+              <p className="text-xs text-text-2">Loading {WORLD_LABEL[world]}…</p>
+            </div>
             {status.state === "error" && (
               <p
                 role="alert"
