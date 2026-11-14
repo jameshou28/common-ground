@@ -27,7 +27,7 @@ export function SiteList() {
   return (
     <section aria-labelledby="site-list" className="p-4">
       <h2 id="site-list" className="flex items-baseline justify-between font-semibold">
-        {earth ? "Check sites" : `Places to look at on the ${WORLD_LABEL[world]}`}
+        {earth ? "Check sites" : `Places to look at on ${world === "moon" ? "the Moon" : WORLD_LABEL[world]}`}
         {earth && <span className="text-xs font-normal text-text-2">expected, worst to best</span>}
       </h2>
       <p className="mt-1 text-xs text-text-2">
