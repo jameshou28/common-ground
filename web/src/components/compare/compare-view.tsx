@@ -152,7 +152,7 @@ export function CompareView() {
             <h2 id="slope-h" className="font-semibold">
               Slopes
             </h2>
-            <p className="mt-1 text-xs text-text-2">Share of each block flatter than a given slope. A curve that climbs early means a flat place.</p>
+            <p className="mt-1 text-xs text-text-2">Share of each block flatter than a given slope. The earlier a curve climbs, the flatter the place.</p>
             <SlopeChart series={series} />
           </section>
           {blocks.length > 0 && (

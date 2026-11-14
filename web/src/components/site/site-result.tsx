@@ -14,7 +14,7 @@ import { CannotCopy } from "./cannot-copy";
 import { ChartsDialog } from "./charts-dialog";
 import { ContributionBars } from "./contribution-bars";
 import { FactsTable } from "./facts-table";
-import { ExportMenu } from "./export-menu";
+import { FieldSheet } from "./field-sheet";
 import { ScoreGauge } from "./score-gauge";
 import { Section } from "./section";
 import { useMatch } from "./use-match";
@@ -62,7 +62,7 @@ export function SiteResult() {
             </Notice>
           )}
           {!env.liveScoring && !r && earth && !q.isError && (
-            <Notice title="Live scoring is paused">Only blocks scored before open right now. The check sites still work.</Notice>
+            <Notice title="Live scoring is paused">Right now only places scored before will open. The check sites still work.</Notice>
           )}
           {earth && q.isError && (
             <Notice alert title={describeError(q.error).title}>
@@ -105,7 +105,7 @@ export function SiteResult() {
       {earth && r && match && (
         <div className="flex gap-2 border-t border-line p-3">
           <AddToCompare tileId={selected.id} tab={match.tab} />
-          <ExportMenu tile={selected} name={site?.name ?? "Clicked block"} result={r} match={match} capture={capture} />
+          <FieldSheet tile={selected} name={site?.name ?? "Clicked block"} result={r} match={match} capture={capture} />
           <span className="sr-only">Showing the {WORLD_LABEL[match.tab]} result</span>
         </div>
       )}

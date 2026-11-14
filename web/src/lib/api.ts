@@ -145,7 +145,7 @@ export function describeError(e: unknown): { title: string; body: string } {
     case "no_model":
       return { title: "Scoring isn't available yet", body: "The scoring model isn't loaded on the server yet. The globe, the block view and the check sites still work." };
     case "not_scorable":
-      return { title: "Only Earth is scored live", body: "The Moon and Mars side is already inside the model. Click a place on Earth to score it." };
+      return { title: "Only Earth is scored live", body: "Moon and Mars terrain is already in the model. Click a place on Earth to score it." };
     default:
       return { title: "Something went wrong", body: e instanceof Error ? e.message : "This block couldn't be scored." };
   }
