@@ -76,7 +76,10 @@ function Wire({ grid, scale }: { grid: Grid; scale: number }) {
     // lines colored by height, low blue to high yellow, so altitude reads at a glance
     const pos = g.attributes.position;
     let lo = Infinity, hi = -Infinity;
-    for (let k = 0; k < pos.count; k++) (lo = Math.min(lo, pos.getY(k))), (hi = Math.max(hi, pos.getY(k)));
+    for (let k = 0; k < pos.count; k++) {
+      lo = Math.min(lo, pos.getY(k));
+      hi = Math.max(hi, pos.getY(k));
+    }
     const c = new THREE.Color(), cols = new Float32Array(pos.count * 3);
     for (let k = 0; k < pos.count; k++) {
       const t = hi > lo ? (pos.getY(k) - lo) / (hi - lo) : 0.5;
