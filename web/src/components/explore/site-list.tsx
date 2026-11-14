@@ -9,7 +9,7 @@ import { useTargets } from "@/lib/queries";
 import { CHECK_SITES, RANK_LABEL, siteHref } from "@/lib/sites";
 import { useExplore } from "./explore-context";
 
-type Row = { id: string; name: string; sub: string; end: string; lat: number; lon: number; tileId?: string };
+type Row = { id: string; name: string; sub: string; end: string; lat: number; lon: number };
 
 // check sites on earth, featured places on the moon and mars
 export function SiteList() {
@@ -19,7 +19,7 @@ export function SiteList() {
   const earth = world === "earth";
 
   const rows: Row[] = earth
-    ? CHECK_SITES.map((s) => ({ id: s.id, name: s.name, sub: s.region, end: RANK_LABEL[s.rank], lat: s.lat, lon: s.lon, tileId: s.tileId }))
+    ? []
     : (targets.data ?? [])
         .filter((t) => t.world === world)
         .map((t) => ({ id: t.id, name: t.name, sub: fmtLatLon(t.lat, t.lon), end: t.dem_source, lat: t.lat, lon: t.lon }));
@@ -28,11 +28,10 @@ export function SiteList() {
     <section aria-labelledby="site-list" className="p-4">
       <h2 id="site-list" className="flex items-baseline justify-between font-semibold">
         {earth ? "Check sites" : `Places to look at on ${world === "moon" ? "the Moon" : WORLD_LABEL[world]}`}
-        {earth && <span className="text-xs font-normal text-text-2">expected, worst to best</span>}
       </h2>
       <p className="mt-1 text-xs text-text-2">
         {earth
-          ? "Places whose answer we wrote down before scoring. The model has to get their order right."
+          ? "Where we expect each one to land. The model should put them in the same order."
           : "Landing sites and other spots worth a close look. Earth blocks are scored against all of the Moon and Mars, not only these."}
       </p>
       {!earth && targets.isPending && <Skeleton className="mt-3 h-10" />}
@@ -43,12 +42,43 @@ export function SiteList() {
         </p>
       )}
       {!earth && targets.isSuccess && !rows.length && <p className="mt-3 text-xs text-text-2">No {WORLD_LABEL[world]} target yet.</p>}
+      {earth && (
+        // expected rank, best first: label on the left, the sites in that band on the right
+        <dl className="mt-4 grid grid-cols-[5.5rem_1fr] gap-x-4">
+          {[5, 4, 3, 2, 1].map((rank) => {
+            const sites = CHECK_SITES.filter((s) => s.rank === rank);
+            if (!sites.length) return null;
+            return (
+              <div key={rank} className="contents">
+                <dt className={`pt-1.5 text-right text-xs ${rank >= 4 ? "text-help" : rank === 3 ? "text-text-2" : "text-hurt"}`}>{RANK_LABEL[rank]}</dt>
+                <dd className="border-l border-line pb-3 pl-2">
+                  {sites.map((s) => (
+                    <button
+                      key={s.id}
+                      type="button"
+                      title={s.region}
+                      onClick={() => router.push(siteHref(s.tileId))}
+                      onPointerEnter={() => setActivePin(s.id)}
+                      onPointerLeave={() => setActivePin(null)}
+                      onFocus={() => setActivePin(s.id)}
+                      onBlur={() => setActivePin(null)}
+                      className={`block w-full rounded-md px-2 py-1 text-left hover:bg-hover ${activePin === s.id ? "bg-hover" : ""}`}
+                    >
+                      {s.name}
+                    </button>
+                  ))}
+                </dd>
+              </div>
+            );
+          })}
+        </dl>
+      )}
       <ul className="-mx-2 mt-2">
         {rows.map((r) => (
           <li key={r.id}>
             <button
               type="button"
-              onClick={() => (r.tileId ? router.push(siteHref(r.tileId)) : flyTo(r))}
+              onClick={() => flyTo(r)}
               onPointerEnter={() => setActivePin(r.id)}
               onPointerLeave={() => setActivePin(null)}
               onFocus={() => setActivePin(r.id)}
