@@ -11,7 +11,7 @@ export const metadata: Metadata = {
     "Click a 4 km block on Earth and see how well it stands in for a Moon-base or Mars target, and why.",
 };
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className="h-full antialiased">
       <body className="flex h-full flex-col">
