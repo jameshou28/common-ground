@@ -12,6 +12,7 @@ import type { Pin } from "@/components/globe/pins";
 import type { LatLon } from "@/components/globe/use-globe-controls";
 import { WorldSwitcher } from "@/components/globe/world-switcher";
 import { StatusItems } from "@/components/shell/status-bar";
+import { TargetList } from "@/components/site/target-list";
 import { ExploreContext } from "./explore-context";
 
 // cesium needs the browser
@@ -82,7 +83,14 @@ export function ExploreShell({ children }: { children: React.ReactNode }) {
 
   return (
     <ExploreContext.Provider value={value}>
-      <div className="grid min-h-0 flex-1 grid-cols-[minmax(0,1fr)_420px] max-md:grid-cols-1 max-md:grid-rows-[minmax(260px,42vh)_minmax(0,1fr)]">
+      <div
+        className={
+          selected
+            ? "grid min-h-0 flex-1 grid-cols-[220px_minmax(0,1fr)_420px] max-lg:grid-cols-[minmax(0,1fr)_380px] max-lg:grid-rows-[auto_minmax(0,1fr)] max-md:grid-cols-1 max-md:grid-rows-[auto_minmax(260px,42vh)_minmax(0,1fr)]"
+            : "grid min-h-0 flex-1 grid-cols-[minmax(0,1fr)_420px] max-md:grid-cols-1 max-md:grid-rows-[minmax(260px,42vh)_minmax(0,1fr)]"
+        }
+      >
+        {selected && <TargetList />}
         <section aria-label={`${WORLD_LABEL[world]} globe`} className="sky relative min-h-[260px] overflow-hidden">
           <GlobeView world={world} onStatus={setStatus} onAltitude={setAltitude} onHover={onHover} onPick={onPick} pins={pins} activePin={activePin} focus={focus?.world === world ? focus : null} selected={selected?.world === world ? selected : null} />
           <WorldSwitcher world={world} />
