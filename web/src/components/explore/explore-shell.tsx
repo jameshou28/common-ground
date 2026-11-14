@@ -1,12 +1,12 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { useSearchParams } from "next/navigation";
-import { useCallback, useMemo, useState } from "react";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useTargets } from "@/lib/queries";
-import { CHECK_SITES } from "@/lib/sites";
+import { CHECK_SITES, siteHref } from "@/lib/sites";
 import { fmtAltitude, fmtLatLon } from "@/lib/format";
-import { WORLDS, type Tile, type World } from "@/lib/tiles";
+import { tileFor, tileFromId, WORLDS, type Tile, type World } from "@/lib/tiles";
 import { WORLD_LABEL, type GlobeStatus } from "@/components/globe/config";
 import type { Pin } from "@/components/globe/pins";
 import type { LatLon } from "@/components/globe/use-globe-controls";
@@ -19,11 +19,23 @@ const GlobeView = dynamic(() => import("@/components/globe/globe-view"), { ssr: 
 
 const CHECK_PINS: Pin[] = CHECK_SITES.map((s) => ({ id: s.id, name: s.name, lat: s.lat, lon: s.lon, kind: "check" }));
 
+function parseTile(id: string | undefined): Tile | null {
+  try {
+    return id ? tileFromId(decodeURIComponent(id)) : null;
+  } catch {
+    return null;
+  }
+}
+
 const parseWorld = (v: string | null): World => (WORLDS.includes(v as World) ? (v as World) : "earth");
 
 // holds the one viewer for every explore route
 export function ExploreShell({ children }: { children: React.ReactNode }) {
-  const world = parseWorld(useSearchParams().get("world"));
+  const search = useSearchParams();
+  const world = parseWorld(search.get("world"));
+  const router = useRouter();
+  const { tileId } = useParams<{ tileId?: string }>();
+  const selected = useMemo(() => parseTile(tileId), [tileId]);
   const [status, setStatus] = useState<GlobeStatus>({ state: "loading" });
   const [altitude, setAltitude] = useState(0);
   const [hovered, setHover] = useState<{ at: LatLon; tile: Tile } | null>(null);
@@ -35,28 +47,44 @@ export function ExploreShell({ children }: { children: React.ReactNode }) {
   const [focus, setFocus] = useState<(LatLon & { key: number; world: World }) | null>(null);
   const flyTo = useCallback((p: LatLon) => setFocus((f) => ({ lat: p.lat, lon: p.lon, world, key: (f?.key ?? 0) + 1 })), [world]);
   const targets = useTargets().data;
+  const targetId = search.get("target") ?? targets?.[0]?.id ?? null;
   const pins = useMemo<Pin[]>(
     () => (world === "earth" ? CHECK_PINS : (targets ?? []).filter((t) => t.world === world).map((t) => ({ id: t.id, name: t.name, lat: t.lat, lon: t.lon, kind: "target" }))),
     [world, targets],
   );
   const value = useMemo(
-    () => ({ world, status, altitude, hoverTile, pins, activePin, setActivePin, flyTo }),
-    [world, status, altitude, hoverTile, pins, activePin, flyTo],
+    () => ({ world, status, altitude, hoverTile, pins, activePin, setActivePin, flyTo, targetId, selected }),
+    [world, status, altitude, hoverTile, pins, activePin, flyTo, targetId, selected],
   );
   const onPick = useCallback(
-    (_: LatLon | null, pinId: string | null) => {
-      const pin = pins.find((p) => p.id === pinId);
-      if (pin) flyTo(pin);
+    (p: LatLon | null, pinId: string | null) => {
+      const at = pins.find((x) => x.id === pinId) ?? p;
+      if (!at) return;
+      // only earth is scored, the moon and mars pins are the fixed targets
+      if (world === "earth") router.push(siteHref(tileFor("earth", at.lat, at.lon).id, targetId));
+      else if (pinId) flyTo(at);
     },
-    [pins, flyTo],
+    [pins, flyTo, world, router, targetId],
   );
+
+  // esc on a result steps back to the globe, capture so the globe's own esc does not also fire
+  useEffect(() => {
+    if (!selected) return;
+    const key = (e: KeyboardEvent) => {
+      if (e.key !== "Escape" || e.defaultPrevented) return;
+      e.preventDefault();
+      router.push("/");
+    };
+    window.addEventListener("keydown", key, true);
+    return () => window.removeEventListener("keydown", key, true);
+  }, [selected, router]);
   const onHover = useCallback((at: LatLon | null, tile: Tile | null) => setHover(at && tile ? { at, tile } : null), []);
 
   return (
     <ExploreContext.Provider value={value}>
       <div className="grid min-h-0 flex-1 grid-cols-[minmax(0,1fr)_420px] max-md:grid-cols-1 max-md:grid-rows-[minmax(260px,42vh)_minmax(0,1fr)]">
         <section aria-label={`${WORLD_LABEL[world]} globe`} className="sky relative min-h-[260px] overflow-hidden">
-          <GlobeView world={world} onStatus={setStatus} onAltitude={setAltitude} onHover={onHover} onPick={onPick} pins={pins} activePin={activePin} focus={focus?.world === world ? focus : null} />
+          <GlobeView world={world} onStatus={setStatus} onAltitude={setAltitude} onHover={onHover} onPick={onPick} pins={pins} activePin={activePin} focus={focus?.world === world ? focus : null} selected={selected?.world === world ? selected : null} />
           <WorldSwitcher world={world} />
           {status.state === "loading" && (
             <p role="status" className="absolute bottom-3 left-3 rounded-md border border-line bg-panel px-2.5 py-1.5 text-xs text-text-2">

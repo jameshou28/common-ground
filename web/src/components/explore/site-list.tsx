@@ -1,23 +1,25 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { Skeleton } from "@/components/ui/skeleton";
 import { WORLD_LABEL } from "@/components/globe/config";
 import { describeError } from "@/lib/api";
 import { fmtLatLon } from "@/lib/format";
 import { useTargets } from "@/lib/queries";
-import { CHECK_SITES, RANK_LABEL } from "@/lib/sites";
+import { CHECK_SITES, RANK_LABEL, siteHref } from "@/lib/sites";
 import { useExplore } from "./explore-context";
 
-type Row = { id: string; name: string; sub: string; end: string; lat: number; lon: number };
+type Row = { id: string; name: string; sub: string; end: string; lat: number; lon: number; tileId?: string };
 
 // check sites on earth, the fixed targets on the moon and mars
 export function SiteList() {
-  const { world, activePin, setActivePin, flyTo } = useExplore();
+  const { world, activePin, setActivePin, flyTo, targetId } = useExplore();
+  const router = useRouter();
   const targets = useTargets();
   const earth = world === "earth";
 
   const rows: Row[] = earth
-    ? CHECK_SITES.map((s) => ({ id: s.id, name: s.name, sub: s.region, end: RANK_LABEL[s.rank], lat: s.lat, lon: s.lon }))
+    ? CHECK_SITES.map((s) => ({ id: s.id, name: s.name, sub: s.region, end: RANK_LABEL[s.rank], lat: s.lat, lon: s.lon, tileId: s.tileId }))
     : (targets.data ?? [])
         .filter((t) => t.world === world)
         .map((t) => ({ id: t.id, name: t.name, sub: fmtLatLon(t.lat, t.lon), end: t.dem_source, lat: t.lat, lon: t.lon }));
@@ -46,7 +48,7 @@ export function SiteList() {
           <li key={r.id}>
             <button
               type="button"
-              onClick={() => flyTo(r)}
+              onClick={() => (r.tileId ? router.push(siteHref(r.tileId, targetId)) : flyTo(r))}
               onPointerEnter={() => setActivePin(r.id)}
               onPointerLeave={() => setActivePin(null)}
               onFocus={() => setActivePin(r.id)}

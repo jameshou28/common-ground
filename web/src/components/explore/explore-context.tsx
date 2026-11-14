@@ -17,6 +17,10 @@ export type ExploreState = {
   activePin: string | null;
   setActivePin: (id: string | null) => void;
   flyTo: (p: { lat: number; lon: number }) => void;
+  // from ?target=, else the first target the api lists
+  targetId: string | null;
+  // the scored block when a site page is open
+  selected: Tile | null;
 };
 
 export const ExploreContext = createContext<ExploreState | null>(null);

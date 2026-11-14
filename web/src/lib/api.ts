@@ -86,6 +86,29 @@ export async function score(tileId: string, targetId: string, signal?: AbortSign
   return res.json();
 }
 
+// cache-first read straight from supabase, null when it is off, empty or failing
+export async function cachedScore(tileId: string, targetId: string, signal?: AbortSignal): Promise<BlockResult | null> {
+  if (!env.supabaseUrl || !env.supabaseAnonKey) return null;
+  const q = new URLSearchParams({
+    tile_id: `eq.${tileId}`,
+    target_id: `eq.${targetId}`,
+    model_version: `eq.${env.modelVersion}`,
+    select: "result",
+    limit: "1",
+  });
+  try {
+    const res = await fetch(`${env.supabaseUrl}/rest/v1/scores?${q}`, {
+      headers: { apikey: env.supabaseAnonKey, authorization: `Bearer ${env.supabaseAnonKey}` },
+      signal,
+    });
+    if (!res.ok) return null;
+    const rows = (await res.json()) as { result: BlockResult }[];
+    return rows[0] ? { ...rows[0].result, cached: true } : null;
+  } catch {
+    return null;
+  }
+}
+
 // relative in local dev, absolute r2 url in production
 export const gridUrl = (url: string) => (/^https?:/.test(url) ? url : `${env.gridBase}${url}`);
 

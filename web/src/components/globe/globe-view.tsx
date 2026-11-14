@@ -19,9 +19,11 @@ export type GlobeViewProps = {
   activePin: string | null;
   // a new key flies the camera to the place
   focus: (LatLon & { key: number }) | null;
+  // the scored block, outlined and flown to
+  selected: Tile | null;
 };
 
-export default function GlobeView({ world, onStatus, onAltitude, onHover, onPick, pins, activePin, focus }: GlobeViewProps) {
+export default function GlobeView({ world, onStatus, onAltitude, onHover, onPick, pins, activePin, focus, selected }: GlobeViewProps) {
   const el = useRef<HTMLDivElement>(null);
   const credits = useRef<HTMLDivElement>(null);
   const handle = useCesiumViewer({ world, el, credits, onStatus, onAltitude });
@@ -42,12 +44,16 @@ export default function GlobeView({ world, onStatus, onAltitude, onHover, onPick
   useEffect(() => {
     if (handle && focus) void flyToBlock(handle, focus);
   }, [handle, focus]);
+  useEffect(() => {
+    if (handle && selected) void flyToBlock(handle, selected.center);
+  }, [handle, selected]);
 
   return (
     <>
       <div ref={el} className="globe" />
       <div ref={credits} className="globe-credits" />
       <HoverFootprint handle={handle} tile={tile} />
+      <HoverFootprint handle={handle} tile={selected} />
       <Pins handle={handle} pins={pins} active={activePin} />
     </>
   );

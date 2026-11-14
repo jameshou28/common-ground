@@ -17,3 +17,6 @@ export type CheckSite = {
 export const CHECK_SITES: CheckSite[] = raw.map((s) => ({ ...s, tileId: tileFor("earth", s.lat, s.lon).id }));
 
 export const RANK_LABEL = ["", "Very bad", "Bad", "Medium", "Good", "Very good"] as const;
+
+// tile ids go in the path as they are, colons are legal there
+export const siteHref = (tileId: string, targetId?: string | null) => `/site/${tileId}${targetId ? `?target=${encodeURIComponent(targetId)}` : ""}`;

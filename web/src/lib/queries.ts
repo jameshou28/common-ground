@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { ApiError, fetchGrid, getTargets, score } from "./api";
+import { ApiError, cachedScore, fetchGrid, getTargets, score } from "./api";
 import { env } from "./env";
 
 // only transient failures are worth a second try
@@ -13,7 +13,8 @@ export function useTargets() {
 export function useScore(tileId: string | null, targetId: string | null) {
   return useQuery({
     queryKey: ["score", env.modelVersion, tileId, targetId],
-    queryFn: ({ signal }) => score(tileId!, targetId!, signal),
+    // a block scored before comes from supabase without waking the api
+    queryFn: async ({ signal }) => (await cachedScore(tileId!, targetId!, signal)) ?? score(tileId!, targetId!, signal),
     enabled: !!tileId && !!targetId,
     retry: retryOnce,
   });
