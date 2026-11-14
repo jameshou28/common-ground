@@ -1,0 +1,41 @@
+# OS / editor
+.DS_Store
+.idea/
+.vscode/
+
+# secrets (commit .env.example only)
+.env
+.env.*
+!.env.example
+
+# tooling output
+.playwright-mcp/
+.gstack/
+.claude/
+.impeccable/
+
+# web (Next.js, root dir = web/)
+node_modules/
+.next/
+out/
+coverage/
+*.tsbuildinfo
+next-env.d.ts
+.vercel
+web/public/cesium/
+
+# api + ml (Python)
+.venv/
+__pycache__/
+.pytest_cache/
+.ipynb_checkpoints/
+api/cache/
+ml/model.npz
+
+# data: large rasters and DEMs live on R2, never in git
+data/*
+!data/.gitkeep
+!data/README.md
+*.tif
+*.tiff
+*.npz
