@@ -5,6 +5,7 @@ import { useParams } from "next/navigation";
 import { useState } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+import { AddToCompare } from "@/components/compare/add-to-compare";
 import { useExplore } from "@/components/explore/explore-context";
 import { describeError } from "@/lib/api";
 import { useScore, useTargets } from "@/lib/queries";
@@ -113,6 +114,11 @@ export function SiteResult() {
           </>
         )}
       </div>
+      {earth && r && (
+        <div className="flex gap-2 border-t border-line p-3">
+          <AddToCompare tileId={selected.id} targetId={targetId} />
+        </div>
+      )}
     </aside>
   );
 }

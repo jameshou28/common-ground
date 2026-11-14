@@ -28,10 +28,22 @@ export function useScores(tileId: string | null, targetIds: string[]) {
   return useQueries({ queries: targetIds.map((id) => scoreQuery(tileId, id)) });
 }
 
+// several blocks against one target, for the compare page and the rank strip
+export function useTileScores(tileIds: string[], targetId: string | null) {
+  return useQueries({ queries: tileIds.map((id) => scoreQuery(id, targetId)) });
+}
+
 export function useGrid(url: string | null | undefined) {
   return useQuery({
     queryKey: ["grid", url],
     queryFn: ({ signal }) => fetchGrid(url!, signal),
     enabled: !!url,
+  });
+}
+
+// several grids at once, a missing url stays idle
+export function useGrids(urls: (string | null | undefined)[]) {
+  return useQueries({
+    queries: urls.map((url) => ({ queryKey: ["grid", url], queryFn: ({ signal }: { signal: AbortSignal }) => fetchGrid(url!, signal), enabled: !!url })),
   });
 }

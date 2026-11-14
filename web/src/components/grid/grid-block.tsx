@@ -1,7 +1,7 @@
 "use client";
 
 import { OrbitControls } from "@react-three/drei";
-import { Canvas } from "@react-three/fiber";
+import { Canvas, useThree } from "@react-three/fiber";
 import { useEffect, useMemo } from "react";
 import * as THREE from "three";
 import type { Grid } from "@/lib/grid";
@@ -80,6 +80,47 @@ function Wire({ grid, scale }: { grid: Grid; scale: number }) {
   );
 }
 
+// one camera position shared by several blocks, so rotating one rotates all
+export type CameraLink = { pos: THREE.Vector3 | null; subs: Set<() => void> };
+export const cameraLink = (): CameraLink => ({ pos: null, subs: new Set() });
+
+type Controls = { update: () => void; addEventListener: (t: "change", f: () => void) => void; removeEventListener: (t: "change", f: () => void) => void };
+
+function joinLink(link: CameraLink, camera: THREE.Camera, controls: Controls, invalidate: () => void) {
+  let applying = false;
+  const pull = () => {
+    if (!link.pos) return;
+    // the update below fires a change, which must not be sent back out
+    applying = true;
+    camera.position.copy(link.pos);
+    controls.update();
+    applying = false;
+    invalidate();
+  };
+  const push = () => {
+    if (applying) return;
+    link.pos = camera.position.clone();
+    link.subs.forEach((f) => f !== pull && f());
+  };
+  link.subs.add(pull);
+  controls.addEventListener("change", push);
+  pull();
+  return () => {
+    link.subs.delete(pull);
+    controls.removeEventListener("change", push);
+  };
+}
+
+function LinkedCamera({ link }: { link: CameraLink }) {
+  const camera = useThree((s) => s.camera);
+  const controls = useThree((s) => s.controls) as Controls | null;
+  const invalidate = useThree((s) => s.invalidate);
+  useEffect(() => {
+    if (controls) return joinLink(link, camera, controls, invalidate);
+  }, [link, camera, controls, invalidate]);
+  return null;
+}
+
 export type GridBlockProps = {
   grid: Grid;
   // vertical exaggeration
@@ -88,10 +129,12 @@ export type GridBlockProps = {
   // a second surface over this one, with its own height scale
   wire?: { grid: Grid; scale: number };
   label: string;
+  // share the camera with the other blocks on the page
+  link?: CameraLink;
 };
 
 // a 4 km block from a height grid: displaced mesh, walls, fixed light from the north-west, orbit camera
-export default function GridBlock({ grid, relief = 1, tone, wire, label }: GridBlockProps) {
+export default function GridBlock({ grid, relief = 1, tone, wire, label, link }: GridBlockProps) {
   const top = ((grid.hi - grid.lo) * relief) / 1000;
   return (
     <Canvas frameloop="demand" dpr={[1, 2]} camera={{ position: [-3.4, 4.4, 7.4], fov: 35 }} role="img" aria-label={label}>
@@ -99,7 +142,9 @@ export default function GridBlock({ grid, relief = 1, tone, wire, label }: GridB
       <directionalLight position={[-5, 4, -5]} intensity={2.4} />
       <Surface grid={grid} scale={relief} tone={tone} />
       {wire && <Wire grid={wire.grid} scale={wire.scale} />}
-      <OrbitControls makeDefault enablePan={false} target={[0, top / 2, 0]} minDistance={3} maxDistance={16} maxPolarAngle={Math.PI * 0.49} />
+      {/* linked blocks orbit one shared point, or the same camera would frame each differently */}
+      <OrbitControls makeDefault enablePan={false} target={[0, link ? 0.2 : top / 2, 0]} minDistance={3} maxDistance={16} maxPolarAngle={Math.PI * 0.49} />
+      {link && <LinkedCamera link={link} />}
     </Canvas>
   );
 }
