@@ -10,6 +10,7 @@ import { describeError } from "@/lib/api";
 import { useScore, useTargets } from "@/lib/queries";
 import { CHECK_SITES } from "@/lib/sites";
 import { CannotCopy } from "./cannot-copy";
+import { ChartsDialog } from "./charts-dialog";
 import { ContributionBars } from "./contribution-bars";
 import { FactsTable } from "./facts-table";
 import { ScoreGauge, type Mode } from "./score-gauge";
@@ -99,6 +100,7 @@ export function SiteResult() {
                 <ToggleGroupItem value="phys">Physics baseline</ToggleGroupItem>
               </ToggleGroup>
               <ScoreGauge result={r} mode={mode} />
+              {target && <ChartsDialog result={r} target={target} name={site?.name ?? "This block"} />}
             </Section>
             <Section title="Why this score" note={mode === "ml" ? "points toward the score" : "block against target"}>
               <ContributionBars result={r} mode={mode} />

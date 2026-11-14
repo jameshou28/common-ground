@@ -34,3 +34,16 @@ export function totals(r: Pick<BlockResult, "bias" | "contributions" | "score">)
   const gap = r.score > 0 && r.score < 100 ? total - logit(r.score) : 0;
   return { bars, total, gap };
 }
+
+const RADAR_KEYS = ["relief_m", "slope_med_deg", "slope_p90_deg", "rms_150m", "shadow"];
+export const RADAR_CAP = 1.5;
+
+// five measurements as multiples of the target's value, capped so one huge ratio does not flatten the rest
+export function radarRows(cs: Contribution[]) {
+  return RADAR_KEYS.flatMap((key) => {
+    const c = cs.find((x) => x.key === key);
+    if (!c || !(c.target_value > 0)) return [];
+    const ratio = c.value / c.target_value;
+    return [{ key, label: c.label, value: c.value, target: c.target_value, unit: c.unit, ratio, shown: Math.min(RADAR_CAP, ratio), ring: 1 }];
+  });
+}

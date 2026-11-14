@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type { Contribution } from "./api";
-import { groupContributions, logit, totals } from "./contributions";
+import { groupContributions, logit, radarRows, totals } from "./contributions";
 
 const c = (key: string, group: string, contribution: number): Contribution => ({ key, label: key, group, value: 1, target_value: 2, distance: 1, contribution, unit: "" });
 
@@ -31,5 +31,16 @@ describe("contributions", () => {
     expect(groups.map((g) => g.name)).toEqual(["shape", "slope", "roughness", "light"]);
     expect(groups[1].rows.map((r) => r.key)).toEqual(["slope_med_deg", "slope_p90_deg"]);
     expect(groups.reduce((s, g) => s + g.sum, 0)).toBeCloseTo(totals(meteor).bars, 9);
+  });
+
+  it("radar spokes are the block's values over the target's, capped at 1.5", () => {
+    const rows = radarRows([
+      { ...c("relief_m", "shape", 0), value: 138, target_value: 542 },
+      { ...c("rms_150m", "roughness", 0), value: 4, target_value: 1 },
+      { ...c("hypsometric", "shape", 0), value: 0.6, target_value: 0.7 },
+    ]);
+    expect(rows.map((r) => r.key)).toEqual(["relief_m", "rms_150m"]);
+    expect(rows[0].ratio).toBeCloseTo(138 / 542, 9);
+    expect(rows[1].shown).toBe(1.5);
   });
 });
