@@ -1,12 +1,14 @@
 -- run once in supabase: sql editor, new query, paste, run
-create table if not exists scores (
+-- the region model scores a tile against every moon and mars region at once, so target_id is gone
+-- old rows came from the stub model and are safe to drop
+drop table if exists scores;
+create table scores (
   tile_id text not null,
-  target_id text not null,
   model_version text not null,
   result jsonb not null,
   explanation jsonb,
   created_at timestamptz not null default now(),
-  primary key (tile_id, target_id, model_version)
+  primary key (tile_id, model_version)
 );
 alter table scores enable row level security;
 drop policy if exists "anon read" on scores;

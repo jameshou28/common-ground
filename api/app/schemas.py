@@ -1,19 +1,17 @@
-from typing import Literal
-
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 from analog_core.tiles import TILE_RE
 
 # the contract, web types get generated from /openapi.json
+# shapes follow victors click_to_score_contract.md, extra fields from newer models pass through
 TileId = Field(pattern=TILE_RE.pattern, examples=["earth:g:974:-2527"])
 
 
+class Loose(BaseModel):
+    model_config = ConfigDict(extra="allow")
+
+
 class ScoreRequest(BaseModel):
-    tile_id: str = TileId
-    target_id: str = Field(examples=["connecting_ridge"])
-
-
-class MatchRequest(BaseModel):
     tile_id: str = TileId
 
 
@@ -22,87 +20,63 @@ class LatLon(BaseModel):
     lon: float
 
 
-class Range(BaseModel):
-    low: float
-    high: float
+class Conditions(Loose):
+    score: float # 0 to 100, the earth side, same for both tabs
+    terms: dict[str, float] # logit points, <= 0 except bare
+    discount: float | None = None # v1.1, overall = landscape * discount
 
 
-class Contribution(BaseModel):
-    key: str
-    label: str
-    group: str
-    value: float
-    target_value: float
-    distance: float
-    percentile: float | None = None
-    contribution: float # logit units, bias + sum(contribution) == logit(score / 100)
-    unit: str
+class Site(Loose):
+    index: int # library row, GET /library/{index} draws it
+    name: str
+    tag: str
+    region: str
+    lat: float
+    lon: float
+    href: str
+    pair_score: float
+    contributions: dict[str, float] # logit points, keys change between models so dont hard-code them
+    cell_cost: list[list[float]] # 8 x 8, row 0 = north
+    partner: list[int] # matched library cell of each earth cell
 
 
-class Point(BaseModel):
-    id: str
-    x_m: float # east of the block centre
-    y_m: float # north of the block centre
-    effect: Literal["help", "hurt"]
-    landform: str
-    local: dict[str, float]
-    reason: str
+class ScaleScore(Loose):
+    score: float
 
 
-class BlockResult(BaseModel):
+class Region(Loose):
+    region: str # like moon:maria
+    title: str
+    score: float # landscape, 0 to 100
+    overall: float # landscape and conditions together
+    scales: dict[str, ScaleScore]
+    best: list[Site]
+
+
+class World(Loose):
+    regions: list[Region] # best first
+    best_region: str
+    landscape_score: float
+    overall: float
+    best_match: Site
+
+
+class ScoreResult(Loose):
     tile_id: str
-    world: Literal["earth", "moon", "mars"]
     center: LatLon
     size_m: int = 4000
-    dem_source: str
-    resolution_m: float
-    confidence: Literal["normal", "lower", "coarse"]
-    measured_share: float | None = None
-    target_id: str
     model_version: str
     cached: bool
-    score: float
-    score_range: Range
-    percentile: float | None = None
-    typicality: float | None = None
-    typicality_percentile: float | None = None
-    physics_score: float
-    bias: float
-    contributions: list[Contribution]
-    nearest_analog: dict | None = None # victors shape, comes with the real model
-    ood: bool = False
-    points: list[Point]
+    ood: bool # terrain unlike anything the model was fitted on
+    conditions: Conditions
+    env: dict[str, float | None] # worldcover shares 0 to 1, precip mm per year
+    block: dict[str, float]
+    worlds: dict[str, World] # moon and mars, the two tabs
     grid_url: str
 
 
-# MATCH: proposed shape from victors class design, not agreed yet
-
-class MatchedBlock(BaseModel):
-    name: str # nearest iau gazetteer name
-    world: Literal["moon", "mars"]
-    center: LatLon
-    score: float
-
-
-class ClassScore(BaseModel):
-    class_id: str # like crater_rim
-    label: str
-    score: float # 0 to 100, calibrated against the class's own members
-    best: list[MatchedBlock] = []
-
-
-class ContextScores(BaseModel):
-    world: Literal["moon", "mars"]
-    context: str # big region like basin
-    classes: list[ClassScore]
-
-
-class MatchResult(BaseModel):
-    tile_id: str
-    center: LatLon
+class LibraryBlock(BaseModel):
+    index: int
+    world: str
     model_version: str
-    cached: bool
-    contexts: list[ContextScores]
-    gate: dict[str, float] # earth side terms, vegetation water snow built-up
-    confidence: Literal["normal", "lower", "coarse"]
     grid_url: str
