@@ -4,24 +4,32 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { WORLD_LABEL } from "@/components/globe/config";
 import type { ScoreResult } from "@/lib/api";
+import { download, exportName, toCsv, toJson } from "@/lib/export";
 import { fmtLatLon, fmtSigned } from "@/lib/format";
 import { bars, conditionLabel, contributionLabel, type Bar, type Match } from "@/lib/regions";
 import type { Tile } from "@/lib/tiles";
 
 type Props = { tile: Tile; name: string; result: ScoreResult; match: Match; capture: () => string | null };
 
-// a one-page print of the block: image, facts, scores and bars
-export function FieldSheet(p: Props) {
+// field sheet to print or save as pdf, plus csv and json for research use
+export function ExportMenu(p: Props) {
   const [image, setImage] = useState<string | null>(null);
   const print = () => {
     setImage(p.capture());
     // let react put the image in before the print dialog freezes the page
     requestAnimationFrame(() => requestAnimationFrame(() => window.print()));
   };
+  const save = (ext: string, body: string, type: string) => download(exportName(p.result, p.match, ext), body, type);
   return (
     <>
-      <Button size="sm" variant="outline" onClick={print}>
-        Print field sheet
+      <Button size="sm" variant="outline" onClick={print} title="Print or save as PDF">
+        Field sheet
+      </Button>
+      <Button size="sm" variant="outline" onClick={() => save("csv", toCsv(p.result, p.match), "text/csv")}>
+        CSV
+      </Button>
+      <Button size="sm" variant="outline" onClick={() => save("json", toJson(p.result, p.match), "application/json")}>
+        JSON
       </Button>
       <Sheet {...p} image={image} />
     </>
@@ -79,6 +87,9 @@ function Sheet({ tile, name, result: r, match, image }: Props & { image: string 
       <h2 className="mt-3 border-b border-black font-semibold">Surface and climate</h2>
       <Rows rows={bars(r.conditions.terms, conditionLabel).rows} />
       <p className="mt-3 border-t border-black pt-1">Dark bars help the match, light bars hurt it. This covers terrain and surface only. No Earth site has lunar or Martian gravity, air or radiation.</p>
+      <p className="mt-1">
+        Tile {r.tile_id} · model {r.model_version} · printed {new Date().toISOString().slice(0, 10)}
+      </p>
     </article>
   );
 }
