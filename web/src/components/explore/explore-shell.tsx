@@ -6,7 +6,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { useTargets } from "@/lib/queries";
 import { CHECK_SITES, siteHref } from "@/lib/sites";
 import { fmtAltitude, fmtLatLon } from "@/lib/format";
-import { tileFor, tileFromId, WORLDS, type Tile, type World } from "@/lib/tiles";
+import { pointTile, tileFromId, WORLDS, type Tile, type World } from "@/lib/tiles";
 import { WORLD_LABEL, type GlobeStatus } from "@/components/globe/config";
 import type { Pin } from "@/components/globe/pins";
 import type { LatLon } from "@/components/globe/use-globe-controls";
@@ -42,6 +42,8 @@ export function ExploreShell({ children }: { children: React.ReactNode }) {
   const [hovered, setHover] = useState<{ at: LatLon; tile: Tile } | null>(null);
   // a hover left over from the previous world is not shown
   const hover = hovered?.tile.world === world ? hovered : null;
+  // with no pointer on the globe the readout stays on the open block
+  const readout = hover ?? (selected ? { at: selected.center, tile: selected } : null);
   const hoverTile = hover?.tile ?? null;
   const [activePin, setActivePin] = useState<string | null>(null);
   // tagged with its world so a rebuilt viewer does not replay an old flight
@@ -62,7 +64,7 @@ export function ExploreShell({ children }: { children: React.ReactNode }) {
       const at = pins.find((x) => x.id === pinId) ?? p;
       if (!at) return;
       // only earth is scored, the moon and mars pins are the fixed targets
-      if (world === "earth") router.push(siteHref(tileFor("earth", at.lat, at.lon).id, targetId));
+      if (world === "earth") router.push(siteHref(pointTile("earth", at.lat, at.lon).id, targetId));
       else if (pinId) flyTo(at);
     },
     [pins, flyTo, world, router, targetId],
@@ -110,8 +112,8 @@ export function ExploreShell({ children }: { children: React.ReactNode }) {
       </div>
       <StatusItems>
         <span>{WORLD_LABEL[world]}</span>
-        {hover && <span className="tabular-nums">{fmtLatLon(hover.at.lat, hover.at.lon)}</span>}
-        {hover && <span className="max-md:hidden">Block {hover.tile.id}</span>}
+        {readout && <span className="tabular-nums">{fmtLatLon(readout.at.lat, readout.at.lon)}</span>}
+        {readout && <span className="max-md:hidden">Block {readout.tile.id}</span>}
         <span className="tabular-nums">Altitude {fmtAltitude(altitude)}</span>
       </StatusItems>
     </ExploreContext.Provider>

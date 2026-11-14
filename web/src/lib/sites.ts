@@ -1,5 +1,5 @@
 import raw from "../../public/data/check_sites.json";
-import { tileFor } from "./tiles";
+import { pointTile } from "./tiles";
 
 // places whose answer was written down before scoring, worst to best
 export type CheckSite = {
@@ -14,7 +14,7 @@ export type CheckSite = {
   tileId: string;
 };
 
-export const CHECK_SITES: CheckSite[] = raw.map((s) => ({ ...s, tileId: tileFor("earth", s.lat, s.lon).id }));
+export const CHECK_SITES: CheckSite[] = raw.map((s) => ({ ...s, tileId: pointTile("earth", s.lat, s.lon).id }));
 
 export const RANK_LABEL = ["", "Very bad", "Bad", "Medium", "Good", "Very good"] as const;
 

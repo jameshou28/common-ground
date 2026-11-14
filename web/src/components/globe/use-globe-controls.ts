@@ -65,18 +65,21 @@ export function useGlobeControls(
     const scene = v.scene;
     globeControls(C, scene.screenSpaceCameraController);
 
+    // the terrain under a screen point, the same for hover and click so the outline shows what a click scores
+    const surfaceAt = (px: CesiumNS.Cartesian2): LatLon | null => {
+      const p = (scene.pickPositionSupported && scene.pickPosition(px)) || v.camera.pickEllipsoid(px, ellipsoid);
+      const c = p && ellipsoid.cartesianToCartographic(p);
+      return c ? { lat: C.Math.toDegrees(c.latitude), lon: C.Math.toDegrees(c.longitude) } : null;
+    };
     const mouse = new C.ScreenSpaceEventHandler(scene.canvas);
     mouse.setInputAction((m: { endPosition: CesiumNS.Cartesian2 }) => {
-      const p = v.camera.pickEllipsoid(m.endPosition, ellipsoid);
-      const c = p && ellipsoid.cartesianToCartographic(p);
-      cb.current(c ? { lat: C.Math.toDegrees(c.latitude), lon: C.Math.toDegrees(c.longitude) } : null);
+      cb.current(surfaceAt(m.endPosition));
     }, C.ScreenSpaceEventType.MOUSE_MOVE);
     mouse.setInputAction((m: { position: CesiumNS.Cartesian2 }) => {
       const id: unknown = scene.pick(m.position)?.id?.id;
       if (typeof id === "string" && id.startsWith(PIN_PREFIX)) return pick.current(null, id.slice(PIN_PREFIX.length));
-      const p = (scene.pickPositionSupported && scene.pickPosition(m.position)) || v.camera.pickEllipsoid(m.position, ellipsoid);
-      const c = p && ellipsoid.cartesianToCartographic(p);
-      if (c) pick.current({ lat: C.Math.toDegrees(c.latitude), lon: C.Math.toDegrees(c.longitude) }, null);
+      const at = surfaceAt(m.position);
+      if (at) pick.current(at, null);
     }, C.ScreenSpaceEventType.LEFT_CLICK);
     const leave = () => cb.current(null);
     scene.canvas.addEventListener("pointerleave", leave);

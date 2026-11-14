@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { tileFor, type Tile, type World } from "@/lib/tiles";
+import { pointTile, type Tile, type World } from "@/lib/tiles";
 import type { GlobeStatus } from "./config";
 import { HoverFootprint } from "./hover-footprint";
 import { Pins, type Pin } from "./pins";
@@ -32,8 +32,8 @@ export default function GlobeView({ world, onStatus, onAltitude, onHover, onPick
   useGlobeControls(
     handle,
     (p) => {
-      const next = p && tileFor(world, p.lat, p.lon);
-      // keep the same object while the pointer stays in one block
+      const next = p && pointTile(world, p.lat, p.lon);
+      // keep the same object while the pointer has not moved
       const same = next?.id === tile?.id;
       if (!same) setTile(next);
       onHover(p, same ? tile : next);
