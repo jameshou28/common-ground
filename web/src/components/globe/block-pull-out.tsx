@@ -1,20 +1,29 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import type { Point } from "@/lib/api";
 import type { Tile, World } from "@/lib/tiles";
+import { FeaturePoints } from "@/components/site/feature-points";
 import type { CesiumLib, CesiumNS } from "./cesium";
 import { FOOTPRINT_COLOR } from "./config";
 import type { GlobeHandle } from "./use-cesium-viewer";
 import { globeControls } from "./use-globe-controls";
 
-const WALL: Record<World, string> = { earth: "#6b5240", moon: "#5c5b5f", mars: "#8a4b31" };
+const WALL: Record<World, string> = {
+  earth: "#6b5240",
+  moon: "#5c5b5f",
+  mars: "#8a4b31",
+};
 // wall points per block edge
 const EDGE_SAMPLES = 48;
 
 type Lifted = { ring: CesiumNS.Cartesian3[]; heights: number[] };
 
 // the camera is locked to the block here, any drag orbits it
-function blockControls(C: CesiumLib, ctl: CesiumNS.ScreenSpaceCameraController) {
+function blockControls(
+  C: CesiumLib,
+  ctl: CesiumNS.ScreenSpaceCameraController,
+) {
   const T = C.CameraEventType;
   ctl.zoomEventTypes = [T.WHEEL, T.PINCH];
   ctl.rotateEventTypes = [T.LEFT_DRAG, T.RIGHT_DRAG, T.MIDDLE_DRAG];
@@ -69,7 +78,15 @@ function exaggerate(scene: CesiumNS.Scene, ex: number) {
 function aim({ C, v, ellipsoid }: GlobeHandle, tile: Tile, height: number) {
   const cam = v.camera;
   const range = C.Cartesian3.magnitude(cam.position);
-  cam.lookAt(C.Cartesian3.fromDegrees(tile.center.lon, tile.center.lat, height, ellipsoid), new C.HeadingPitchRange(cam.heading, cam.pitch, range));
+  cam.lookAt(
+    C.Cartesian3.fromDegrees(
+      tile.center.lon,
+      tile.center.lat,
+      height,
+      ellipsoid,
+    ),
+    new C.HeadingPitchRange(cam.heading, cam.pitch, range),
+  );
 }
 
 // wall top and bottom heights at this relief, 3d tiles samples come back already exaggerated
@@ -81,7 +98,11 @@ function wallHeights(heights: number[], ex: number) {
 }
 
 // fly in, then crop the planet to the block and lock the camera to it, returns the undo
-function liftBlock(handle: GlobeHandle, tile: Tile, onLifted: (l: Lifted | null) => void): () => void {
+function liftBlock(
+  handle: GlobeHandle,
+  tile: Tile,
+  onLifted: (l: Lifted | null) => void,
+): () => void {
   const { C, v, ellipsoid, tileset, motion, inBlock } = handle;
   const scene = v.scene;
   let dead = false;
@@ -89,7 +110,9 @@ function liftBlock(handle: GlobeHandle, tile: Tile, onLifted: (l: Lifted | null)
   motion.current = null;
 
   // densify the edges in cartesian space so polar blocks do not wrap around the pole
-  const corners = tile.corners.map(([lon, lat]) => C.Cartesian3.fromDegrees(lon, lat, 0, ellipsoid));
+  const corners = tile.corners.map(([lon, lat]) =>
+    C.Cartesian3.fromDegrees(lon, lat, 0, ellipsoid),
+  );
   const ring: CesiumNS.Cartesian3[] = [];
   for (let k = 0; k < corners.length; k++) {
     const a = corners[k];
@@ -109,11 +132,17 @@ function liftBlock(handle: GlobeHandle, tile: Tile, onLifted: (l: Lifted | null)
   (async () => {
     // sample wall heights before cropping, just inside the edge so they land on terrain
     const centroid = C.BoundingSphere.fromPoints(ring).center;
-    const cartos = ring.map((p) => ellipsoid.cartesianToCartographic(C.Cartesian3.lerp(p, centroid, 0.005, new C.Cartesian3())));
+    const cartos = ring.map((p) =>
+      ellipsoid.cartesianToCartographic(
+        C.Cartesian3.lerp(p, centroid, 0.005, new C.Cartesian3()),
+      ),
+    );
     let raw: (number | undefined)[] = cartos.map(() => undefined);
     try {
       await handle.terrainReady;
-      const s = scene.globe ? await C.sampleTerrainMostDetailed(v.terrainProvider, cartos) : await scene.sampleHeightMostDetailed(cartos);
+      const s = scene.globe
+        ? await C.sampleTerrainMostDetailed(v.terrainProvider, cartos)
+        : await scene.sampleHeightMostDetailed(cartos);
       raw = s.map((c) => c?.height);
     } catch {
       // flat-topped walls if sampling fails
@@ -125,10 +154,19 @@ function liftBlock(handle: GlobeHandle, tile: Tile, onLifted: (l: Lifted | null)
     const mid = C.BoundingSphere.fromPoints(
       ring.map((p) => {
         const c = ellipsoid.cartesianToCartographic(p);
-        return C.Cartesian3.fromRadians(c.longitude, c.latitude, (lo + hi) / 2, ellipsoid);
+        return C.Cartesian3.fromRadians(
+          c.longitude,
+          c.latitude,
+          (lo + hi) / 2,
+          ellipsoid,
+        );
       }),
     );
-    const view = new C.HeadingPitchRange(C.Math.toRadians(25), C.Math.toRadians(-28), 9_000 + (hi - lo) * 1.5);
+    const view = new C.HeadingPitchRange(
+      C.Math.toRadians(25),
+      C.Math.toRadians(-28),
+      9_000 + (hi - lo) * 1.5,
+    );
 
     v.camera.flyToBoundingSphere(mid, {
       offset: view,
@@ -145,22 +183,45 @@ function liftBlock(handle: GlobeHandle, tile: Tile, onLifted: (l: Lifted | null)
           // polygon clipping on the globe crashes cesium 1.147, the limit rectangle does not
           const lons = tile.corners.map(([lon]) => C.Math.toRadians(lon));
           const lats = tile.corners.map(([, lat]) => C.Math.toRadians(lat));
-          scene.globe.cartographicLimitRectangle = new C.Rectangle(Math.min(...lons), Math.min(...lats), Math.max(...lons), Math.max(...lats));
+          scene.globe.cartographicLimitRectangle = new C.Rectangle(
+            Math.min(...lons),
+            Math.min(...lats),
+            Math.max(...lons),
+            Math.max(...lats),
+          );
         } else if (tileset) {
           // four planes through each edge and the radial direction, exact at the poles where polygons smear
           const up = C.Cartesian3.normalize(centroid, new C.Cartesian3());
-          tileset.clippingPlanes ??= new C.ClippingPlaneCollection({ unionClippingRegions: true });
+          tileset.clippingPlanes ??= new C.ClippingPlaneCollection({
+            unionClippingRegions: true,
+          });
           tileset.clippingPlanes.removeAll();
           corners.forEach((a, k) => {
             const b = corners[(k + 1) % corners.length];
-            const n = C.Cartesian3.cross(up, C.Cartesian3.subtract(b, a, new C.Cartesian3()), new C.Cartesian3());
+            const n = C.Cartesian3.cross(
+              up,
+              C.Cartesian3.subtract(b, a, new C.Cartesian3()),
+              new C.Cartesian3(),
+            );
             C.Cartesian3.normalize(n, n);
-            if (C.Cartesian3.dot(n, C.Cartesian3.subtract(centroid, a, new C.Cartesian3())) < 0) C.Cartesian3.negate(n, n);
-            tileset.clippingPlanes.add(new C.ClippingPlane(n, -C.Cartesian3.dot(n, a)));
+            if (
+              C.Cartesian3.dot(
+                n,
+                C.Cartesian3.subtract(centroid, a, new C.Cartesian3()),
+              ) < 0
+            )
+              C.Cartesian3.negate(n, n);
+            tileset.clippingPlanes.add(
+              new C.ClippingPlane(n, -C.Cartesian3.dot(n, a)),
+            );
           });
           // the planes are in world coordinates, undo the tileset's clipping origin (private in the typings)
           tileset.clippingPlanes.modelMatrix = C.Matrix4.inverse(
-            (tileset as unknown as { clippingPlanesOriginMatrix: CesiumNS.Matrix4 }).clippingPlanesOriginMatrix,
+            (
+              tileset as unknown as {
+                clippingPlanesOriginMatrix: CesiumNS.Matrix4;
+              }
+            ).clippingPlanesOriginMatrix,
             new C.Matrix4(),
           );
           tileset.clippingPlanes.enabled = true;
@@ -180,7 +241,8 @@ function liftBlock(handle: GlobeHandle, tile: Tile, onLifted: (l: Lifted | null)
     onLifted(null);
     if (v.isDestroyed()) return;
     v.camera.cancelFlight();
-    if (scene.globe) scene.globe.cartographicLimitRectangle = C.Rectangle.MAX_VALUE;
+    if (scene.globe)
+      scene.globe.cartographicLimitRectangle = C.Rectangle.MAX_VALUE;
     else if (tileset?.clippingPlanes) {
       tileset.clippingPlanes.enabled = false;
       tileset.clippingPlanes.removeAll();
@@ -197,7 +259,18 @@ function liftBlock(handle: GlobeHandle, tile: Tile, onLifted: (l: Lifted | null)
 }
 
 // lifts the 4 km block out of the planet: crop, strata walls, an orbiting camera, a scale bar and a north arrow
-export function BlockPullOut({ handle, tile, relief }: { handle: GlobeHandle | null; tile: Tile | null; relief: number }) {
+export function BlockPullOut({
+  handle,
+  tile,
+  relief,
+  points,
+}: {
+  handle: GlobeHandle | null;
+  tile: Tile | null;
+  relief: number;
+  // the scored cells, shown once the block is out
+  points: Point[];
+}) {
   const [lifted, setLifted] = useState<Lifted | null>(null);
   const bar = useRef<SVGPathElement>(null);
   const barText = useRef<SVGTextElement>(null);
@@ -227,15 +300,29 @@ export function BlockPullOut({ handle, tile, relief }: { handle: GlobeHandle | n
           positions: closed,
           maximumHeights: closedTops,
           minimumHeights: closed.map(() => base),
-          material: new C.ImageMaterialProperty({ image: strataTexture(WALL[world]), repeat: new C.Cartesian2(24, 1) }),
+          material: new C.ImageMaterialProperty({
+            image: strataTexture(WALL[world]),
+            repeat: new C.Cartesian2(24, 1),
+          }),
         },
       }),
-      v.entities.add({ polygon: { hierarchy: lifted.ring, height: base, material: C.Color.fromCssColorString("#0b0c0f") } }),
+      v.entities.add({
+        polygon: {
+          hierarchy: lifted.ring,
+          height: base,
+          material: C.Color.fromCssColorString("#0b0c0f"),
+        },
+      }),
       v.entities.add({
         polyline: {
           positions: closed.map((p, i) => {
             const c = ellipsoid.cartesianToCartographic(p);
-            return C.Cartesian3.fromRadians(c.longitude, c.latitude, closedTops[i] + 2, ellipsoid);
+            return C.Cartesian3.fromRadians(
+              c.longitude,
+              c.latitude,
+              closedTops[i] + 2,
+              ellipsoid,
+            );
           }),
           width: 2,
           material: C.Color.fromCssColorString(FOOTPRINT_COLOR),
@@ -245,7 +332,8 @@ export function BlockPullOut({ handle, tile, relief }: { handle: GlobeHandle | n
 
     // scale bar along the south edge and a north arrow off the north edge, placed on screen every frame
     const [sw, se, ne, nw] = tile.corners;
-    const at = (lon: number, lat: number, h: number) => C.Cartesian3.fromDegrees(lon, lat, h, ellipsoid);
+    const at = (lon: number, lat: number, h: number) =>
+      C.Cartesian3.fromDegrees(lon, lat, h, ellipsoid);
     const top = Math.max(...tops);
     const dLat = C.Math.toDegrees(700 / ellipsoid.maximumRadius);
     const world3 = [
@@ -254,20 +342,34 @@ export function BlockPullOut({ handle, tile, relief }: { handle: GlobeHandle | n
       at((nw[0] + ne[0]) / 2, nw[1], top),
       at((nw[0] + ne[0]) / 2, nw[1] + dLat, top),
     ];
-    const marks = [bar.current, barText.current, north.current, northText.current];
+    const marks = [
+      bar.current,
+      barText.current,
+      north.current,
+      northText.current,
+    ];
     const [barEl, barTextEl, northEl, northTextEl] = marks;
     const place = () => {
-      const [a, b, n0, n1] = world3.map((p) => C.SceneTransforms.worldToWindowCoordinates(scene, p));
+      const [a, b, n0, n1] = world3.map((p) =>
+        C.SceneTransforms.worldToWindowCoordinates(scene, p),
+      );
       const ok = a && b && n0 && n1;
-      for (const el of marks) el?.setAttribute("visibility", ok ? "visible" : "hidden");
+      for (const el of marks)
+        el?.setAttribute("visibility", ok ? "visible" : "hidden");
       if (!ok) return;
-      barEl?.setAttribute("d", `M${a.x} ${a.y + 14}L${b.x} ${b.y + 14}M${a.x} ${a.y + 8}v12M${b.x} ${b.y + 8}v12`);
+      barEl?.setAttribute(
+        "d",
+        `M${a.x} ${a.y + 14}L${b.x} ${b.y + 14}M${a.x} ${a.y + 8}v12M${b.x} ${b.y + 8}v12`,
+      );
       barTextEl?.setAttribute("x", String((a.x + b.x) / 2));
       barTextEl?.setAttribute("y", String((a.y + b.y) / 2 + 32));
       const [dx, dy] = [n1.x - n0.x, n1.y - n0.y];
       const len = Math.hypot(dx, dy) || 1;
       const [ux, uy] = [dx / len, dy / len];
-      northEl?.setAttribute("d", `M${n0.x} ${n0.y}L${n1.x} ${n1.y}M${n1.x - ux * 9 - uy * 5} ${n1.y - uy * 9 + ux * 5}L${n1.x} ${n1.y}L${n1.x - ux * 9 + uy * 5} ${n1.y - uy * 9 - ux * 5}`);
+      northEl?.setAttribute(
+        "d",
+        `M${n0.x} ${n0.y}L${n1.x} ${n1.y}M${n1.x - ux * 9 - uy * 5} ${n1.y - uy * 9 + ux * 5}L${n1.x} ${n1.y}L${n1.x - ux * 9 + uy * 5} ${n1.y - uy * 9 - ux * 5}`,
+      );
       northTextEl?.setAttribute("x", String(n1.x + ux * 12));
       northTextEl?.setAttribute("y", String(n1.y + uy * 12 + 4));
     };
@@ -284,15 +386,38 @@ export function BlockPullOut({ handle, tile, relief }: { handle: GlobeHandle | n
   }, [handle, lifted, tile, relief]);
 
   return (
-    <svg aria-hidden className="pointer-events-none absolute inset-0 size-full fill-none stroke-white/85 stroke-[1.5] text-xs">
-      <path ref={bar} visibility="hidden" />
-      <path ref={north} visibility="hidden" />
-      <text ref={barText} visibility="hidden" textAnchor="middle" className="fill-white stroke-none">
-        4.0 km
-      </text>
-      <text ref={northText} visibility="hidden" textAnchor="middle" className="fill-white stroke-none">
-        N
-      </text>
-    </svg>
+    <>
+      {handle && tile && lifted && (
+        <FeaturePoints
+          handle={handle}
+          tile={tile}
+          points={points}
+          relief={relief}
+        />
+      )}
+      <svg
+        aria-hidden
+        className="pointer-events-none absolute inset-0 size-full fill-none stroke-white/85 stroke-[1.5] text-xs"
+      >
+        <path ref={bar} visibility="hidden" />
+        <path ref={north} visibility="hidden" />
+        <text
+          ref={barText}
+          visibility="hidden"
+          textAnchor="middle"
+          className="fill-white stroke-none"
+        >
+          4.0 km
+        </text>
+        <text
+          ref={northText}
+          visibility="hidden"
+          textAnchor="middle"
+          className="fill-white stroke-none"
+        >
+          N
+        </text>
+      </svg>
+    </>
   );
 }

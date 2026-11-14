@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import type { Point } from "@/lib/api";
 import { pointTile, type Tile, type World } from "@/lib/tiles";
 import { BlockPullOut } from "./block-pull-out";
 import type { GlobeStatus } from "./config";
@@ -24,12 +25,14 @@ export type GlobeViewProps = {
   selected: Tile | null;
   // vertical exaggeration of the pulled-out block, earth only
   relief: number;
+  // feature points of the scored block
+  points: Point[];
 };
 
 // pins would float in empty space around a pulled-out block
 const NO_PINS: Pin[] = [];
 
-export default function GlobeView({ world, onStatus, onAltitude, onHover, onPick, pins, activePin, focus, selected, relief }: GlobeViewProps) {
+export default function GlobeView({ world, onStatus, onAltitude, onHover, onPick, pins, activePin, focus, selected, relief, points }: GlobeViewProps) {
   const el = useRef<HTMLDivElement>(null);
   const credits = useRef<HTMLDivElement>(null);
   const handle = useCesiumViewer({ world, el, credits, onStatus, onAltitude });
@@ -57,7 +60,7 @@ export default function GlobeView({ world, onStatus, onAltitude, onHover, onPick
       <div ref={credits} className="globe-credits" />
       <HoverFootprint handle={handle} tile={selected ? null : tile} />
       <Pins handle={handle} pins={selected ? NO_PINS : pins} active={activePin} />
-      <BlockPullOut handle={handle} tile={selected} relief={relief} />
+      <BlockPullOut handle={handle} tile={selected} relief={relief} points={points} />
     </>
   );
 }

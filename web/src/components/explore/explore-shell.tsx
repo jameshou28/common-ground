@@ -4,7 +4,8 @@ import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { useTargets } from "@/lib/queries";
+import type { Point } from "@/lib/api";
+import { useScore, useTargets } from "@/lib/queries";
 import { CHECK_SITES, siteHref } from "@/lib/sites";
 import { fmtAltitude, fmtLatLon } from "@/lib/format";
 import { pointTile, tileFromId, WORLDS, type Tile, type World } from "@/lib/tiles";
@@ -21,6 +22,8 @@ import { ExploreContext } from "./explore-context";
 const GlobeView = dynamic(() => import("@/components/globe/globe-view"), { ssr: false });
 
 const CHECK_PINS: Pin[] = CHECK_SITES.map((s) => ({ id: s.id, name: s.name, lat: s.lat, lon: s.lon, kind: "check" }));
+
+const NO_POINTS: Point[] = [];
 
 function parseTile(id: string | undefined): Tile | null {
   try {
@@ -54,6 +57,8 @@ export function ExploreShell({ children }: { children: React.ReactNode }) {
   const flyTo = useCallback((p: LatLon) => setFocus((f) => ({ lat: p.lat, lon: p.lon, world, key: (f?.key ?? 0) + 1 })), [world]);
   const targets = useTargets().data;
   const targetId = search.get("target") ?? targets?.[0]?.id ?? null;
+  // the same cached result the panel shows
+  const points = useScore(selected?.world === "earth" ? selected.id : null, targetId).data?.points ?? NO_POINTS;
   const pins = useMemo<Pin[]>(
     () => (world === "earth" ? CHECK_PINS : (targets ?? []).filter((t) => t.world === world).map((t) => ({ id: t.id, name: t.name, lat: t.lat, lon: t.lon, kind: "target" }))),
     [world, targets],
@@ -97,7 +102,7 @@ export function ExploreShell({ children }: { children: React.ReactNode }) {
       >
         {selected && <TargetList />}
         <section aria-label={`${WORLD_LABEL[world]} globe`} className="sky relative min-h-[260px] overflow-hidden">
-          <GlobeView world={world} onStatus={setStatus} onAltitude={setAltitude} onHover={onHover} onPick={onPick} pins={pins} activePin={activePin} focus={focus?.world === world ? focus : null} selected={selected?.world === world ? selected : null} relief={relief} />
+          <GlobeView world={world} onStatus={setStatus} onAltitude={setAltitude} onHover={onHover} onPick={onPick} pins={pins} activePin={activePin} focus={focus?.world === world ? focus : null} selected={selected?.world === world ? selected : null} relief={relief} points={points} />
           <WorldSwitcher world={world} />
           {selected && (
             <div role="toolbar" aria-label="Block view" className="absolute top-3 right-3 z-10 flex items-center gap-2 rounded-md border border-line bg-panel py-1 pr-1 pl-2.5 text-xs">
