@@ -147,10 +147,10 @@ export function ExploreShell({ children }: { children: React.ReactNode }) {
     (p: LatLon | null, pinId: string | null) => {
       const at = pins.find((x) => x.id === pinId) ?? p;
       if (!at) return;
-      // only earth is scored, the moon and mars pins are featured sites
+      // only earth is scored, on the moon and mars a click flies there
       if (world === "earth")
         router.push(siteHref(pointTile("earth", at.lat, at.lon).id));
-      else if (pinId) flyTo(at);
+      else flyTo(at);
     },
     [pins, flyTo, world, router],
   );
