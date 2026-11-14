@@ -3,7 +3,7 @@ import math
 import numpy as np
 import pytest
 
-from analog_core import grid, scorer
+from analog_core import dem, grid, scorer
 from analog_core.dem import WINDOW_PX, Window, center, local_xy
 from analog_core.features import features, slope_deg
 from analog_core.tiles import TILE_RE, tile_center, tile_id
@@ -72,3 +72,10 @@ def test_target_scores_itself_at_the_bias(monkeypatch):
         monkeypatch.setattr(scorer, "features", lambda *a, tgt=tgt, **k: tgt["features"])
         r = scorer.score_window(hill_window(), tid)
         assert r["score"] == pytest.approx(100 / (1 + math.exp(-scorer.BIAS)))
+
+
+def test_ocean_needs_no_request(monkeypatch):
+    monkeypatch.setattr(dem, "glo30_tiles", lambda: frozenset()) # nothing listed, all ocean
+    monkeypatch.setattr(dem, "_sample", lambda *a, **k: pytest.fail("made a request for ocean"))
+    with pytest.raises(dem.NoTerrain):
+        dem.read_window("earth", 0.0, -30.0)

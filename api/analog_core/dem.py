@@ -1,9 +1,10 @@
 import os
 from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass
+from functools import lru_cache
 from pathlib import Path
 
-# gdal settings, set before rasterio loads so range reads stay quick
+# gdal settings
 for _k, _v in {
     "GDAL_DISABLE_READDIR_ON_OPEN": "EMPTY_DIR",
     "CPL_VSIL_CURL_ALLOWED_EXTENSIONS": ".tif",
@@ -17,6 +18,7 @@ for _k, _v in {
 }.items():
     os.environ.setdefault(_k, _v)
 
+import httpx
 import numpy as np
 import rasterio
 from pyproj import CRS, Transformer
@@ -27,14 +29,18 @@ from scipy import ndimage
 from .tiles import RADIUS_M
 
 RES_M = 31.25
-WINDOW_PX = 256 # 8 km, the 4 km block plus 2 km margin for shadows
+WINDOW_PX = 256 # 8 km (4 km block + 2 km margin for shadows)
 BLOCK_PX = 128
 GLO30 = "https://copernicus-dem-30m.s3.amazonaws.com"
 CACHE = Path(os.environ.get("CACHE_DIR", Path(__file__).resolve().parents[1] / "cache"))
 
 
 class NoTerrain(Exception):
-    pass # ocean or mostly water
+    pass # ocean/mostly water
+
+
+class UpstreamError(Exception):
+    pass # a tile that should exist could not be read
 
 
 @dataclass
@@ -58,6 +64,16 @@ def local_xy(n: int = WINDOW_PX, res: float = RES_M):
     # x east, y north of the window centre in metres
     c = (np.arange(n) - (n - 1) / 2) * res
     return np.meshgrid(c, -c)
+
+
+@lru_cache(1)
+def glo30_tiles() -> frozenset[str]:
+    # every tile glo30 has, a tile not in here is ocean so we skip the request
+    path = CACHE / "glo30_tileList.txt"
+    if not path.exists():
+        CACHE.mkdir(parents=True, exist_ok=True)
+        path.write_bytes(httpx.get(f"{GLO30}/tileList.txt", timeout=30).raise_for_status().content)
+    return frozenset(s.strip() for s in path.read_text().splitlines() if s.strip())
 
 
 def glo30_name(lat_floor: int, lon_floor: int) -> str:
@@ -114,22 +130,26 @@ def read_window(world: str, lat: float, lon: float, src: str | None = None,
         lon_g, lat_g = Transformer.from_crs(aeqd, geo, always_xy=True).transform(X, Y)
         lon_g = (lon_g + 180.0) % 360.0 - 180.0
         lat_f, lon_f = np.floor(lat_g).astype(int), np.floor(lon_g).astype(int)
-        wanted = list({(int(a), int(b)) for a, b in zip(lat_f.ravel(), lon_f.ravel())})
+        have = glo30_tiles()
+        wanted = [(la, lo) for la, lo in {(int(a), int(b)) for a, b in zip(lat_f.ravel(), lon_f.ravel())}
+                  if glo30_name(la, lo) in have]
+        if not wanted:
+            raise NoTerrain("no GLO-30 tile here (ocean)")
         dem = np.full(X.shape, np.nan, np.float32)
 
         def one(tile):
             la, lo = tile
             name = glo30_name(la, lo)
             sel = (lat_f == la) & (lon_f == lo)
-            try:
-                return sel, _sample(f"/vsicurl/{GLO30}/{name}/{name}.tif", lon_g[sel], lat_g[sel], res)[0]
-            except RasterioIOError:
-                return sel, np.full(int(sel.sum()), np.nan, np.float32) # no tile, so ocean
+            return sel, _sample(f"/vsicurl/{GLO30}/{name}/{name}.tif", lon_g[sel], lat_g[sel], res)[0]
 
-        # one range read per tile, in parallel
-        with ThreadPoolExecutor(len(wanted)) as ex:
-            for sel, part in ex.map(one, wanted):
-                dem[sel] = part
+        try:
+            # one range read per tile, in parallel
+            with ThreadPoolExecutor(len(wanted)) as ex:
+                for sel, part in ex.map(one, wanted):
+                    dem[sel] = part
+        except RasterioIOError as e:
+            raise UpstreamError(str(e)[:200]) from e
         native, source = 30.0, "Copernicus GLO-30"
 
     blk = center(dem)
