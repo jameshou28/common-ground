@@ -74,7 +74,7 @@ function Sheet({ tile, name, result: r, match, image }: Props & { image: string 
     <article className="field-sheet hidden text-[11px] leading-snug text-black">
       <header className="flex items-baseline justify-between border-b-2 border-black pb-1">
         <h1 className="text-lg font-semibold">{name}</h1>
-        <span>Analog Explorer field sheet · model {r.model_version}</span>
+        <span>Common Ground field sheet · model {r.model_version}</span>
       </header>
       {/* a data url from the canvas, next/image has nothing to optimise */}
       {/* eslint-disable-next-line @next/next/no-img-element */}
