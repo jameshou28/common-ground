@@ -22,8 +22,8 @@ export function StatusItems({ children }: { children: React.ReactNode }) {
 export function StatusBar() {
   return (
     <footer className="flex h-[26px] shrink-0 items-center gap-4 border-t border-line bg-panel px-3.5 text-xs text-text-2">
-      <div id={STATUS_SLOT} className="flex min-w-0 items-center gap-4 overflow-hidden whitespace-nowrap" />
-      <span className="ml-auto whitespace-nowrap">Model {env.modelVersion}</span>
+      <div id={STATUS_SLOT} className="flex min-w-0 items-center empty:hidden gap-4 overflow-hidden whitespace-nowrap" />
+      <span className="ml-auto whitespace-nowrap max-md:hidden">Model {env.modelVersion}</span>
       <LiveScoring />
     </footer>
   );

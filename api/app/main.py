@@ -7,7 +7,7 @@ import time
 from contextlib import asynccontextmanager
 from pathlib import Path
 
-from fastapi import FastAPI, Response
+from fastapi import BackgroundTasks, FastAPI, Response
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
@@ -89,7 +89,7 @@ def targets():
 
 
 @app.post("/score", response_model=ScoreResult, responses={422: {}, 502: {}, 503: {}})
-def score(req: ScoreRequest, response: Response): # plain def so fastapi runs it in the thread pool
+def score(req: ScoreRequest, response: Response, background: BackgroundTasks): # plain def so fastapi runs it in the thread pool
     response.headers["Cache-Control"] = "no-store"
     try:
         world, lat, lon = tile_center(req.tile_id)
@@ -115,7 +115,12 @@ def score(req: ScoreRequest, response: Response): # plain def so fastapi runs it
     full = dict(result, tile_id=req.tile_id, center=dict(lat=lat, lon=lon), size_m=4000, cached=False,
                 grid_url=store.put_grid(req.tile_id, grid.encode(block)))
     full = ScoreResult(**full).model_dump()
-    store.put_result(req.tile_id, version, full)
+    # the supabase write (about 180 kb) runs after the response goes out, so the click doesn't wait on it.
+    # SCORE_SYNC_CACHE_WRITE=1 puts it back in line (the old behaviour)
+    if os.environ.get("SCORE_SYNC_CACHE_WRITE") == "1":
+        store.put_result(req.tile_id, version, full)
+    else:
+        background.add_task(store.put_result, req.tile_id, version, full)
     return full
 
 

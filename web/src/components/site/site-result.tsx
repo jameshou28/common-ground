@@ -66,7 +66,7 @@ export function SiteResult() {
 
   return (
     <aside aria-label="Result" className="flex min-h-0 flex-col border-l border-line bg-panel max-md:border-t max-md:border-l-0">
-      <div className="min-h-0 flex-1 overflow-y-auto">
+      <div className="min-h-0 flex-1 overflow-y-auto max-md:flex-none">
         <div className="border-b border-line p-4">
           <Link href="/" className="text-xs text-text-2 hover:text-text">
             ← Back to the globe

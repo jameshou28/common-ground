@@ -141,7 +141,7 @@ export function BestSites() {
   const info = open?.overall ? OVERALL_INFO : open?.tag ? FEATURE_INFO[open.tag] : open ? REGION_INFO[open.region] : undefined;
 
   return (
-    <main className="flex-1 overflow-y-auto p-6">
+    <main className="flex-1 overflow-y-auto p-6 max-md:p-4">
       <div className="mx-auto max-w-4xl">
         <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
           <h1 className="text-xl leading-tight font-semibold">Best sites</h1>
@@ -171,19 +171,19 @@ export function BestSites() {
             </span>
           </p>
         ) : (
-          <div className="mt-6 grid gap-6 md:grid-cols-[240px_minmax(0,1fr)]">
+          <div className="mt-6 grid grid-cols-[minmax(0,1fr)] gap-6 md:grid-cols-[240px_minmax(0,1fr)]">
             <div className="space-y-4">
               {groups.map((g) =>
                 g.lists.length ? (
                   <div key={g.name}>
                     <h2 className="mb-1 px-2 text-xs font-semibold text-text-2">{g.name}</h2>
-                    <ul aria-label={`${WORLD_LABEL[tab]} ${g.name.toLowerCase()}`} className="space-y-0.5">
+                    <ul aria-label={`${WORLD_LABEL[tab]} ${g.name.toLowerCase()}`} className="space-y-0.5 max-md:-mx-4 max-md:flex max-md:gap-1.5 max-md:space-y-0 max-md:overflow-x-auto max-md:px-4">
                       {g.lists.map((l) => (
                         <li key={l.key}>
                           <Link
                             href={`/best?tab=${tab}&list=${encodeURIComponent(l.key)}`}
                             aria-current={l === open ? "true" : undefined}
-                            className={`block rounded-md border-l-2 px-2 py-1.5 hover:bg-hover hover:no-underline ${l === open ? "border-brand bg-raised" : "border-transparent"}`}
+                            className={`block rounded-md border-l-2 px-2 py-1.5 hover:bg-hover hover:no-underline max-md:border max-md:whitespace-nowrap ${l === open ? "border-brand bg-raised" : "border-transparent max-md:border-line"}`}
                           >
                             {l.title}
                           </Link>
