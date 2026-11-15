@@ -243,3 +243,32 @@
     display: block !important;
   }
 }
+
+/* covers the globe while a block is scored */
+.score-loader {
+  position: absolute;
+  inset: 0;
+  z-index: 30;
+  display: grid;
+  place-content: center;
+  background: color-mix(in oklab, var(--space) 82%, transparent);
+  backdrop-filter: blur(6px);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.4s ease;
+}
+.score-loader[data-on] {
+  opacity: 1;
+  pointer-events: auto;
+}
+/* each photo wipes in from the bottom and settles from a slight zoom */
+.score-loader-photo {
+  animation: photo-in 0.32s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+@keyframes photo-in {
+  from { clip-path: inset(100% 0 0 0); transform: scale(1.08); }
+  to { clip-path: inset(0 0 0 0); transform: scale(1); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .score-loader-photo { animation: none; }
+}

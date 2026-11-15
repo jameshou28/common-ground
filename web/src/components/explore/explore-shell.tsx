@@ -24,6 +24,7 @@ import { Toggle } from "@/components/ui/toggle";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { MatchedBlock } from "@/components/site/matched-block";
 import { useMatch } from "@/components/site/use-match";
+import { ScoreLoader } from "@/components/site/score-loader";
 import { WireOverlay } from "@/components/site/wire-overlay";
 import { RegionList } from "@/components/site/region-list";
 import { ExploreContext } from "./explore-context";
@@ -291,6 +292,12 @@ export function ExploreShell({ children }: { children: React.ReactNode }) {
                   {status.message ?? "Check your connection and reload."}
                 </span>
               </p>
+            )}
+            {selected?.world === "earth" && (
+              <ScoreLoader
+                active={score.fetchStatus === "fetching" && !result}
+                name={CHECK_SITES.find((c) => c.tileId === selected.id)?.name ?? "New place"}
+              />
             )}
             {selected && wire && match && matchedGrid && (
               <WireOverlay
