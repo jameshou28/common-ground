@@ -18,6 +18,8 @@ export function Pins({ handle, pins, active }: { handle: GlobeHandle | null; pin
     if (!handle || !pins.length) return;
     const { C, v, ellipsoid } = handle;
     const dark = C.Color.fromCssColorString("#0b0b0c");
+    // a phone-sized globe cannot fit every name, so check sites wait for a zoom there too
+    const narrow = window.matchMedia("(max-width: 767px)").matches;
     const made = pins.map((p) => {
       const on = p.id === active;
       const analog = p.kind === "mars" || p.kind === "moon";
@@ -44,7 +46,7 @@ export function Pins({ handle, pins, active }: { handle: GlobeHandle | null; pin
           verticalOrigin: C.VerticalOrigin.CENTER,
           pixelOffset: new C.Cartesian2(12, 0),
           // 61 analog names at once would bury the globe
-          distanceDisplayCondition: analog && !on ? new C.DistanceDisplayCondition(0, ANALOG_LABEL_BELOW_M) : undefined,
+          distanceDisplayCondition: (analog || narrow) && !on ? new C.DistanceDisplayCondition(0, ANALOG_LABEL_BELOW_M) : undefined,
           heightReference: C.HeightReference.CLAMP_TO_GROUND,
           disableDepthTestDistance: PIN_NO_DEPTH_M,
         },
