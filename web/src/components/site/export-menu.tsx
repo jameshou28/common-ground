@@ -32,7 +32,7 @@ export function ExportMenu(p: Props) {
     <>
       <DropdownMenu.Root>
         <DropdownMenu.Trigger asChild>
-          <Button size="sm" variant="outline" className="group ml-auto">
+          <Button size="sm" variant="outline" className="group shrink-0">
             Export <ChevronUpIcon className="transition-transform group-data-[state=closed]:rotate-180" />
           </Button>
         </DropdownMenu.Trigger>

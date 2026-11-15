@@ -71,9 +71,19 @@ export function SiteResult() {
           <Link href="/" className="text-xs text-text-2 hover:text-text">
             ← Back to the globe
           </Link>
-          <h1 className="mt-2 text-xl leading-tight font-semibold">{site?.name ?? place?.name ?? "Clicked block"}</h1>
-          {site && <p className="text-text-2">{site.region}</p>}
-          {place && <p className="text-text-2">{place.note}</p>}
+          <div className="mt-2 flex items-start gap-3">
+            <div className="min-w-0 flex-1">
+              <h1 className="text-lg leading-tight font-semibold">{site?.name ?? place?.name ?? "Clicked block"}</h1>
+              {site && <p className="mt-0.5 text-sm text-text-2">{site.region}</p>}
+              {place && <p className="mt-0.5 text-sm text-text-2">{place.note}</p>}
+            </div>
+            {earth && r && match && (
+              <>
+                <ExportMenu tile={selected} name={site?.name ?? "Clicked block"} result={r} match={match} capture={capture} />
+                <span className="sr-only">Showing the {WORLD_LABEL[match.tab]} result</span>
+              </>
+            )}
+          </div>
           {selected && <FactsTable tile={selected} match={match} />}
 
           {!selected && (
@@ -159,12 +169,6 @@ export function SiteResult() {
           </>
         )}
       </div>
-      {earth && r && match && (
-        <div className="flex justify-end gap-2 border-t border-line p-3">
-          <ExportMenu tile={selected} name={site?.name ?? "Clicked block"} result={r} match={match} capture={capture} />
-          <span className="sr-only">Showing the {WORLD_LABEL[match.tab]} result</span>
-        </div>
-      )}
     </aside>
   );
 }

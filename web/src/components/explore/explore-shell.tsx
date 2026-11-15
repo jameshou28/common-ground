@@ -192,8 +192,8 @@ export function ExploreShell({ children }: { children: React.ReactNode }) {
       <div
         className={
           scored
-            ? "grid min-h-0 flex-1 grid-cols-[220px_minmax(0,1fr)_420px] max-lg:grid-cols-[minmax(0,1fr)_380px] max-lg:grid-rows-[auto_minmax(0,1fr)] max-md:grid-cols-1 max-md:grid-rows-[auto_minmax(260px,42vh)_minmax(0,1fr)]"
-            : "grid min-h-0 flex-1 grid-cols-[minmax(0,1fr)_420px] max-md:grid-cols-1 max-md:grid-rows-[minmax(260px,42vh)_minmax(0,1fr)]"
+            ? "grid min-h-0 flex-1 grid-cols-[264px_minmax(0,1fr)_360px] max-lg:grid-cols-[minmax(0,1fr)_340px] max-lg:grid-rows-[auto_minmax(0,1fr)] max-md:grid-cols-1 max-md:grid-rows-[auto_minmax(260px,42vh)_minmax(0,1fr)]"
+            : "grid min-h-0 flex-1 grid-cols-[minmax(0,1fr)_360px] max-md:grid-cols-1 max-md:grid-rows-[minmax(260px,42vh)_minmax(0,1fr)]"
         }
       >
         {scored && <RegionList />}
