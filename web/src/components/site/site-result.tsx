@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import { Skeleton } from "@/components/ui/skeleton";
 import { AddToCompare } from "@/components/compare/add-to-compare";
 import { useExplore } from "@/components/explore/explore-context";
 import { WORLD_LABEL } from "@/components/globe/config";
@@ -16,6 +15,7 @@ import { ContributionBars } from "./contribution-bars";
 import { FactsTable } from "./facts-table";
 import { ExportMenu } from "./export-menu";
 import { ScoreGauge } from "./score-gauge";
+import { ScoreLoader } from "./score-loader";
 import { Section } from "./section";
 import { useMatch } from "./use-match";
 
@@ -75,12 +75,8 @@ export function SiteResult() {
         </div>
 
         {earth && q.isPending && (
-          <div role="status" aria-live="polite" className="p-4">
-            <b className="block font-semibold">Scoring this block</b>
-            <span className="text-text-2">A new place takes a few seconds. A place scored before opens straight away.</span>
-            <Skeleton className="mt-4 h-9 w-2/3" />
-            <Skeleton className="mt-2 h-4" />
-            <Skeleton className="mt-2 h-4 w-1/2" />
+          <div className="p-4">
+            <ScoreLoader name={site?.name ?? "New place"} />
           </div>
         )}
 
