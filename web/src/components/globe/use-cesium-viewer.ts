@@ -16,6 +16,9 @@ import {
   type GlobeStatus,
 } from "./config";
 
+// module level, so only the first globe of a page visit flies in
+let flownIn = false;
+
 export type Motion = "spin" | "orbit" | null;
 
 export type GlobeHandle = {
@@ -97,7 +100,6 @@ export function useCesiumViewer({ world, el, credits, onStatus, onAltitude }: Op
         if (world === "earth") {
           const terrain = C.Terrain.fromWorldTerrain();
           terrain.errorEvent.addEventListener((e: Error) => cb.current.onStatus({ state: "error", message: e.message }));
-          terrain.readyEvent.addEventListener(() => cb.current.onStatus({ state: "ready" }));
           terrainReady = new Promise<void>((done) => {
             terrain.readyEvent.addEventListener(() => done());
             terrain.errorEvent.addEventListener(() => done());
@@ -126,7 +128,6 @@ export function useCesiumViewer({ world, el, credits, onStatus, onAltitude }: Op
           tileset = await C.Cesium3DTileset.fromIonAssetId(ION_ASSET[world]!);
           if (dead) return;
           v.scene.primitives.add(tileset);
-          cb.current.onStatus({ state: "ready" });
         }
       } catch (e) {
         cb.current.onStatus({ state: "error", message: e instanceof Error ? e.message : String(e) });
@@ -158,7 +159,30 @@ export function useCesiumViewer({ world, el, credits, onStatus, onAltitude }: Op
       };
 
       const s = START[world];
-      viewer.camera.setView({ destination: C.Cartesian3.fromDegrees(s.lon, s.lat, s.height, ellipsoid) });
+      // the first globe of the visit eases in from further out once its tiles are drawn
+      const flyIn = !flownIn;
+      flownIn = true;
+      viewer.camera.setView({ destination: C.Cartesian3.fromDegrees(s.lon, s.lat, s.height * (flyIn ? 3 : 1), ellipsoid) });
+      // ready once the first view is drawn, not when the provider answers; 8 s fallback for a stalled tile
+      let shown = false;
+      const show = () => {
+        if (shown || dead) return;
+        shown = true;
+        cb.current.onStatus({ state: "ready" });
+        if (flyIn) viewer.camera.flyTo({ destination: C.Cartesian3.fromDegrees(s.lon, s.lat, s.height, ellipsoid), duration: 1.4 });
+      };
+      setTimeout(show, 8000);
+      // moon and mars tilesets are huge and never settle quickly, show once the first coarse tile is drawn
+      if (tileset) {
+        const ts = tileset;
+        const first = () => {
+          ts.tileVisible.removeEventListener(first);
+          show();
+        };
+        ts.tileVisible.addEventListener(first);
+      } else viewer.scene.globe.tileLoadProgressEvent.addEventListener((n: number) => n === 0 && viewer.scene.globe.tilesLoaded && show());
+      // request render mode draws nothing until asked, and tiles only load on a draw
+      viewer.scene.requestRender();
 
       // relief light: a fixed low sun in the camera's local frame
       const sunLight = viewer.scene.light;
