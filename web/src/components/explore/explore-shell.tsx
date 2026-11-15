@@ -192,17 +192,17 @@ export function ExploreShell({ children }: { children: React.ReactNode }) {
       <div
         className={
           scored
-            ? "grid min-h-0 flex-1 grid-cols-[264px_minmax(0,1fr)_360px] max-lg:grid-cols-[minmax(0,1fr)_340px] max-lg:grid-rows-[auto_minmax(0,1fr)] max-md:grid-cols-1 max-md:grid-rows-[auto_minmax(260px,42vh)_minmax(0,1fr)]"
-            : "grid min-h-0 flex-1 grid-cols-[minmax(0,1fr)_360px] max-md:grid-cols-1 max-md:grid-rows-[minmax(260px,42vh)_minmax(0,1fr)]"
+            ? "grid min-h-0 flex-1 grid-cols-[264px_minmax(0,1fr)_360px] max-lg:grid-cols-[minmax(0,1fr)_340px] max-lg:grid-rows-[auto_minmax(0,1fr)] max-md:flex max-md:flex-col max-md:overflow-y-auto max-md:[&>*]:shrink-0"
+            : "grid min-h-0 flex-1 grid-cols-[minmax(0,1fr)_360px] max-md:grid-cols-1 max-md:grid-rows-[minmax(260px,1fr)_auto]"
         }
       >
         {scored && <RegionList />}
         <div
           className={
             scored && matchedGrid
-              ? "grid min-h-0 grid-rows-[minmax(0,3fr)_minmax(0,2fr)]"
+              ? "grid min-h-0 grid-rows-[minmax(0,3fr)_minmax(0,2fr)] max-md:h-[80svh]"
               : selected
-                ? "grid min-h-0"
+                ? "grid min-h-0 max-md:h-[50svh]"
                 : "contents"
           }
         >
@@ -233,7 +233,7 @@ export function ExploreShell({ children }: { children: React.ReactNode }) {
               <div
                 role="toolbar"
                 aria-label="Block view"
-                className="absolute top-3 right-3 z-30 flex items-center gap-2 rounded-md border border-line bg-panel py-1 pr-1 pl-2.5 text-xs"
+                className="absolute top-3 right-3 z-30 flex items-center gap-2 rounded-md border border-line bg-panel py-1 pr-1 pl-2.5 text-xs max-md:left-3 max-md:overflow-x-auto max-md:whitespace-nowrap max-md:[&>*]:shrink-0"
               >
                 {world === "earth" && (
                   <>
@@ -333,7 +333,7 @@ export function ExploreShell({ children }: { children: React.ReactNode }) {
         {readout && (
           <span className="max-md:hidden">Block {readout.tile.id}</span>
         )}
-        <span className="tabular-nums">Altitude {fmtAltitude(altitude)}</span>
+        <span className="tabular-nums max-sm:hidden">Altitude {fmtAltitude(altitude)}</span>
       </StatusItems>
     </ExploreContext.Provider>
   );

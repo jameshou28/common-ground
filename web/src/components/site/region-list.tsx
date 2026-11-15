@@ -28,7 +28,7 @@ export function RegionList() {
   const tileId = selected?.id ?? "";
 
   return (
-    <aside aria-labelledby="regions-h" className="flex min-h-0 flex-col overflow-y-auto border-r border-line bg-panel p-3 max-lg:col-span-full max-lg:border-r-0 max-lg:border-b">
+    <aside aria-labelledby="regions-h" className="flex min-h-0 flex-col overflow-y-auto border-r border-line bg-panel p-3 max-lg:col-span-full max-lg:border-r-0 max-lg:border-b max-md:order-last max-md:border-t">
       <h2 id="regions-h" className="sr-only">
         Moon and Mars regions
       </h2>
