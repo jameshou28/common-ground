@@ -10,6 +10,7 @@ import { cellPoints, type CellPoint } from "@/lib/regions";
 import { ApiError } from "@/lib/api";
 import { isLandCell } from "@/lib/land-mask";
 import { placeNear, placesOn } from "@/lib/places";
+import { EXAMPLES } from "@/lib/examples";
 import { CHECK_SITES, siteHref } from "@/lib/sites";
 import { fmtAltitude, fmtLatLon } from "@/lib/format";
 import {
@@ -41,7 +42,10 @@ const GlobeView = dynamic(() => import("@/components/globe/globe-view"), {
 const ANALOG_PINS: Pin[] = analogSites.map((s) => ({ id: `analog-${s.id}`, name: s.name, lat: s.lat, lon: s.lon, kind: s.world as "mars" | "moon" }));
 // the check sites float on the earth globe as named points, so the model can be checked by eye; no sidebar list
 const CHECK_PINS: Pin[] = CHECK_SITES.map((s) => ({ id: s.id, name: s.name, lat: s.lat, lon: s.lon, kind: "check" }));
-const EARTH_PINS = [...ANALOG_PINS, ...CHECK_PINS];
+// the front page's example sites float with the check sites (same ids where they overlap, so hovering a list row
+// lights its pin)
+const EXAMPLE_PINS: Pin[] = EXAMPLES.filter((e) => !CHECK_SITES.some((s) => s.id === e.id)).map((e) => ({ id: e.id, name: e.name, lat: e.lat, lon: e.lon, kind: "check" }));
+const EARTH_PINS = [...ANALOG_PINS, ...CHECK_PINS, ...EXAMPLE_PINS];
 
 const NO_POINTS: CellPoint[] = [];
 // a low sun for moon light, the library blocks carry no sun angle of their own
@@ -113,7 +117,9 @@ export function ExploreShell({ children }: { children: React.ReactNode }) {
   const [wire, setWire] = useState(true);
   // light both blocks with a sun just above the horizon, as at the lunar poles
   const [moon, setMoon] = useState(false);
+  // the matched moon block always gets the low lunar sun; the toggle lights the earth block the same way
   const moonSun = moon && match?.tab === "moon" ? MOON_SUN_DEG : null;
+  const matchSun = match?.tab === "moon" ? MOON_SUN_DEG : null;
   const captureSlot = useRef<(() => string | null) | null>(null);
   const capture = useCallback(() => captureSlot.current?.() ?? null, []);
   const pins = useMemo<Pin[]>(
@@ -317,7 +323,7 @@ export function ExploreShell({ children }: { children: React.ReactNode }) {
               blank={water}
               match={match}
               relief={world === "earth" ? relief : 1}
-              moonSun={moonSun}
+              moonSun={matchSun}
             />
           )}
         </div>

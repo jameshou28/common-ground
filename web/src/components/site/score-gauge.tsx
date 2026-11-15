@@ -1,7 +1,7 @@
 const pct = (v: number) => `${Math.min(100, Math.max(0, v))}%`;
 
 // a score on a 0 to 100 bar, with its terrain part marked on it. the shown score is sqrt(terrain x surface)
-export function ScoreGauge({ overall, terrain, surface, standIn, terrainNote }: { overall: number; terrain: number; surface: number; standIn: string; terrainNote: string }) {
+export function ScoreGauge({ overall, terrain, surface, standIn, terrainNote }: { overall: number; terrain: number; surface: number; standIn: React.ReactNode; terrainNote: string }) {
   const o = Math.round(overall);
   const t = Math.round(terrain);
   const s = Math.round(surface);

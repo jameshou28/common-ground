@@ -8,6 +8,7 @@ import { WORLD_LABEL } from "@/components/globe/config";
 import { ApiError, describeError } from "@/lib/api";
 import { env } from "@/lib/env";
 import { bars, conditionLabel, landformOf, landformPlural } from "@/lib/regions";
+import { nameNear } from "@/lib/names";
 import { placeNear } from "@/lib/places";
 import { isLandCell } from "@/lib/land-mask";
 import { useAlignedLibraryGrid, useGrid } from "@/lib/queries";
@@ -16,6 +17,7 @@ import { ChartsDialog } from "./charts-dialog";
 import { ContributionBars } from "./contribution-bars";
 import { FactsTable } from "./facts-table";
 import { ExportMenu } from "./export-menu";
+import { ExampleImage } from "./example-image";
 import { MatchReasons } from "./match-reasons";
 import { ScoreGauge } from "./score-gauge";
 import { ScoreLoader } from "./score-loader";
@@ -37,13 +39,15 @@ const WAIT_MS = 5000;
 // the right-hand panel for one scored block
 export function SiteResult() {
   const { tileId } = useParams<{ tileId: string }>();
-  const { selected, capture } = useExplore();
+  const { selected, capture, pins } = useExplore();
   const earth = selected?.world === "earth";
   const { q, match } = useMatch(selected);
   const site = CHECK_SITES.find((s) => s.tileId === selected?.id);
   // a moon or mars landmark opened from its pin
   const place = selected && !earth ? placeNear(selected.world, selected.center.lat, selected.center.lon) : undefined;
-  const name = site?.name ?? "This block";
+  // a check site, a moon/mars landmark, any pin on this globe, or a best-site pick: show its name instead of "Clicked block"
+  const named = selected && !site && !place ? nameNear(selected.world, selected.center, pins) : null;
+  const name = site?.name ?? place?.name ?? named?.name ?? "This block";
   const r = q.data;
   const surface = r ? bars(r.conditions.terms, conditionLabel) : null;
   // keep the loader up until the 3d side is ready too (the block's grid and the lined-up match), so the panel and the
@@ -73,13 +77,14 @@ export function SiteResult() {
           </Link>
           <div className="mt-2 flex items-start gap-3">
             <div className="min-w-0 flex-1">
-              <h1 className="text-lg leading-tight font-semibold">{site?.name ?? place?.name ?? "Clicked block"}</h1>
+              <h1 className="text-lg leading-tight font-semibold">{site?.name ?? place?.name ?? named?.name ?? "Clicked block"}</h1>
               {site && <p className="mt-0.5 text-sm text-text-2">{site.region}</p>}
               {place && <p className="mt-0.5 text-sm text-text-2">{place.note}</p>}
+              {named?.note && <p className="mt-0.5 text-sm text-text-2">{named.note}</p>}
             </div>
             {earth && r && match && (
               <>
-                <ExportMenu tile={selected} name={site?.name ?? "Clicked block"} result={r} match={match} capture={capture} />
+                <ExportMenu tile={selected} name={site?.name ?? named?.name ?? "Clicked block"} result={r} match={match} capture={capture} />
                 <span className="sr-only">Showing the {WORLD_LABEL[match.tab]} result</span>
               </>
             )}
@@ -122,29 +127,57 @@ export function SiteResult() {
 
         {loading && (
           <div className="p-4">
-            <ScoreLoader name={site?.name ?? "New place"} />
+            <ScoreLoader name={site?.name ?? named?.name ?? "New place"} />
           </div>
         )}
 
         {r && match && !loading && (
           <>
-            <Section title="Region score" note={match.region.region === match.world.best_region ? `best region: ${match.region.title}` : match.region.title}>
+            <Section
+              title="Region score"
+              note={
+                <>
+                  {match.region.region === match.world.best_region ? "best region: " : ""}
+                  <ExampleImage k={match.region.region}>{match.region.title}</ExampleImage>
+                </>
+              }
+            >
               <ScoreGauge
                 overall={regionOverall}
                 terrain={match.region.score}
                 surface={r.conditions.score}
-                standIn={`a ${WORLD_LABEL[match.tab]} stand-in`}
+                standIn={
+                  <>
+                    a <ExampleImage k={match.region.region}>{WORLD_LABEL[match.tab]}</ExampleImage> stand-in
+                  </>
+                }
                 terrainNote={`how the ground compares with ${match.region.title.toLowerCase()}`}
               />
             </Section>
-            <Section title="Feature score" note={landform ? `${landform.label.toLowerCase()}${landform.validated ? "" : ", not validated yet"}` : "none for this region"}>
+            <Section
+              title="Feature score"
+              note={
+                landform ? (
+                  <>
+                    <ExampleImage k={landform.tag}>{landform.label.toLowerCase()}</ExampleImage>
+                    {landform.validated ? "" : ", not validated yet"}
+                  </>
+                ) : (
+                  "none for this region"
+                )
+              }
+            >
               {landform ? (
                 <>
                   <ScoreGauge
                     overall={typeof landform.overall === "number" ? landform.overall : Math.sqrt(Math.max(landform.score, 0) * r.conditions.score)}
                     terrain={landform.score}
                     surface={r.conditions.score}
-                    standIn={`${/^[aeiou]/i.test(landform.label) ? "an" : "a"} ${landform.label.toLowerCase()} stand-in`}
+                    standIn={
+                      <>
+                        {/^[aeiou]/i.test(landform.label) ? "an" : "a"} <ExampleImage k={landform.tag}>{landform.label.toLowerCase()}</ExampleImage> stand-in
+                      </>
+                    }
                     terrainNote={`how the ground compares with the ${landformPlural(landform)} in ${match.region.title.toLowerCase()}`}
                   />
                   {landform.badge ? (

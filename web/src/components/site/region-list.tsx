@@ -7,6 +7,7 @@ import { WORLD_LABEL } from "@/components/globe/config";
 import { fmtLatLon } from "@/lib/format";
 import { TABS } from "@/lib/regions";
 import { siteHref } from "@/lib/sites";
+import { ExampleImage } from "./example-image";
 import { useMatch } from "./use-match";
 
 const link = "hover:no-underline";
@@ -73,7 +74,9 @@ export function RegionList() {
                     className={`${link} block rounded-lg px-3 py-2.5 ${on ? "" : "hover:bg-hover"}`}
                   >
                     <span className="flex items-center gap-2">
-                      <span className={`min-w-0 break-words ${on ? "font-semibold" : ""}`}>{g.title}</span>
+                      <span className={`min-w-0 break-words ${on ? "font-semibold" : ""}`}>
+                        <ExampleImage k={g.region}>{g.title}</ExampleImage>
+                      </span>
                       {best && <span className="rounded bg-warn/15 px-1.5 py-0.5 text-[11px] font-semibold text-warn">Best</span>}
                       <b className="ml-auto shrink-0 font-semibold">{Math.round(g.score)}</b>
                     </span>

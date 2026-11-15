@@ -103,11 +103,17 @@ export function FeaturePoints({ handle, tile, points, relief, matchName }: { han
               >
                 {i + 1}
               </button>
-              {on && <PointCard point={p} id={`point-${p.id}`} matchName={matchName} />}
+
             </div>
           );
         })}
       </div>
+      {/* the open point's card sits in a fixed corner, above the legend: tied to the point it bobbed as the block turned */}
+      {open && points.some((p) => p.id === open) && (
+        <div className="absolute bottom-14 left-3 z-20">
+          <PointCard point={points.find((p) => p.id === open)!} id={`point-${open}`} matchName={matchName} />
+        </div>
+      )}
       {ready && points.length > 0 && (
         <p className="absolute bottom-3 left-3 flex gap-3 rounded-md border border-line bg-panel px-2.5 py-1.5 text-xs text-text-2">
           <span className="flex items-center gap-1.5">

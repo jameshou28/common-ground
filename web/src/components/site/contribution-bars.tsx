@@ -40,7 +40,9 @@ export function BreakdownBars({ breakdown, context, total, note }: { breakdown: 
       <div className={`${line} mt-2 border-b border-line pb-1.5`}>
         <span>
           Starting point{" "}
-          <span className="text-xs text-text-2">{context ? `the score of a typical match to ${context.target}` : "a typical match"}</span>
+          <span className="text-xs text-text-2">
+            {breakdown.kind === "head" ? "ordinary land" : context ? `the score of a typical match to ${context.target}` : "a typical match"}
+          </span>
         </span>
         <span className="text-right text-xs">{breakdown.base.toFixed(1)}</span>
       </div>

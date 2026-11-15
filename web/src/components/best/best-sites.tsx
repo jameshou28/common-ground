@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { HoverCard } from "radix-ui";
 import { useSearchParams } from "next/navigation";
 import { WORLD_LABEL } from "@/components/globe/config";
 import { fmtLatLon } from "@/lib/format";
@@ -50,7 +51,6 @@ function SiteRow({ s, i, href, feature }: { s: Site; i: number; href: string; fe
   const facts = [
     s.surface != null && `surface ${Math.round(s.surface)}`,
     !feature && s.lead != null && s.lead > 0.5 && `${Math.round(s.lead)} ahead of the next region`,
-    s.known && s.known_site && `known analog: ${s.known_site}`,
   ].filter(Boolean);
   return (
     <li>
@@ -59,18 +59,52 @@ function SiteRow({ s, i, href, feature }: { s: Site; i: number; href: string; fe
         <span className="min-w-0 flex-1">
           <span className="block truncate">
             {s.name}
-            {s.known && <span className="ml-2 rounded-sm border border-line-2 px-1 text-[11px] text-text-2">known</span>}
+            {s.known && <KnownStar site={s.known_site} />}
           </span>
           <span className="block text-xs text-text-2">
             {fmtLatLon(s.lat, s.lon)}
             {facts.length > 0 && ` · ${facts.join(" · ")}`}
           </span>
         </span>
-        <b className="font-semibold" title={feature ? "Feature score" : "Terrain score"}>
+        <b className="font-semibold" title={feature ? "Feature score" : "Overall score"}>
           {Math.round(s.score)}
         </b>
       </Link>
     </li>
+  );
+}
+
+// a yellow star on picks next to a verified analog site, with a small info box on hover
+function KnownStar({ site }: { site?: string | null }) {
+  return (
+    <HoverCard.Root openDelay={200} closeDelay={80}>
+      <HoverCard.Trigger asChild>
+        <span tabIndex={0} aria-label="Known analog location" className="ml-2 inline-block cursor-help align-[-1px] text-[13px] leading-none text-yellow-400" onClick={(e) => e.preventDefault()}>
+          ★
+        </span>
+      </HoverCard.Trigger>
+      <HoverCard.Portal>
+        <HoverCard.Content
+          side="top"
+          align="start"
+          sideOffset={6}
+          className="z-[60] flex max-w-64 items-start gap-2 rounded-md border border-line bg-panel px-3 py-2 text-xs shadow-xl duration-150 data-[side=top]:slide-in-from-bottom-1 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:animate-in data-[state=open]:fade-in-0"
+        >
+          <span aria-hidden className="mt-px grid size-4 shrink-0 place-items-center rounded-full border border-text-2 text-[10px] font-semibold text-text-2 italic">
+            i
+          </span>
+          <span>
+            <b className="font-semibold">Known location.</b> A verified analog site is within 25 km
+            {site ? (
+              <>
+                : <span className="text-text-2">{site}</span>
+              </>
+            ) : null}
+            .
+          </span>
+        </HoverCard.Content>
+      </HoverCard.Portal>
+    </HoverCard.Root>
   );
 }
 
@@ -101,7 +135,8 @@ export function BestSites() {
         </div>
         <p className="mt-2 max-w-prose text-text-2">
           The places on Earth whose ground comes closest to each kind of {WORLD_LABEL[tab]} terrain, found by scoring all of Earth&apos;s dry land ahead of time. Each list is
-          ranked by terrain score, among places bare and dry enough to work as a test site, with at most four per country. Open one to see why it scored the way it did.
+          ranked by overall score (terrain and surface together, the number a click shows), with each place only in the list of the region it matches best and at
+          most four per country. Open one to see why it scored the way it did.
         </p>
 
         {!lists.length ? (
@@ -140,7 +175,7 @@ export function BestSites() {
                 <p className="mb-2 text-xs text-text-2">
                   {open.feature
                     ? `Ranked by feature score: how well the ground matches the ${open.title.toLowerCase()}. Only features the model can reliably tell apart get a list.`
-                    : `Ranked by terrain score for ${open.title.toLowerCase()}, among places where it's the best or nearly the best ${WORLD_LABEL[tab]} region.`}
+                    : `Ranked by overall score, among places whose closest ${WORLD_LABEL[tab]} region is ${open.title.toLowerCase()}.`}
                 </p>
                 <ol aria-label={`Best Earth sites for ${open.title}`} className="space-y-1">
                   {open.sites.map((s, i) => (

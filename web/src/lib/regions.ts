@@ -37,6 +37,8 @@ const CONTRIBUTION_LABEL: Record<string, string> = {
   d_bowl_r: "Bowl size",
   d_cone: "Cone shape",
   d_cone_r: "Cone size",
+  // v3.0: how far above ordinary land the match to this region (or feature) is
+  region_match: "Match to this kind of terrain",
 };
 
 const CONDITION_LABEL: Record<string, string> = {
@@ -46,6 +48,7 @@ const CONDITION_LABEL: Record<string, string> = {
   water: "Open water",
   snow: "Snow and ice",
   bare: "Bare ground",
+  sparse: "Shrub, grass and moss",
   precip: "Rainfall",
 };
 
@@ -77,7 +80,8 @@ export function bars(values: Record<string, number>, label: (key: string) => str
 }
 
 // v2.0.1: a score split into score points that add up to it: base + terms + common + earth = total
-export type Breakdown = { base: number; terms: Record<string, number>; common: number; earth: number; total: number };
+// kind "head" (v3.0): terms compare each measurement with verified analog sites; older results compare with the matched blocks
+export type Breakdown = { base: number; terms: Record<string, number>; common: number; earth: number; total: number; kind?: string };
 
 export type Landform = {
   tag: string;
