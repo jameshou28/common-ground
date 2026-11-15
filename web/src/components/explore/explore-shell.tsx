@@ -4,7 +4,8 @@ import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { useGrid, useLibraryGrid, useTargets } from "@/lib/queries";
+import { alignedCell } from "@/lib/align";
+import { useAlignedLibraryGrid, useGrid, useTargets } from "@/lib/queries";
 import { cellPoints, type CellPoint } from "@/lib/regions";
 import { CHECK_SITES, siteHref } from "@/lib/sites";
 import { fmtAltitude, fmtLatLon } from "@/lib/format";
@@ -96,10 +97,14 @@ export function ExploreShell({ children }: { children: React.ReactNode }) {
   // the same cached result the panel shows
   const { q: score, match } = useMatch(selected);
   const result = score.data;
-  const points = useMemo(() => (match ? cellPoints(match.site) : NO_POINTS), [match]);
-  // the matched block, the bottom pane exists only once its grid has loaded
-  const matchedGrid = useLibraryGrid(match?.site.index).data;
   const blockGrid = useGrid(result?.grid_url).data;
+  // the matched block lined up with this one for display, the bottom pane exists only once its grid has loaded
+  const { grid: matchedGrid, alignment } = useAlignedLibraryGrid(match?.site.index, blockGrid);
+  // the cell pairings move with the lined-up view
+  const points = useMemo(
+    () => (match ? cellPoints(match.site, alignment ? (row, col) => alignedCell(alignment, row, col) : undefined) : NO_POINTS),
+    [match, alignment],
+  );
   // the earth pane as a plain height grid with the matched block drawn over it
   const [wire, setWire] = useState(false);
   // light both blocks with a sun just above the horizon, as at the lunar poles
@@ -302,6 +307,7 @@ export function ExploreShell({ children }: { children: React.ReactNode }) {
           {selected && (
             <MatchedBlock
               grid={matchedGrid}
+              alignment={alignment}
               match={match}
               relief={world === "earth" ? relief : 1}
               moonSun={moonSun}

@@ -1,5 +1,31 @@
 import type { ScoreResult } from "./api";
-import type { Match } from "./regions";
+import type { Breakdown, Match } from "./regions";
+import { breakdownOf, landformOf } from "./regions";
+
+type Row = [string, string, unknown];
+
+const breakdownRows = (section: string, bd: Breakdown | null): Row[] =>
+  bd
+    ? [
+        [section, "base", bd.base],
+        ...Object.entries(bd.terms).map(([k, v]): Row => [section, k, v]),
+        [section, "common", bd.common],
+        [section, "earth", bd.earth],
+        [section, "total", bd.total],
+      ]
+    : [];
+
+const feature = (m: Match): Row[] => {
+  const lf = landformOf(m.region);
+  return lf
+    ? [
+        ["feature", "tag", lf.tag],
+        ["feature", "score", lf.score],
+        ["feature", "validated", lf.validated],
+        ...breakdownRows("feature_breakdown", breakdownOf(lf)),
+      ]
+    : [];
+};
 
 export const CSV_HEADER = ["tile_id", "model_version", "world", "region", "site", "section", "key", "value"];
 const CITE = "Common Ground, NASA Space Apps 2026. Cite the tile id and model version with any use of this data.";
@@ -18,6 +44,11 @@ export function toCsv(r: ScoreResult, m: Match): string {
     ...Object.entries(m.site.contributions).map(([k, v]) => ["contribution", k, v] as [string, string, unknown]),
     ["score", "overall", m.world.overall],
     ["score", "landscape_score", m.world.landscape_score],
+    ["score", "region_overall", m.region.overall],
+    ["score", "region_score", m.region.score],
+    ...feature(m),
+    ...breakdownRows("region_breakdown", breakdownOf(m.region)),
+    ...breakdownRows("site_breakdown", breakdownOf(m.site)),
     ["score", "pair_score", m.site.pair_score],
     ["score", "site_lat", m.site.lat],
     ["score", "site_lon", m.site.lon],

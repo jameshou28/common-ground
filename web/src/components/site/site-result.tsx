@@ -7,12 +7,13 @@ import { useExplore } from "@/components/explore/explore-context";
 import { WORLD_LABEL } from "@/components/globe/config";
 import { describeError } from "@/lib/api";
 import { env } from "@/lib/env";
-import { bars, conditionLabel, contributionLabel } from "@/lib/regions";
+import { bars, conditionLabel, landformOf, landformPlural } from "@/lib/regions";
 import { CHECK_SITES } from "@/lib/sites";
 import { ChartsDialog } from "./charts-dialog";
 import { ContributionBars } from "./contribution-bars";
 import { FactsTable } from "./facts-table";
 import { ExportMenu } from "./export-menu";
+import { MatchReasons } from "./match-reasons";
 import { ScoreGauge } from "./score-gauge";
 import { ScoreLoader } from "./score-loader";
 import { Section } from "./section";
@@ -36,8 +37,10 @@ export function SiteResult() {
   const site = CHECK_SITES.find((s) => s.tileId === selected?.id);
   const name = site?.name ?? "This block";
   const r = q.data;
-  const terrain = match ? bars(match.site.contributions, contributionLabel) : null;
   const surface = r ? bars(r.conditions.terms, conditionLabel) : null;
+  const landform = match ? landformOf(match.region) : null;
+  // the selected region's overall; the api has it per region since v1.3
+  const regionOverall = match ? (typeof match.region.overall === "number" ? match.region.overall : match.world.overall) : 0;
 
   return (
     <aside aria-label="Result" className="flex min-h-0 flex-col border-l border-line bg-panel max-md:border-t max-md:border-l-0">
@@ -81,12 +84,40 @@ export function SiteResult() {
 
         {r && match && (
           <>
-            <Section title="Analog score" note={`best region: ${match.world.regions.find((g) => g.region === match.world.best_region)?.title ?? ""}`}>
-              <ScoreGauge result={r} match={match} />
+            <Section title="Region score" note={match.region.region === match.world.best_region ? `best region: ${match.region.title}` : match.region.title}>
+              <ScoreGauge
+                overall={regionOverall}
+                terrain={match.region.score}
+                surface={r.conditions.score}
+                standIn={`a ${WORLD_LABEL[match.tab]} stand-in`}
+                terrainNote={`how the ground compares with ${match.region.title.toLowerCase()}`}
+              />
+            </Section>
+            <Section title="Feature score" note={landform ? `${landform.label.toLowerCase()}${landform.validated ? "" : ", not validated yet"}` : "none for this region"}>
+              {landform ? (
+                <>
+                  <ScoreGauge
+                    overall={Math.sqrt(Math.max(landform.score, 0) * r.conditions.score)}
+                    terrain={landform.score}
+                    surface={r.conditions.score}
+                    standIn={`${/^[aeiou]/i.test(landform.label) ? "an" : "a"} ${landform.label.toLowerCase()} stand-in`}
+                    terrainNote={`how the ground compares with the ${landformPlural(landform)} in ${match.region.title.toLowerCase()}`}
+                  />
+                  {landform.badge ? (
+                    <p className="mt-3 inline-block rounded-sm border border-help px-1.5 py-0.5 text-xs text-help">Checked feature match</p>
+                  ) : (
+                    !landform.validated && (
+                      <p className="mt-3 text-xs text-text-2">The model can&apos;t yet reliably tell this feature apart from the rest of the region, so take it as a rough guide.</p>
+                    )
+                  )}
+                </>
+              ) : (
+                <p className="text-xs text-text-2">The model has too few mapped features in {match.region.title.toLowerCase()} to score one.</p>
+              )}
               <ChartsDialog gridUrl={r.grid_url} libraryIndex={match.site.index} name={name} matchName={match.site.name} />
             </Section>
-            <Section title={`Why it matches ${match.region.title.toLowerCase()}`} note={`closest place ${Math.round(match.site.pair_score)}`}>
-              <ContributionBars rows={terrain!.rows} zero={terrain!.zero} note={`Measured against ${match.site.name}. Bars to the right help the match.`} />
+            <Section title={`Why it matches ${match.region.title.toLowerCase()}`}>
+              <MatchReasons key={`${match.tab}|${match.region.region}|${match.site.index}`} match={match} landform={landform} />
             </Section>
             <Section title="Surface and climate" note="the same for both worlds">
               <ContributionBars rows={surface!.rows} zero={surface!.zero} note="Bare, dry ground helps. Trees, fields and water hurt." />

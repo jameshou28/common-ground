@@ -82,6 +82,8 @@ export function FeaturePoints({ handle, tile, points, relief, matchName }: { han
         {points.map((p, i) => {
           const on = open === p.id;
           const help = p.effect === "help";
+          const bg = help ? "bg-help" : p.effect === "weak" ? "bg-text-2" : "bg-hurt";
+          const what = help ? "a close match, helps" : p.effect === "weak" ? "a weaker match, helps a little" : "a poor match, hurts";
           return (
             <div
               key={p.id}
@@ -95,9 +97,9 @@ export function FeaturePoints({ handle, tile, points, relief, matchName }: { han
                 type="button"
                 aria-expanded={on}
                 aria-controls={on ? `point-${p.id}` : undefined}
-                aria-label={`Point ${i + 1}: ${help ? "a close match, helps" : "a poor match, hurts"}`}
+                aria-label={`Point ${i + 1}: ${what}`}
                 onClick={() => setOpen(on ? null : p.id)}
-                className={`pointer-events-auto absolute size-6 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-app text-xs font-semibold text-app ${help ? "bg-help" : "bg-hurt"} ${on ? "ring-2 ring-text" : ""}`}
+                className={`pointer-events-auto absolute size-6 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-app text-xs font-semibold text-app ${bg} ${on ? "ring-2 ring-text" : ""}`}
               >
                 {i + 1}
               </button>
@@ -112,10 +114,18 @@ export function FeaturePoints({ handle, tile, points, relief, matchName }: { han
             <i className="size-2.5 rounded-full bg-help" />
             Helps the match
           </span>
-          <span className="flex items-center gap-1.5">
-            <i className="size-2.5 rounded-full bg-hurt" />
-            Hurts it
-          </span>
+          {points.some((p) => p.effect === "weak") && (
+            <span className="flex items-center gap-1.5">
+              <i className="size-2.5 rounded-full bg-text-2" />
+              Helps least
+            </span>
+          )}
+          {points.some((p) => p.effect === "hurt") && (
+            <span className="flex items-center gap-1.5">
+              <i className="size-2.5 rounded-full bg-hurt" />
+              Hurts it
+            </span>
+          )}
         </p>
       )}
     </>

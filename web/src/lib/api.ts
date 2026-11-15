@@ -117,8 +117,9 @@ export async function cachedScore(tileId: string, signal?: AbortSignal): Promise
 }
 
 // where a matched block's height grid is, the api reads it on first request
-export async function library(index: number, signal?: AbortSignal): Promise<LibraryBlock> {
-  return (await http(`${env.apiUrl}/library/${index}`, { signal })).json();
+// pad asks for 2 km of margin on every side so the block can be lined up; an api without it ignores the flag (pad_px stays 0)
+export async function library(index: number, signal?: AbortSignal, pad = false): Promise<LibraryBlock & { pad_px?: number }> {
+  return (await http(`${env.apiUrl}/library/${index}${pad ? "?pad=true" : ""}`, { signal })).json();
 }
 
 // relative in local dev, absolute r2 url in production
