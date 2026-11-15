@@ -1,0 +1,19 @@
+name: Keep the API warm
+
+# render's free plan sleeps after 15 idle minutes and the first click then waits for a cold start (tens of seconds).
+# pinging /health every 10 minutes keeps it awake. set the repo variable API_URL (settings -> variables -> actions)
+# to the api's base url; without it the job does nothing. delete this file to turn it off.
+on:
+  schedule:
+    - cron: "*/10 * * * *"
+  workflow_dispatch:
+
+permissions: {}
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    if: vars.API_URL != ''
+    steps:
+      - name: Ping /health
+        run: curl -fsS --max-time 60 "${{ vars.API_URL }}/health" || echo "api did not answer"
