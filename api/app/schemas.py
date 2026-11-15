@@ -80,3 +80,20 @@ class LibraryBlock(BaseModel):
     world: str
     model_version: str
     grid_url: str
+
+
+class EarthMatch(Loose):
+    name: str
+    lat: float
+    lon: float
+    tile_id: str # earth block, POST /score opens it
+    score: float # 0 to 100
+
+
+class EarthMatches(Loose):
+    tile_id: str # the moon or mars block that was clicked
+    world: str
+    center: LatLon
+    model_version: str
+    dummy: bool # true = placeholder list, not the model
+    matches: list[EarthMatch] # best first

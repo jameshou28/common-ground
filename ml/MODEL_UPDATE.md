@@ -32,9 +32,24 @@ The API and the website both read the model straight from `ml/export/`. Nobody c
 6. **Open a PR to `main`.** CI runs the API tests against your new model. When it's green, merge.
 7. **Deploy.** Vercel rebuilds the website on its own. Render redeploys the API if auto-deploy is on, otherwise press Manual Deploy on the Render dashboard.
 
+## Moon and Mars clicks: Earth places like this
+
+Clicking the Moon or Mars calls `POST /earth-matches`, which lists the Earth places that look most like the clicked block. Right now it returns a fixed placeholder list (`dummy: true`, and the site says "placeholder list, model coming").
+
+To plug in the real model, add this function to `export/analog_runtime.py`:
+
+```python
+def earth_matches(model: Model, world: str, lat: float, lon: float) -> list[dict]:
+    # world is "moon" or "mars", lat/lon is the centre of the clicked 4 km block
+    # return Earth places best first, each dict(name=str, lat=float, lon=float, score=0..100)
+    # extra keys are fine, they pass through to the response
+```
+
+The API uses it as soon as it exists, so you don't need to change anything in `api/`. Each place becomes a link to its Earth result page.
+
 ## Checking it's live
 
-- `<api url>/health` shows `model_version`. It should be the new one.
+- https://spaceapps-ypoe.onrender.com/health shows `model_version`, the model the live API is running. It should be the new one.
 - The bottom right of the website says `Model <version>`.
 - Render's logs show one line per request with the full input and output, so you can see what the model returned.
 
@@ -48,7 +63,7 @@ delete from scores where model_version = 'regions-1.3-v1';
 
 ## If something goes wrong
 
-- **The website still shows the old version:** the Vercel build couldn't read `../ml`. Turn on "Include files outside the root directory" in the Vercel project settings, then redeploy.
+- **The website still shows the old version:** the Vercel build couldn't read `../ml` and used `NEXT_PUBLIC_MODEL_VERSION` instead. Either set that variable in Vercel to the new version string (same as `/health`), or turn on "Include files outside the root directory" in the Vercel project settings. Redeploy after either one.
 - **`/health` shows the old version:** Render didn't redeploy. Press Manual Deploy.
 - **`/score` returns 503 `no_model`:** `model.npz` is missing from the image. Check it's committed. `.gitignore` allows `ml/export/*.npz`.
 - **To roll back:** revert the PR on `main`.

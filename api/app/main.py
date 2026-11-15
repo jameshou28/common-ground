@@ -18,7 +18,7 @@ from analog_core.scorer import NoModel
 from analog_core.tiles import tile_center
 
 from . import store
-from .schemas import LibraryBlock, ScoreRequest, ScoreResult
+from .schemas import EarthMatches, LibraryBlock, ScoreRequest, ScoreResult
 
 START = time.time() # for uptime
 TARGETS: dict = json.loads((Path(__file__).resolve().parents[1] / "targets.json").read_text())
@@ -117,6 +117,23 @@ def score(req: ScoreRequest, response: Response): # plain def so fastapi runs it
     full = ScoreResult(**full).model_dump()
     store.put_result(req.tile_id, version, full)
     return full
+
+
+@app.post("/earth-matches", response_model=EarthMatches, responses={422: {}, 503: {}})
+def earth_matches(req: ScoreRequest, response: Response):
+    # the other way round: a moon or mars block -> earth places like it
+    response.headers["Cache-Control"] = "no-store"
+    try:
+        world, lat, lon = tile_center(req.tile_id)
+    except ValueError as e:
+        return err(422, "bad_tile", str(e))
+    if world == "earth":
+        return err(422, "not_scorable", "earth blocks go to /score")
+    try:
+        r = scorer.earth_matches(req.tile_id)
+    except NoModel as e:
+        return err(503, "no_model", str(e))
+    return dict(r, tile_id=req.tile_id, world=world, center=dict(lat=lat, lon=lon))
 
 
 @app.get("/library/{index}", response_model=LibraryBlock, responses={404: {}, 502: {}, 503: {}})

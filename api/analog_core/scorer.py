@@ -8,7 +8,7 @@ import numpy as np
 
 from .dem import NoTerrain, UpstreamError
 from .ml import readers, runtime
-from .tiles import tile_center
+from .tiles import tile_center, tile_id as tile_id_of
 
 # model.npz comes from MODEL_PATH, the repo's ml/export, or MODEL_URL (r2) downloaded once into the cache
 CACHE = Path(os.environ.get("CACHE_DIR") or Path(__file__).resolve().parents[1] / "cache")
@@ -61,6 +61,26 @@ def score_tile(tile_id: str) -> tuple[dict, np.ndarray]:
     result["env"] = env
     # fetch_earth already refused blocks without site terrain
     return _clean(result), dems["site"][SITE_BLOCK, SITE_BLOCK].astype(np.float32)
+
+
+# ponytail: fixed stand-in until victors runtime has earth_matches(model, world, lat, lon) -> [dict(name, lat, lon, score)]
+DUMMY_EARTH = (("McMurdo Dry Valleys", -77.52, 161.8), ("Haughton crater", 75.38, -89.67),
+               ("Meteor Crater", 35.027, -111.022), ("Lanzarote Timanfaya", 29.0, -13.75),
+               ("Holuhraun lava field", 64.87, -16.83), ("Utah near MDRS", 38.4, -110.8))
+
+
+def earth_matches(tile_id: str) -> dict:
+    # a moon or mars block -> the earth places that look most like it, best first
+    m = model()
+    world, lat, lon = tile_center(tile_id)
+    fn = getattr(runtime, "earth_matches", None)
+    if fn:
+        matches, dummy = fn(m, world, lat, lon), False
+    else:
+        matches, dummy = [dict(name=n, lat=a, lon=o, score=90.0 - 8 * i) for i, (n, a, o) in enumerate(DUMMY_EARTH)], True
+    for s in matches:
+        s.setdefault("tile_id", tile_id_of("earth", s["lat"], s["lon"]))
+    return _clean(dict(model_version=m.version, dummy=dummy, matches=matches))
 
 
 def library_block(index: int) -> np.ndarray:

@@ -151,3 +151,13 @@ def test_api(monkeypatch):
     assert calls == [idx] # second call served from the stored grid
     assert len(client.get(lib["grid_url"]).content) == 32776
     assert client.get("/library/999999").status_code == 404
+
+
+@needs_model
+def test_earth_matches():
+    r = client.post("/earth-matches", json={"tile_id": "moon:ps:s:-3:-3"})
+    assert r.status_code == 200, r.text
+    ms = r.json()["matches"]
+    assert ms and all(TILE_RE.match(s["tile_id"]) and s["tile_id"].startswith("earth:") for s in ms)
+    assert [s["score"] for s in ms] == sorted((s["score"] for s in ms), reverse=True)
+    assert client.post("/earth-matches", json={"tile_id": "earth:g:974:-2527"}).status_code == 422
