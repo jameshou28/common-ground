@@ -14,7 +14,7 @@ const PHOTOS = [
   ["lunar-crater", "A lunar crater"],
   ["mount-sharp", "Mount Sharp on Mars"],
 ] as const;
-const STEP_MS = 320;
+const STEP_MS = 700;
 
 // covers the globe while a new block is scored; the count eases toward 97 and snaps to 100 when the score lands
 export function ScoreLoader({ active, name }: { active: boolean; name: string }) {
@@ -48,22 +48,17 @@ export function ScoreLoader({ active, name }: { active: boolean; name: string })
 
   return (
     <div role="status" aria-live="polite" aria-hidden={!active} className="score-loader" data-on={active || hold ? "" : undefined}>
-      {/* every photo loaded up front so the swap never waits on the network */}
-      <div className="hidden">
-        {PHOTOS.map(([f]) => (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img key={f} src={`/loader/${f}.jpg`} alt="" />
-        ))}
-      </div>
       <div className="w-52">
         <p className="flex justify-between text-[11px] font-medium tracking-wider uppercase">
           <span className="truncate pr-3">{name}</span>
           <span className="tabular-nums">{count}</span>
         </p>
-        <div className="mt-1.5 flex h-52 items-start">
-          {/* keyed so each photo replays the reveal */}
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img key={i} src={`/loader/${PHOTOS[i][0]}.jpg`} alt={PHOTOS[i][1]} className="score-loader-photo w-full" />
+        {/* all photos stacked in one fixed frame, the current one fades in over the last */}
+        <div className="relative mt-1.5 aspect-square overflow-hidden bg-raised">
+          {PHOTOS.map(([f, alt], k) => (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img key={f} src={`/loader/${f}.jpg`} alt={k === i ? alt : ""} className="score-loader-photo" data-on={k === i ? "" : undefined} />
+          ))}
         </div>
         <p className="mt-1.5 text-[11px] text-text-2">Scoring against the Moon and Mars</p>
       </div>
