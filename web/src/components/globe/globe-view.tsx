@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import type { CellPoint } from "@/lib/regions";
 import { pointTile, type Tile, type World } from "@/lib/tiles";
+import type { Grid } from "@/lib/grid";
 import { BlockPullOut } from "./block-pull-out";
 import type { GlobeStatus } from "./config";
 import { HoverFootprint } from "./hover-footprint";
@@ -30,6 +31,8 @@ export type GlobeViewProps = {
   matchName: string;
   // sun elevation for moon light on the block, null when off
   moonSun: number | null;
+  // the match drawn as lines over the pulled-out block, earth only
+  wire: { block: Grid; over: Grid } | null;
   // filled with a function that returns the current view as a jpeg data url
   capture: { current: (() => string | null) | null };
 };
@@ -44,7 +47,7 @@ function shareCapture(slot: GlobeViewProps["capture"], fn: () => string | null) 
 // pins would float in empty space around a pulled-out block
 const NO_PINS: Pin[] = [];
 
-export default function GlobeView({ world, onStatus, onAltitude, onHover, onPick, pins, activePin, focus, selected, relief, points, matchName, moonSun, capture }: GlobeViewProps) {
+export default function GlobeView({ world, onStatus, onAltitude, onHover, onPick, pins, activePin, focus, selected, relief, points, matchName, moonSun, wire, capture }: GlobeViewProps) {
   const el = useRef<HTMLDivElement>(null);
   const credits = useRef<HTMLDivElement>(null);
   const handle = useCesiumViewer({ world, el, credits, onStatus, onAltitude });
@@ -82,7 +85,7 @@ export default function GlobeView({ world, onStatus, onAltitude, onHover, onPick
       <div ref={credits} className="globe-credits" />
       <HoverFootprint handle={handle} tile={selected ? null : tile} />
       <Pins handle={handle} pins={selected ? NO_PINS : pins} active={activePin} />
-      <BlockPullOut handle={handle} tile={selected} relief={relief} points={points} matchName={matchName} moonSun={moonSun} />
+      <BlockPullOut handle={handle} tile={selected} relief={relief} points={points} matchName={matchName} moonSun={moonSun} wire={wire} />
     </>
   );
 }
