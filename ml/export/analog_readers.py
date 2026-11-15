@@ -204,12 +204,14 @@ def score_latlon(model, lat, lon, **kw):
     return out
 
 
-def library_block_dem(model, index, scale="site"):
+def library_block_dem(model, index, scale="site", pad_px=0):
     # The matched Moon or Mars block as a (128, 128) height grid, read from its source DEM (about 1 s).
+    # pad_px (at most PAD_PX) keeps that much margin on every side, so the viewer can shift the block to line it up
     world, lat = str(model.lib_world[index]), float(model.lib_lat[index])
     href = str(model.lib_href[index]) if scale == "site" else GLOBAL_DEM[world]
     if scale != "site" and world == "moon" and lat <= POLAR_LAT:
         href = POLAR_DEM[scale]
     dem, _ = read_raster_window(href, float(model.lib_lat[index]), float(model.lib_lon[index]),
                                 rt.RADIUS_M[world], rt.SCALES[scale]["res"], max_nodata=0.2)
-    return dem[rt.PAD_PX:-rt.PAD_PX, rt.PAD_PX:-rt.PAD_PX]
+    c = rt.PAD_PX - int(min(max(pad_px, 0), rt.PAD_PX))
+    return dem[c:dem.shape[0] - c, c:dem.shape[1] - c]
