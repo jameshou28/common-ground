@@ -63,12 +63,15 @@ def score_tile(tile_id: str) -> tuple[dict, np.ndarray]:
     return _clean(result), dems["site"][SITE_BLOCK, SITE_BLOCK].astype(np.float32)
 
 
-def library_block(index: int) -> np.ndarray:
-    # the matched moon or mars block as a 128 px grid, read live from its source dem (about 1 s)
+def library_block(index: int, pad_px: int = 0) -> np.ndarray:
+    # the matched moon or mars block as a 128 px grid, read live from its source dem (about 1 s).
+    # pad_px keeps that much margin on every side (128 + 2 pad_px), so the site can shift it to line up with the click
     m = model()
     if not 0 <= index < len(m.lib_world):
         raise IndexError(index)
     try:
+        if pad_px:
+            return readers.library_block_dem(m, index, pad_px=pad_px).astype(np.float32)
         return readers.library_block_dem(m, index).astype(np.float32)
     except Exception as e:
         raise UpstreamError(f"{type(e).__name__}: {e}") from e

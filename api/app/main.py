@@ -119,9 +119,13 @@ def score(req: ScoreRequest, response: Response): # plain def so fastapi runs it
     return full
 
 
+LIBRARY_PAD_PX = 64  # 2 km at 31.25 m, all the margin the reader has: the padded grid is 8 km across
+
+
 @app.get("/library/{index}", response_model=LibraryBlock, responses={404: {}, 502: {}, 503: {}})
-def library(index: int):
-    # height grid of a matched moon or mars block, read once then served from r2
+def library(index: int, pad: bool = False):
+    # height grid of a matched moon or mars block, read once then served from r2.
+    # pad=true returns the block with 2 km of margin on every side, so the site can line it up with the clicked block
     try:
         m = scorer.model()
     except NoModel as e:
@@ -129,11 +133,12 @@ def library(index: int):
     if not 0 <= index < len(m.lib_world):
         return err(404, "unknown_index", f"index must be 0 to {len(m.lib_world) - 1}")
     # library rows are renumbered every model, so the version is part of the key
-    name = f"lib/{m.version}/{index}"
+    pad_px = LIBRARY_PAD_PX if pad else 0
+    name = f"lib/{m.version}/{index}" + (f"-pad{pad_px}" if pad_px else "")
     url = store.grid_url(name)
     if url is None:
         try:
-            url = store.put_grid(name, grid.encode(scorer.library_block(index)))
+            url = store.put_grid(name, grid.encode(scorer.library_block(index, pad_px)))
         except UpstreamError as e:
             return err(502, "dem_read_failed", str(e))
-    return dict(index=index, world=str(m.lib_world[index]), model_version=m.version, grid_url=url)
+    return dict(index=index, world=str(m.lib_world[index]), model_version=m.version, grid_url=url, pad_px=pad_px)

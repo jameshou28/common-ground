@@ -151,3 +151,11 @@ def test_api(monkeypatch):
     assert calls == [idx] # second call served from the stored grid
     assert len(client.get(lib["grid_url"]).content) == 32776
     assert client.get("/library/999999").status_code == 404
+
+    # pad=true: the block plus 2 km on every side, stored under its own name
+    (store.LOCAL_GRIDS / f"lib/{a['model_version']}/{idx}-pad64.bin").unlink(missing_ok=True)
+    padded = []
+    monkeypatch.setattr(readers, "library_block_dem", lambda m, i, pad_px=0: padded.append(pad_px) or np.zeros((128 + 2 * pad_px,) * 2))
+    lp = client.get(f"/library/{idx}?pad=true").json()
+    assert lp["pad_px"] == 64 and lp["grid_url"] != lib["grid_url"] and padded == [64]
+    assert len(client.get(lp["grid_url"]).content) == 8 + 2 * 256 * 256

@@ -80,3 +80,4 @@ class LibraryBlock(BaseModel):
     world: str
     model_version: str
     grid_url: str
+    pad_px: int = 0  # margin on every side in 31.25 m pixels: the grid is (128 + 2 pad_px) across
