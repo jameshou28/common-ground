@@ -127,6 +127,7 @@ function liftBlock(
     ground: scene.globe?.showGroundAtmosphere,
     depth: scene.globe?.depthTestAgainstTerrain,
     fog: scene.fog.enabled,
+    skirts: scene.globe?.showSkirts,
   };
 
   (async () => {
@@ -177,6 +178,8 @@ function liftBlock(
         if (scene.globe) scene.globe.depthTestAgainstTerrain = true;
         if (scene.skyAtmosphere) scene.skyAtmosphere.show = false;
         if (scene.globe) scene.globe.showGroundAtmosphere = false;
+        // tile skirts hang below the cut edge as a stretched curtain
+        if (scene.globe) scene.globe.showSkirts = false;
         scene.fog.enabled = false;
 
         if (scene.globe) {
@@ -250,6 +253,7 @@ function liftBlock(
     if (scene.skyAtmosphere) scene.skyAtmosphere.show = saved.sky ?? true;
     if (scene.globe) scene.globe.showGroundAtmosphere = saved.ground ?? true;
     if (scene.globe) scene.globe.depthTestAgainstTerrain = saved.depth ?? false;
+    if (scene.globe) scene.globe.showSkirts = saved.skirts ?? true;
     scene.fog.enabled = saved.fog;
     v.camera.lookAtTransform(C.Matrix4.IDENTITY);
     globeControls(C, scene.screenSpaceCameraController);
