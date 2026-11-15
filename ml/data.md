@@ -22,6 +22,42 @@ The click flow is the same: same call, same two live reads. The response and a f
 - `model.npz` grows to roughly 20–60 MB at v1. Measure memory on Render after the first deploy.
 - About-page credit to add: LOLA polar DEMs (NASA GSFC PGDA, Barker et al.).
 
+## What changes for James in v1.3.2 (display only, `regions-1.3.2-v1`)
+
+- Copy `ml/export/analog_runtime.py` over `api/analog_core/ml/analog_runtime.py` again.
+- `best[].pair_score` is now on the same scale as the region score: the best sites sit around the region score (e.g. region 53, sites 57-61; farmland region 21, sites 24-27). The old one-to-one number is in `pair_score_raw`.
+- `best[].contributions` are now score points (e.g. "shadow at a low Sun +5.1"), not logit points. The old values are in `contributions_logit`.
+- `conditions.terms` are now surface-score points (e.g. "open ground +19.7", "farmland -11.5"). The old values are in `conditions.terms_logit`.
+- Version bumped, so cached rows re-score.
+
+## What changes for James in v1.3.1 (display fix, `regions-1.3.1-v1`)
+
+Same trained model as v1.3; only the score scale changed. No ranking changes anywhere.
+
+- **Copy `ml/export/analog_runtime.py` over `api/analog_core/ml/analog_runtime.py`.** The backend loads `model.npz` from `ml/export` but runs its own runtime copy, so both have to change together. Ours now defaults to 5 best sites, like yours.
+- The model version changed, so cached Supabase rows from `regions-1.3-v1` stop being served and every tile re-scores. That also clears the stale rows for Haughton, McMurdo, Holuhraun and Utah, which were scored by the v1.1 runtime with the v1.3 model.
+- `conditions.score` is now out of 100 for real: 100 = as bare and dry as any place on Earth gets. The old probability is in `conditions.raw` (it maxed out at 72).
+- `regions[].overall` and `worlds.{w}.overall` = √(terrain score × surface score), the geometric mean, instead of the product. Good analog sites now read 60-80, typical land about 40, farmland about 13.
+- New `worlds.{w}.overall_percentile`: share of Earth's land this place beats, e.g. "better than 91% of Earth's land". Good as a subtitle under the score.
+- `regions[].best[].pair_score` (the "closest place" number) is a one-to-one block comparison, not on the same scale as the region score. Please label it "closest single block" so it isn't read against the region score.
+- `example_response.json` is regenerated (Meteor Crater, live read).
+
+## What changes for James in v1.3 (trained, `regions-1.3-v1`)
+
+- Each region now has `score` (what to show and sort by), plus `similarity` (raw likeness to the Moon/Mars region), `earth_percentile` and `earth_factor`. `score = similarity x earth_factor`, and `overall = score x conditions.score / 100`.
+- `conditions.terms` adds `sparse` (shrub, grass, moss); `built` now includes a fixed penalty. `env` in the response adds `sparse`.
+- Regions are sorted by `score`, so the order always matches the numbers shown.
+- Matches are "terrain like this", not landform identifications. Please word the UI that way (e.g. "similar terrain: crater rim near Tycho"), since landform-level matching isn't validated.
+
+## What changes for James in v1.2 (not trained yet)
+
+- `model_version` will be `regions-1.2-v1`.
+- `overall` is now `landscape score × conditions.score / 100` (the 0.4 floor is gone, because farmland was getting through).
+- `conditions.terms` keys change to tree, crop, built, water, open, precip. "open" is bare ground plus snow and ice. `env` in the response still has the raw shares, including snow and bare.
+- `best[].contributions` still has 12 names; `rough_coarse` is always 0 at the 4 km scale now.
+- Scoring a click takes a bit longer (roughly 0.3 s to 0.45 s) because the best matches are re-ranked with both scales.
+- `analog_runtime.py` has one extra helper, `region_logits_task`. The server doesn't need it.
+
 ## What a click reads
 
 | Step | Data | Source | Stored by us | Time |

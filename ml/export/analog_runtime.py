@@ -398,6 +398,17 @@ def region_scores(model: Model, emb: dict, world: str, exclude: np.ndarray | Non
         ref = model.earth_ref[r]
         pct = float(np.searchsorted(ref, L, side="right") / len(ref)) if ref is not None and len(ref) else 1.0
         factor = model.earth_floor + (1.0 - model.earth_floor) * pct
+        # v1.3.2: put each best site on the region score's scale. the region's logit L sits where the average of its
+        # top pairs sits, so a site's logit is shifted by the same amount, then gets the same Earth factor.
+        # contributions become score points (logit points x the slope of the score at that site), so they read like "+4"
+        ref_j = float(np.mean(np.sort(joint)[::-1][:min(k, len(joint))]))
+        for b in best:
+            p = float(expit(b["logit"] - ref_j + L))
+            b["pair_score_raw"] = b["pair_score"]
+            b["pair_score"] = 100.0 * p * factor
+            slope = 100.0 * p * (1.0 - p) * factor
+            b["contributions_logit"] = b["contributions"]
+            b["contributions"] = {n: v * slope for n, v in b["contributions"].items()}
         out.append(dict(region_id=r, region=key, title=model.region_title[r], score=sim * factor, similarity=sim,
                         earth_percentile=100.0 * pct, earth_factor=factor,
                         logit=float(L), scales=per_scale, n_members=int(len(mem)), best=best))
@@ -437,7 +448,10 @@ def score_click(model: Model, dems: dict, env: dict, worlds=WORLDS, n_best: int 
     raw = float(100 * expit(G))                                    # the conditions model's probability, at most surface_max
     surface = float(min(100.0, 100.0 * raw / model.surface_max))   # shown out of 100: 100 = as bare and dry as the model allows
     out = dict(model_version=model.version, scales_used=list(emb), ood=any(ood.values()), ood_by_scale=ood,
-               conditions=dict(score=surface, raw=raw, logit=G, terms=terms, discount=surface / 100.0),
+               conditions=dict(score=surface, raw=raw, logit=G, discount=surface / 100.0, terms_logit=terms,
+                               # terms in surface-score points: logit points x the slope of the 0-100 surface score here
+                               terms={n: v * 100.0 * (raw / 100.0) * (1.0 - raw / 100.0) * 100.0 / model.surface_max
+                                      for n, v in terms.items()}),
                block={n: float(v) for n, v in zip(BLOCK_FEATURES, blk)}, worlds={})
     for w in worlds:
         regs = region_scores(model, emb, w, n_best=n_best, with_cells=True)
