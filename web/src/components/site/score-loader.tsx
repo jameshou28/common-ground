@@ -30,19 +30,19 @@ export function ScoreLoader({ name }: { name: string }) {
   const i = Math.floor(t / STEP_MS) % PHOTOS.length;
 
   return (
-    <div role="status" aria-live="polite">
+    <div role="status" aria-live="polite" className="mx-auto mt-6 w-40">
       <p className="flex justify-between text-[11px] font-medium tracking-wider uppercase">
-        <span className="truncate pr-3">Scoring {name}</span>
+        <span className="truncate pr-3">{name}</span>
         <span className="tabular-nums">{count}</span>
       </p>
       {/* all photos stacked in one fixed frame, the current one fades in over the last */}
-      <div className="relative mt-1.5 aspect-[4/3] overflow-hidden rounded-md bg-raised">
+      <div className="relative mt-1.5 aspect-square overflow-hidden bg-raised">
         {PHOTOS.map(([f, alt], k) => (
           // eslint-disable-next-line @next/next/no-img-element
           <img key={f} src={`/loader/${f}.jpg`} alt={k === i ? alt : ""} className="score-loader-photo" data-on={k === i ? "" : undefined} />
         ))}
       </div>
-      <p className="mt-2 text-xs text-text-2">Comparing it with every kind of Moon and Mars terrain. A new place takes a few seconds.</p>
+      <p className="mt-2 text-center text-[11px] text-text-2">A new place takes a few seconds.</p>
     </div>
   );
 }
