@@ -97,7 +97,6 @@ export function ExploreShell({ children }: { children: React.ReactNode }) {
   const matchedGrid = useLibraryGrid(match?.site.index).data;
   // the earth pane as a plain height grid with the matched block drawn over it
   const [wire, setWire] = useState(false);
-  const [matched, setMatched] = useState(false);
   // light both blocks with a sun just above the horizon, as at the lunar poles
   const [moon, setMoon] = useState(false);
   const moonSun = moon && match?.tab === "moon" ? MOON_SUN_DEG : null;
@@ -250,15 +249,6 @@ export function ExploreShell({ children }: { children: React.ReactNode }) {
                     >
                       Overlay the match as wireframe
                     </Toggle>
-                    {wire && (
-                      <Toggle
-                        size="sm"
-                        pressed={matched}
-                        onPressedChange={setMatched}
-                      >
-                        Matched relief
-                      </Toggle>
-                    )}
                   </>
                 )}
                 {world === "earth" && match?.tab === "moon" && (
@@ -308,7 +298,6 @@ export function ExploreShell({ children }: { children: React.ReactNode }) {
                 over={matchedGrid}
                 overName={match.site.name}
                 relief={relief}
-                matched={matched}
                 moonSun={moonSun}
               />
             )}
