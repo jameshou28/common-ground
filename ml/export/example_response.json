@@ -1,5 +1,5 @@
 {
- "model_version": "regions-1.3.1-v1",
+ "model_version": "regions-1.3.2-v1",
  "scales_used": [
   "site",
   "regional"
@@ -13,7 +13,8 @@
   "score": 88.2047,
   "raw": 63.3686,
   "logit": 0.5481,
-  "terms": {
+  "discount": 0.882,
+  "terms_logit": {
    "tree": 0.3807,
    "crop": -0.201,
    "built": -0.1288,
@@ -22,7 +23,15 @@
    "sparse": 0.0028,
    "precip": 0.0456
   },
-  "discount": 0.882
+  "terms": {
+   "tree": 12.3018,
+   "crop": -6.4943,
+   "built": -4.16,
+   "water": 0.3641,
+   "open": 19.741,
+   "sparse": 0.0896,
+   "precip": 1.4729
+  }
  },
  "block": {
   "relief": 134.2445,
@@ -63,7 +72,7 @@
        "lat": 32.274,
        "lon": -75.974,
        "href": "https://astrogeo-ard.s3-us-west-2.amazonaws.com/moon/kaguya/terrain_camera/usgs_dtms_v2/TC1W2B0_01_05261N318E2841__TC2W2B0_01_05261N322E2841/TC1W2B0_01_05261N318E2841__TC2W2B0_01_05261N322E2841-DEM.tif",
-       "pair_score": 68.9153,
+       "pair_score": 61.1619,
        "logit": 0.7962,
        "scale_logits": {
         "site": 0.5233,
@@ -71,18 +80,18 @@
        },
        "W": 1.6246,
        "contributions": {
-        "slope_mean": 0.0228,
+        "slope_mean": 0.4276,
         "rough_coarse": -0.0,
-        "geo_convex": 0.0301,
-        "geo_concave": 0.0233,
-        "shadow_low": 0.2743,
+        "geo_convex": 0.5654,
+        "geo_concave": 0.4374,
+        "shadow_low": 5.1487,
         "shadow_mid": 0.0,
         "norm_height": 0.0,
-        "d_relief": 0.1777,
-        "d_hurst": 0.0706,
-        "d_linearity": 0.0348,
-        "d_depression_area": 0.0074,
-        "d_depression_depth": 0.0037
+        "d_relief": 3.3343,
+        "d_hurst": 1.3255,
+        "d_linearity": 0.6531,
+        "d_depression_area": 0.1395,
+        "d_depression_depth": 0.0692
        },
        "cell_cost": [
         [
@@ -231,7 +240,22 @@
         10,
         16,
         25
-       ]
+       ],
+       "pair_score_raw": 68.9153,
+       "contributions_logit": {
+        "slope_mean": 0.0228,
+        "rough_coarse": -0.0,
+        "geo_convex": 0.0301,
+        "geo_concave": 0.0233,
+        "shadow_low": 0.2743,
+        "shadow_mid": 0.0,
+        "norm_height": 0.0,
+        "d_relief": 0.1777,
+        "d_hurst": 0.0706,
+        "d_linearity": 0.0348,
+        "d_depression_area": 0.0074,
+        "d_depression_depth": 0.0037
+       }
       },
       {
        "index": 228,
@@ -241,7 +265,7 @@
        "lat": -0.5224,
        "lon": 42.9803,
        "href": "https://astrogeo-ard.s3-us-west-2.amazonaws.com/moon/kaguya/terrain_camera/usgs_dtms_v2/TC1W2B0_01_02650S011E0432__TC2W2B0_01_02650S005E0432/TC1W2B0_01_02650S011E0432__TC2W2B0_01_02650S005E0432-DEM.tif",
-       "pair_score": 66.6873,
+       "pair_score": 59.2091,
        "logit": 0.6941,
        "scale_logits": {
         "site": 0.6952,
@@ -249,18 +273,18 @@
        },
        "W": 1.1792,
        "contributions": {
-        "slope_mean": 0.0235,
+        "slope_mean": 0.4587,
         "rough_coarse": -0.0,
-        "geo_convex": 0.0744,
-        "geo_concave": 0.0245,
-        "shadow_low": 0.3539,
+        "geo_convex": 1.4496,
+        "geo_concave": 0.477,
+        "shadow_low": 6.8938,
         "shadow_mid": 0.0,
         "norm_height": 0.0,
-        "d_relief": 0.1398,
-        "d_hurst": 0.1659,
-        "d_linearity": 0.0328,
-        "d_depression_area": 0.0005,
-        "d_depression_depth": 0.0014
+        "d_relief": 2.723,
+        "d_hurst": 3.2314,
+        "d_linearity": 0.6384,
+        "d_depression_area": 0.0099,
+        "d_depression_depth": 0.0267
        },
        "cell_cost": [
         [
@@ -409,7 +433,22 @@
         15,
         30,
         37
-       ]
+       ],
+       "pair_score_raw": 66.6873,
+       "contributions_logit": {
+        "slope_mean": 0.0235,
+        "rough_coarse": -0.0,
+        "geo_convex": 0.0744,
+        "geo_concave": 0.0245,
+        "shadow_low": 0.3539,
+        "shadow_mid": 0.0,
+        "norm_height": 0.0,
+        "d_relief": 0.1398,
+        "d_hurst": 0.1659,
+        "d_linearity": 0.0328,
+        "d_depression_area": 0.0005,
+        "d_depression_depth": 0.0014
+       }
       },
       {
        "index": 141,
@@ -419,7 +458,7 @@
        "lat": 28.6301,
        "lon": 9.5574,
        "href": "https://astrogeo-ard.s3-us-west-2.amazonaws.com/moon/kaguya/terrain_camera/usgs_dtms_v2/TC2W2B0_01_07081N283E0094__TC1W2B0_01_07081N288E0094/TC2W2B0_01_07081N283E0094__TC1W2B0_01_07081N288E0094-DEM.tif",
-       "pair_score": 66.5333,
+       "pair_score": 59.074,
        "logit": 0.6871,
        "scale_logits": {
         "site": 0.4577,
@@ -427,18 +466,18 @@
        },
        "W": 4.5701,
        "contributions": {
-        "slope_mean": 0.012,
+        "slope_mean": 0.2346,
         "rough_coarse": -0.0,
-        "geo_convex": 0.0429,
-        "geo_concave": 0.0215,
-        "shadow_low": 0.2645,
+        "geo_convex": 0.8381,
+        "geo_concave": 0.4202,
+        "shadow_low": 5.164,
         "shadow_mid": 0.0,
         "norm_height": 0.0,
-        "d_relief": 0.0784,
-        "d_hurst": 0.1297,
-        "d_linearity": 0.0337,
-        "d_depression_area": -0.0022,
-        "d_depression_depth": -0.0013
+        "d_relief": 1.5301,
+        "d_hurst": 2.5321,
+        "d_linearity": 0.6587,
+        "d_depression_area": -0.0433,
+        "d_depression_depth": -0.0262
        },
        "cell_cost": [
         [
@@ -587,7 +626,22 @@
         20,
         35,
         19
-       ]
+       ],
+       "pair_score_raw": 66.5333,
+       "contributions_logit": {
+        "slope_mean": 0.012,
+        "rough_coarse": -0.0,
+        "geo_convex": 0.0429,
+        "geo_concave": 0.0215,
+        "shadow_low": 0.2645,
+        "shadow_mid": 0.0,
+        "norm_height": 0.0,
+        "d_relief": 0.0784,
+        "d_hurst": 0.1297,
+        "d_linearity": 0.0337,
+        "d_depression_area": -0.0022,
+        "d_depression_depth": -0.0013
+       }
       },
       {
        "index": 438,
@@ -597,7 +651,7 @@
        "lat": 58.0424,
        "lon": -14.5852,
        "href": "https://astrogeo-ard.s3-us-west-2.amazonaws.com/moon/kaguya/terrain_camera/usgs_dtms_v2/TC1W2B0_01_01703N580E3451__TC2W2B0_01_01703N577E3451/TC1W2B0_01_01703N580E3451__TC2W2B0_01_01703N577E3451-DEM.tif",
-       "pair_score": 64.4041,
+       "pair_score": 57.2062,
        "logit": 0.5929,
        "scale_logits": {
         "site": 0.4418,
@@ -605,18 +659,18 @@
        },
        "W": 5.275,
        "contributions": {
-        "slope_mean": 0.0065,
+        "slope_mean": 0.1314,
         "rough_coarse": -0.0,
-        "geo_convex": 0.0671,
-        "geo_concave": 0.0233,
-        "shadow_low": 0.2001,
+        "geo_convex": 1.35,
+        "geo_concave": 0.4678,
+        "shadow_low": 4.026,
         "shadow_mid": 0.0,
         "norm_height": 0.0,
-        "d_relief": 0.1006,
-        "d_hurst": 0.1586,
-        "d_linearity": 0.008,
-        "d_depression_area": 0.0045,
-        "d_depression_depth": -0.0055
+        "d_relief": 2.0245,
+        "d_hurst": 3.1913,
+        "d_linearity": 0.1615,
+        "d_depression_area": 0.0909,
+        "d_depression_depth": -0.1117
        },
        "cell_cost": [
         [
@@ -765,7 +819,22 @@
         30,
         2,
         22
-       ]
+       ],
+       "pair_score_raw": 64.4041,
+       "contributions_logit": {
+        "slope_mean": 0.0065,
+        "rough_coarse": -0.0,
+        "geo_convex": 0.0671,
+        "geo_concave": 0.0233,
+        "shadow_low": 0.2001,
+        "shadow_mid": 0.0,
+        "norm_height": 0.0,
+        "d_relief": 0.1006,
+        "d_hurst": 0.1586,
+        "d_linearity": 0.008,
+        "d_depression_area": 0.0045,
+        "d_depression_depth": -0.0055
+       }
       },
       {
        "index": 150,
@@ -775,7 +844,7 @@
        "lat": -24.6761,
        "lon": -35.8284,
        "href": "https://astrogeo-ard.s3-us-west-2.amazonaws.com/moon/kaguya/terrain_camera/usgs_dtms_v2/TC1W2B0_01_02723S246E3238__TC2W2B0_01_02723S242E3238/TC1W2B0_01_02723S246E3238__TC2W2B0_01_02723S242E3238-DEM.tif",
-       "pair_score": 64.2583,
+       "pair_score": 57.0782,
        "logit": 0.5866,
        "scale_logits": {
         "site": 0.5012,
@@ -783,18 +852,18 @@
        },
        "W": 2.5155,
        "contributions": {
-        "slope_mean": 0.0164,
+        "slope_mean": 0.3314,
         "rough_coarse": -0.0,
-        "geo_convex": 0.0435,
-        "geo_concave": 0.0229,
-        "shadow_low": 0.254,
+        "geo_convex": 0.8769,
+        "geo_concave": 0.4607,
+        "shadow_low": 5.119,
         "shadow_mid": 0.0,
         "norm_height": 0.0,
-        "d_relief": 0.0991,
-        "d_hurst": 0.1498,
-        "d_linearity": 0.0343,
-        "d_depression_area": 0.005,
-        "d_depression_depth": -0.0024
+        "d_relief": 1.9979,
+        "d_hurst": 3.0204,
+        "d_linearity": 0.6919,
+        "d_depression_area": 0.1004,
+        "d_depression_depth": -0.0486
        },
        "cell_cost": [
         [
@@ -943,7 +1012,22 @@
         54,
         38,
         20
-       ]
+       ],
+       "pair_score_raw": 64.2583,
+       "contributions_logit": {
+        "slope_mean": 0.0164,
+        "rough_coarse": -0.0,
+        "geo_convex": 0.0435,
+        "geo_concave": 0.0229,
+        "shadow_low": 0.254,
+        "shadow_mid": 0.0,
+        "norm_height": 0.0,
+        "d_relief": 0.0991,
+        "d_hurst": 0.1498,
+        "d_linearity": 0.0343,
+        "d_depression_area": 0.005,
+        "d_depression_depth": -0.0024
+       }
       }
      ],
      "overall": 68.4758
@@ -977,7 +1061,7 @@
        "lat": 12.7987,
        "lon": -57.8095,
        "href": "https://astrogeo-ard.s3-us-west-2.amazonaws.com/moon/kaguya/terrain_camera/usgs_dtms_v2/TC1W2B0_01_02743N126E3026__TC2W2B0_01_02743N132E3025/TC1W2B0_01_02743N126E3026__TC2W2B0_01_02743N132E3025-DEM.tif",
-       "pair_score": 59.3898,
+       "pair_score": 18.7191,
        "logit": 0.3801,
        "scale_logits": {
         "site": 0.4296,
@@ -985,18 +1069,18 @@
        },
        "W": 2.5816,
        "contributions": {
-        "slope_mean": 0.0151,
+        "slope_mean": 0.2049,
         "rough_coarse": -0.0,
-        "geo_convex": 0.0286,
-        "geo_concave": 0.0107,
-        "shadow_low": 0.1721,
+        "geo_convex": 0.3876,
+        "geo_concave": 0.1457,
+        "shadow_low": 2.3362,
         "shadow_mid": 0.0,
         "norm_height": 0.0,
-        "d_relief": 0.1341,
-        "d_hurst": 0.1776,
-        "d_linearity": 0.0145,
-        "d_depression_area": -0.002,
-        "d_depression_depth": 0.0003
+        "d_relief": 1.8207,
+        "d_hurst": 2.4107,
+        "d_linearity": 0.1967,
+        "d_depression_area": -0.0266,
+        "d_depression_depth": 0.0034
        },
        "cell_cost": [
         [
@@ -1145,7 +1229,22 @@
         9,
         36,
         21
-       ]
+       ],
+       "pair_score_raw": 59.3898,
+       "contributions_logit": {
+        "slope_mean": 0.0151,
+        "rough_coarse": -0.0,
+        "geo_convex": 0.0286,
+        "geo_concave": 0.0107,
+        "shadow_low": 0.1721,
+        "shadow_mid": 0.0,
+        "norm_height": 0.0,
+        "d_relief": 0.1341,
+        "d_hurst": 0.1776,
+        "d_linearity": 0.0145,
+        "d_depression_area": -0.002,
+        "d_depression_depth": 0.0003
+       }
       },
       {
        "index": 654,
@@ -1155,7 +1254,7 @@
        "lat": 5.5187,
        "lon": 35.6208,
        "href": "https://astrogeo-ard.s3-us-west-2.amazonaws.com/moon/kaguya/terrain_camera/usgs_dtms_v2/TC1W2B0_01_05157N052E0357__TC2W2B0_01_05157N056E0357/TC1W2B0_01_05157N052E0357__TC2W2B0_01_05157N056E0357-DEM.tif",
-       "pair_score": 59.2851,
+       "pair_score": 18.6602,
        "logit": 0.3758,
        "scale_logits": {
         "site": 0.525,
@@ -1163,18 +1262,18 @@
        },
        "W": 3.3482,
        "contributions": {
-        "slope_mean": 0.0114,
+        "slope_mean": 0.1543,
         "rough_coarse": -0.0,
-        "geo_convex": 0.052,
-        "geo_concave": 0.0205,
-        "shadow_low": 0.3063,
+        "geo_convex": 0.705,
+        "geo_concave": 0.2774,
+        "shadow_low": 4.149,
         "shadow_mid": 0.0,
         "norm_height": 0.0,
-        "d_relief": 0.0616,
-        "d_hurst": 0.1614,
-        "d_linearity": 0.0291,
-        "d_depression_area": 0.0043,
-        "d_depression_depth": -0.0001
+        "d_relief": 0.8343,
+        "d_hurst": 2.1871,
+        "d_linearity": 0.3937,
+        "d_depression_area": 0.0581,
+        "d_depression_depth": -0.0011
        },
        "cell_cost": [
         [
@@ -1323,7 +1422,22 @@
         5,
         4,
         19
-       ]
+       ],
+       "pair_score_raw": 59.2851,
+       "contributions_logit": {
+        "slope_mean": 0.0114,
+        "rough_coarse": -0.0,
+        "geo_convex": 0.052,
+        "geo_concave": 0.0205,
+        "shadow_low": 0.3063,
+        "shadow_mid": 0.0,
+        "norm_height": 0.0,
+        "d_relief": 0.0616,
+        "d_hurst": 0.1614,
+        "d_linearity": 0.0291,
+        "d_depression_area": 0.0043,
+        "d_depression_depth": -0.0001
+       }
       },
       {
        "index": 754,
@@ -1333,7 +1447,7 @@
        "lat": 3.0077,
        "lon": 1.9131,
        "href": "https://astrogeo-ard.s3-us-west-2.amazonaws.com/moon/kaguya/terrain_camera/usgs_dtms_v2/TC1W2B0_01_02688N033E0022__TC2W2B0_01_02688N025E0022/TC1W2B0_01_02688N033E0022__TC2W2B0_01_02688N025E0022-DEM.tif",
-       "pair_score": 59.2075,
+       "pair_score": 18.6167,
        "logit": 0.3725,
        "scale_logits": {
         "site": 0.3399,
@@ -1341,18 +1455,18 @@
        },
        "W": 6.3647,
        "contributions": {
-        "slope_mean": 0.0048,
+        "slope_mean": 0.0645,
         "rough_coarse": -0.0,
-        "geo_convex": 0.0559,
-        "geo_concave": 0.0139,
-        "shadow_low": 0.2004,
+        "geo_convex": 0.7556,
+        "geo_concave": 0.1878,
+        "shadow_low": 2.7108,
         "shadow_mid": 0.0,
         "norm_height": 0.0,
-        "d_relief": 0.0527,
-        "d_hurst": 0.1316,
-        "d_linearity": 0.0039,
-        "d_depression_area": -0.005,
-        "d_depression_depth": 0.0031
+        "d_relief": 0.7136,
+        "d_hurst": 1.7807,
+        "d_linearity": 0.0534,
+        "d_depression_area": -0.0677,
+        "d_depression_depth": 0.0414
        },
        "cell_cost": [
         [
@@ -1501,7 +1615,22 @@
         55,
         52,
         10
-       ]
+       ],
+       "pair_score_raw": 59.2075,
+       "contributions_logit": {
+        "slope_mean": 0.0048,
+        "rough_coarse": -0.0,
+        "geo_convex": 0.0559,
+        "geo_concave": 0.0139,
+        "shadow_low": 0.2004,
+        "shadow_mid": 0.0,
+        "norm_height": 0.0,
+        "d_relief": 0.0527,
+        "d_hurst": 0.1316,
+        "d_linearity": 0.0039,
+        "d_depression_area": -0.005,
+        "d_depression_depth": 0.0031
+       }
       },
       {
        "index": 1093,
@@ -1511,7 +1640,7 @@
        "lat": 10.0672,
        "lon": -53.4691,
        "href": "https://astrogeo-ard.s3-us-west-2.amazonaws.com/moon/kaguya/terrain_camera/usgs_dtms_v2/TC1W2B0_01_05748N101E3067__TC2W2B0_01_05748N105E3067/TC1W2B0_01_05748N101E3067__TC2W2B0_01_05748N105E3067-DEM.tif",
-       "pair_score": 59.1662,
+       "pair_score": 18.5936,
        "logit": 0.3708,
        "scale_logits": {
         "site": 0.3635,
@@ -1519,18 +1648,18 @@
        },
        "W": 5.4423,
        "contributions": {
-        "slope_mean": 0.0092,
+        "slope_mean": 0.1244,
         "rough_coarse": -0.0,
-        "geo_convex": 0.0454,
-        "geo_concave": 0.0018,
-        "shadow_low": 0.1799,
+        "geo_convex": 0.6141,
+        "geo_concave": 0.0249,
+        "shadow_low": 2.4317,
         "shadow_mid": 0.0,
         "norm_height": 0.0,
-        "d_relief": 0.0684,
-        "d_hurst": 0.1655,
-        "d_linearity": 0.0179,
-        "d_depression_area": -0.0004,
-        "d_depression_depth": -0.0027
+        "d_relief": 0.9239,
+        "d_hurst": 2.2365,
+        "d_linearity": 0.242,
+        "d_depression_area": -0.006,
+        "d_depression_depth": -0.0369
        },
        "cell_cost": [
         [
@@ -1679,7 +1808,22 @@
         2,
         13,
         10
-       ]
+       ],
+       "pair_score_raw": 59.1662,
+       "contributions_logit": {
+        "slope_mean": 0.0092,
+        "rough_coarse": -0.0,
+        "geo_convex": 0.0454,
+        "geo_concave": 0.0018,
+        "shadow_low": 0.1799,
+        "shadow_mid": 0.0,
+        "norm_height": 0.0,
+        "d_relief": 0.0684,
+        "d_hurst": 0.1655,
+        "d_linearity": 0.0179,
+        "d_depression_area": -0.0004,
+        "d_depression_depth": -0.0027
+       }
       },
       {
        "index": 795,
@@ -1689,7 +1833,7 @@
        "lat": 8.627,
        "lon": -50.164,
        "href": "https://astrogeo-ard.s3-us-west-2.amazonaws.com/moon/kaguya/terrain_camera/usgs_dtms_v2/TC1W2B0_01_05745N087E3099__TC2W2B0_01_05745N090E3099/TC1W2B0_01_05745N087E3099__TC2W2B0_01_05745N090E3099-DEM.tif",
-       "pair_score": 58.385,
+       "pair_score": 18.161,
        "logit": 0.3386,
        "scale_logits": {
         "site": 0.3489,
@@ -1697,18 +1841,18 @@
        },
        "W": 3.7298,
        "contributions": {
-        "slope_mean": 0.0135,
+        "slope_mean": 0.1795,
         "rough_coarse": -0.0,
-        "geo_convex": 0.0716,
-        "geo_concave": 0.0032,
-        "shadow_low": 0.0701,
+        "geo_convex": 0.9536,
+        "geo_concave": 0.043,
+        "shadow_low": 0.9336,
         "shadow_mid": 0.0,
         "norm_height": 0.0,
-        "d_relief": 0.1944,
-        "d_hurst": 0.1217,
-        "d_linearity": -0.0045,
-        "d_depression_area": 0.0057,
-        "d_depression_depth": -0.0054
+        "d_relief": 2.589,
+        "d_hurst": 1.621,
+        "d_linearity": -0.0605,
+        "d_depression_area": 0.0762,
+        "d_depression_depth": -0.0714
        },
        "cell_cost": [
         [
@@ -1857,7 +2001,22 @@
         63,
         31,
         30
-       ]
+       ],
+       "pair_score_raw": 58.385,
+       "contributions_logit": {
+        "slope_mean": 0.0135,
+        "rough_coarse": -0.0,
+        "geo_convex": 0.0716,
+        "geo_concave": 0.0032,
+        "shadow_low": 0.0701,
+        "shadow_mid": 0.0,
+        "norm_height": 0.0,
+        "d_relief": 0.1944,
+        "d_hurst": 0.1217,
+        "d_linearity": -0.0045,
+        "d_depression_area": 0.0057,
+        "d_depression_depth": -0.0054
+       }
       }
      ],
      "overall": 37.0201
@@ -1891,7 +2050,7 @@
        "lat": 10.6174,
        "lon": 1.8611,
        "href": "https://astrogeo-ard.s3-us-west-2.amazonaws.com/moon/kaguya/terrain_camera/usgs_dtms_v2/TC1W2B0_01_05188N110E0023__TC2W2B0_01_05188N101E0023/TC1W2B0_01_05188N110E0023__TC2W2B0_01_05188N101E0023-DEM.tif",
-       "pair_score": 52.1551,
+       "pair_score": 9.187,
        "logit": 0.0863,
        "scale_logits": {
         "site": 0.3184,
@@ -1899,18 +2058,18 @@
        },
        "W": 4.235,
        "contributions": {
-        "slope_mean": 0.0111,
+        "slope_mean": 0.0782,
         "rough_coarse": -0.0,
-        "geo_convex": 0.0355,
-        "geo_concave": 0.0099,
-        "shadow_low": 0.2583,
+        "geo_convex": 0.2514,
+        "geo_concave": 0.0699,
+        "shadow_low": 1.8279,
         "shadow_mid": 0.0,
         "norm_height": 0.0,
-        "d_relief": 0.04,
-        "d_hurst": 0.0665,
-        "d_linearity": 0.0139,
-        "d_depression_area": 0.0011,
-        "d_depression_depth": 0.0036
+        "d_relief": 0.2829,
+        "d_hurst": 0.4709,
+        "d_linearity": 0.0985,
+        "d_depression_area": 0.0075,
+        "d_depression_depth": 0.0252
        },
        "cell_cost": [
         [
@@ -2059,7 +2218,22 @@
         27,
         19,
         10
-       ]
+       ],
+       "pair_score_raw": 52.1551,
+       "contributions_logit": {
+        "slope_mean": 0.0111,
+        "rough_coarse": -0.0,
+        "geo_convex": 0.0355,
+        "geo_concave": 0.0099,
+        "shadow_low": 0.2583,
+        "shadow_mid": 0.0,
+        "norm_height": 0.0,
+        "d_relief": 0.04,
+        "d_hurst": 0.0665,
+        "d_linearity": 0.0139,
+        "d_depression_area": 0.0011,
+        "d_depression_depth": 0.0036
+       }
       },
       {
        "index": 1575,
@@ -2069,7 +2243,7 @@
        "lat": 50.6116,
        "lon": 17.1854,
        "href": "https://astrogeo-ard.s3-us-west-2.amazonaws.com/moon/kaguya/terrain_camera/usgs_dtms_v2/TC1W2B0_01_01674N508E0168__TC2W2B0_01_01674N506E0168/TC1W2B0_01_01674N508E0168__TC2W2B0_01_01674N506E0168-DEM.tif",
-       "pair_score": 50.4563,
+       "pair_score": 8.7146,
        "logit": 0.0183,
        "scale_logits": {
         "site": 0.518,
@@ -2077,18 +2251,18 @@
        },
        "W": 6.4857,
        "contributions": {
-        "slope_mean": 0.0089,
+        "slope_mean": 0.0609,
         "rough_coarse": -0.0,
-        "geo_convex": 0.0651,
-        "geo_concave": 0.0224,
-        "shadow_low": 0.299,
+        "geo_convex": 0.4435,
+        "geo_concave": 0.1528,
+        "shadow_low": 2.0379,
         "shadow_mid": 0.0,
         "norm_height": 0.0,
-        "d_relief": 0.0686,
-        "d_hurst": 0.1531,
-        "d_linearity": 0.0229,
-        "d_depression_area": 0.003,
-        "d_depression_depth": -0.0036
+        "d_relief": 0.4675,
+        "d_hurst": 1.0437,
+        "d_linearity": 0.1559,
+        "d_depression_area": 0.0206,
+        "d_depression_depth": -0.0246
        },
        "cell_cost": [
         [
@@ -2237,7 +2411,22 @@
         43,
         10,
         3
-       ]
+       ],
+       "pair_score_raw": 50.4563,
+       "contributions_logit": {
+        "slope_mean": 0.0089,
+        "rough_coarse": -0.0,
+        "geo_convex": 0.0651,
+        "geo_concave": 0.0224,
+        "shadow_low": 0.299,
+        "shadow_mid": 0.0,
+        "norm_height": 0.0,
+        "d_relief": 0.0686,
+        "d_hurst": 0.1531,
+        "d_linearity": 0.0229,
+        "d_depression_area": 0.003,
+        "d_depression_depth": -0.0036
+       }
       },
       {
        "index": 1278,
@@ -2247,7 +2436,7 @@
        "lat": 28.7507,
        "lon": -48.7033,
        "href": "https://astrogeo-ard.s3-us-west-2.amazonaws.com/moon/kaguya/terrain_camera/usgs_dtms_v2/TC2W2B0_01_07137N286E3114__TC1W2B0_01_07137N291E3115/TC2W2B0_01_07137N286E3114__TC1W2B0_01_07137N291E3115-DEM.tif",
-       "pair_score": 48.7911,
+       "pair_score": 8.2691,
        "logit": -0.0484,
        "scale_logits": {
         "site": 0.1913,
@@ -2255,18 +2444,18 @@
        },
        "W": 5.7421,
        "contributions": {
-        "slope_mean": 0.0075,
+        "slope_mean": 0.049,
         "rough_coarse": -0.0,
-        "geo_convex": 0.0387,
-        "geo_concave": 0.0225,
-        "shadow_low": 0.2423,
+        "geo_convex": 0.254,
+        "geo_concave": 0.1478,
+        "shadow_low": 1.5897,
         "shadow_mid": 0.0,
         "norm_height": 0.0,
-        "d_relief": -0.0097,
-        "d_hurst": 0.0002,
-        "d_linearity": 0.0127,
-        "d_depression_area": -0.0033,
-        "d_depression_depth": 0.0018
+        "d_relief": -0.0639,
+        "d_hurst": 0.0016,
+        "d_linearity": 0.0835,
+        "d_depression_area": -0.0219,
+        "d_depression_depth": 0.0117
        },
        "cell_cost": [
         [
@@ -2415,7 +2604,22 @@
         9,
         19,
         53
-       ]
+       ],
+       "pair_score_raw": 48.7911,
+       "contributions_logit": {
+        "slope_mean": 0.0075,
+        "rough_coarse": -0.0,
+        "geo_convex": 0.0387,
+        "geo_concave": 0.0225,
+        "shadow_low": 0.2423,
+        "shadow_mid": 0.0,
+        "norm_height": 0.0,
+        "d_relief": -0.0097,
+        "d_hurst": 0.0002,
+        "d_linearity": 0.0127,
+        "d_depression_area": -0.0033,
+        "d_depression_depth": 0.0018
+       }
       },
       {
        "index": 1343,
@@ -2425,7 +2629,7 @@
        "lat": 16.3832,
        "lon": -96.5729,
        "href": "https://astrogeo-ard.s3-us-west-2.amazonaws.com/moon/kaguya/terrain_camera/usgs_dtms_v2/TC1W2B0_01_04945N166E2639__TC2W2B0_01_04945N163E2639/TC1W2B0_01_04945N166E2639__TC2W2B0_01_04945N163E2639-DEM.tif",
-       "pair_score": 47.7722,
+       "pair_score": 8.0046,
        "logit": -0.0892,
        "scale_logits": {
         "site": 0.2605,
@@ -2433,18 +2637,18 @@
        },
        "W": 6.3926,
        "contributions": {
-        "slope_mean": 0.0064,
+        "slope_mean": 0.0408,
         "rough_coarse": -0.0,
-        "geo_convex": 0.052,
-        "geo_concave": 0.015,
-        "shadow_low": 0.2318,
+        "geo_convex": 0.3329,
+        "geo_concave": 0.0959,
+        "shadow_low": 1.4838,
         "shadow_mid": 0.0,
         "norm_height": 0.0,
-        "d_relief": 0.0246,
-        "d_hurst": 0.0695,
-        "d_linearity": -0.0145,
-        "d_depression_area": -0.0016,
-        "d_depression_depth": -0.0011
+        "d_relief": 0.1573,
+        "d_hurst": 0.4448,
+        "d_linearity": -0.0926,
+        "d_depression_area": -0.0105,
+        "d_depression_depth": -0.007
        },
        "cell_cost": [
         [
@@ -2593,7 +2797,22 @@
         41,
         33,
         34
-       ]
+       ],
+       "pair_score_raw": 47.7722,
+       "contributions_logit": {
+        "slope_mean": 0.0064,
+        "rough_coarse": -0.0,
+        "geo_convex": 0.052,
+        "geo_concave": 0.015,
+        "shadow_low": 0.2318,
+        "shadow_mid": 0.0,
+        "norm_height": 0.0,
+        "d_relief": 0.0246,
+        "d_hurst": 0.0695,
+        "d_linearity": -0.0145,
+        "d_depression_area": -0.0016,
+        "d_depression_depth": -0.0011
+       }
       },
       {
        "index": 1143,
@@ -2603,7 +2822,7 @@
        "lat": -73.7899,
        "lon": 91.4942,
        "href": "https://astrogeo-ard.s3-us-west-2.amazonaws.com/moon/kaguya/terrain_camera/usgs_dtms_v2/TC1W2B0_01_01607S744E0899__TC2W2B0_01_01607S735E0898/TC1W2B0_01_01607S744E0899__TC2W2B0_01_01607S735E0898-DEM.tif",
-       "pair_score": 46.8811,
+       "pair_score": 7.7782,
        "logit": -0.1249,
        "scale_logits": {
         "site": 0.3328,
@@ -2611,18 +2830,18 @@
        },
        "W": 7.758,
        "contributions": {
-        "slope_mean": 0.0049,
+        "slope_mean": 0.0305,
         "rough_coarse": -0.0,
-        "geo_convex": -0.0026,
-        "geo_concave": 0.024,
-        "shadow_low": 0.2432,
+        "geo_convex": -0.0161,
+        "geo_concave": 0.1503,
+        "shadow_low": 1.524,
         "shadow_mid": 0.0,
         "norm_height": 0.0,
-        "d_relief": 0.0859,
-        "d_hurst": 0.094,
-        "d_linearity": 0.0064,
-        "d_depression_area": 0.0041,
-        "d_depression_depth": -0.0057
+        "d_relief": 0.538,
+        "d_hurst": 0.589,
+        "d_linearity": 0.0404,
+        "d_depression_area": 0.0255,
+        "d_depression_depth": -0.0355
        },
        "cell_cost": [
         [
@@ -2771,7 +2990,22 @@
         33,
         7,
         13
-       ]
+       ],
+       "pair_score_raw": 46.8811,
+       "contributions_logit": {
+        "slope_mean": 0.0049,
+        "rough_coarse": -0.0,
+        "geo_convex": -0.0026,
+        "geo_concave": 0.024,
+        "shadow_low": 0.2432,
+        "shadow_mid": 0.0,
+        "norm_height": 0.0,
+        "d_relief": 0.0859,
+        "d_hurst": 0.094,
+        "d_linearity": 0.0064,
+        "d_depression_area": 0.0041,
+        "d_depression_depth": -0.0057
+       }
       }
      ],
      "overall": 25.457
@@ -2805,7 +3039,7 @@
        "lat": -85.2564,
        "lon": 128.4364,
        "href": "https://pgda.gsfc.nasa.gov/data/LOLA_20mpp/LDEM_80S_20MPP_ADJ.TIF",
-       "pair_score": 59.439,
+       "pair_score": 10.3668,
        "logit": 0.3821,
        "scale_logits": {
         "site": 0.3535,
@@ -2813,18 +3047,18 @@
        },
        "W": 7.0454,
        "contributions": {
-        "slope_mean": 0.0045,
+        "slope_mean": 0.0342,
         "rough_coarse": -0.0,
-        "geo_convex": 0.0671,
-        "geo_concave": 0.0187,
-        "shadow_low": 0.1491,
+        "geo_convex": 0.5151,
+        "geo_concave": 0.1435,
+        "shadow_low": 1.1453,
         "shadow_mid": 0.0,
         "norm_height": 0.0,
-        "d_relief": 0.1158,
-        "d_hurst": 0.1108,
-        "d_linearity": 0.0086,
-        "d_depression_area": 0.0056,
-        "d_depression_depth": -0.0052
+        "d_relief": 0.8893,
+        "d_hurst": 0.8507,
+        "d_linearity": 0.066,
+        "d_depression_area": 0.043,
+        "d_depression_depth": -0.0398
        },
        "cell_cost": [
         [
@@ -2973,7 +3207,22 @@
         31,
         52,
         58
-       ]
+       ],
+       "pair_score_raw": 59.439,
+       "contributions_logit": {
+        "slope_mean": 0.0045,
+        "rough_coarse": -0.0,
+        "geo_convex": 0.0671,
+        "geo_concave": 0.0187,
+        "shadow_low": 0.1491,
+        "shadow_mid": 0.0,
+        "norm_height": 0.0,
+        "d_relief": 0.1158,
+        "d_hurst": 0.1108,
+        "d_linearity": 0.0086,
+        "d_depression_area": 0.0056,
+        "d_depression_depth": -0.0052
+       }
       },
       {
        "index": 1891,
@@ -2983,7 +3232,7 @@
        "lat": -86.5795,
        "lon": 171.5444,
        "href": "https://pgda.gsfc.nasa.gov/data/LOLA_20mpp/LDEM_80S_20MPP_ADJ.TIF",
-       "pair_score": 52.2102,
+       "pair_score": 8.2744,
        "logit": 0.0885,
        "scale_logits": {
         "site": 0.2012,
@@ -2991,18 +3240,18 @@
        },
        "W": 6.3326,
        "contributions": {
-        "slope_mean": 0.0063,
+        "slope_mean": 0.0412,
         "rough_coarse": -0.0,
-        "geo_convex": 0.0398,
-        "geo_concave": 0.0205,
-        "shadow_low": 0.225,
+        "geo_convex": 0.2613,
+        "geo_concave": 0.1344,
+        "shadow_low": 1.4764,
         "shadow_mid": 0.0,
         "norm_height": 0.0,
-        "d_relief": 0.0161,
-        "d_hurst": -0.0111,
-        "d_linearity": 0.0304,
-        "d_depression_area": -0.003,
-        "d_depression_depth": -0.0013
+        "d_relief": 0.1055,
+        "d_hurst": -0.0731,
+        "d_linearity": 0.1996,
+        "d_depression_area": -0.0194,
+        "d_depression_depth": -0.0087
        },
        "cell_cost": [
         [
@@ -3151,7 +3400,22 @@
         19,
         28,
         18
-       ]
+       ],
+       "pair_score_raw": 52.2102,
+       "contributions_logit": {
+        "slope_mean": 0.0063,
+        "rough_coarse": -0.0,
+        "geo_convex": 0.0398,
+        "geo_concave": 0.0205,
+        "shadow_low": 0.225,
+        "shadow_mid": 0.0,
+        "norm_height": 0.0,
+        "d_relief": 0.0161,
+        "d_hurst": -0.0111,
+        "d_linearity": 0.0304,
+        "d_depression_area": -0.003,
+        "d_depression_depth": -0.0013
+       }
       },
       {
        "index": 2145,
@@ -3161,7 +3425,7 @@
        "lat": -82.4136,
        "lon": 103.0692,
        "href": "https://pgda.gsfc.nasa.gov/data/LOLA_20mpp/LDEM_80S_20MPP_ADJ.TIF",
-       "pair_score": 52.1328,
+       "pair_score": 8.254,
        "logit": 0.0854,
        "scale_logits": {
         "site": 0.3006,
@@ -3169,18 +3433,18 @@
        },
        "W": 5.2786,
        "contributions": {
-        "slope_mean": 0.0074,
+        "slope_mean": 0.0484,
         "rough_coarse": -0.0,
-        "geo_convex": 0.0524,
-        "geo_concave": 0.0175,
-        "shadow_low": 0.1584,
+        "geo_convex": 0.343,
+        "geo_concave": 0.1147,
+        "shadow_low": 1.0378,
         "shadow_mid": 0.0,
         "norm_height": 0.0,
-        "d_relief": 0.0995,
-        "d_hurst": 0.0941,
-        "d_linearity": -0.0031,
-        "d_depression_area": 0.0019,
-        "d_depression_depth": -0.006
+        "d_relief": 0.6519,
+        "d_hurst": 0.6167,
+        "d_linearity": -0.0205,
+        "d_depression_area": 0.0122,
+        "d_depression_depth": -0.0393
        },
        "cell_cost": [
         [
@@ -3329,7 +3593,22 @@
         34,
         44,
         26
-       ]
+       ],
+       "pair_score_raw": 52.1328,
+       "contributions_logit": {
+        "slope_mean": 0.0074,
+        "rough_coarse": -0.0,
+        "geo_convex": 0.0524,
+        "geo_concave": 0.0175,
+        "shadow_low": 0.1584,
+        "shadow_mid": 0.0,
+        "norm_height": 0.0,
+        "d_relief": 0.0995,
+        "d_hurst": 0.0941,
+        "d_linearity": -0.0031,
+        "d_depression_area": 0.0019,
+        "d_depression_depth": -0.006
+       }
       },
       {
        "index": 1969,
@@ -3339,7 +3618,7 @@
        "lat": -86.4767,
        "lon": -170.1012,
        "href": "https://pgda.gsfc.nasa.gov/data/LOLA_20mpp/LDEM_80S_20MPP_ADJ.TIF",
-       "pair_score": 51.328,
+       "pair_score": 8.0449,
        "logit": 0.0531,
        "scale_logits": {
         "site": 0.3262,
@@ -3347,18 +3626,18 @@
        },
        "W": 6.2254,
        "contributions": {
-        "slope_mean": 0.0054,
+        "slope_mean": 0.0347,
         "rough_coarse": -0.0,
-        "geo_convex": 0.0505,
-        "geo_concave": 0.0068,
-        "shadow_low": 0.0784,
+        "geo_convex": 0.3243,
+        "geo_concave": 0.0435,
+        "shadow_low": 0.5038,
         "shadow_mid": 0.0,
         "norm_height": 0.0,
-        "d_relief": 0.101,
-        "d_hurst": 0.1819,
-        "d_linearity": 0.0251,
-        "d_depression_area": 0.0034,
-        "d_depression_depth": -0.0047
+        "d_relief": 0.649,
+        "d_hurst": 1.1688,
+        "d_linearity": 0.1614,
+        "d_depression_area": 0.0217,
+        "d_depression_depth": -0.0304
        },
        "cell_cost": [
         [
@@ -3507,7 +3786,22 @@
         40,
         0,
         33
-       ]
+       ],
+       "pair_score_raw": 51.328,
+       "contributions_logit": {
+        "slope_mean": 0.0054,
+        "rough_coarse": -0.0,
+        "geo_convex": 0.0505,
+        "geo_concave": 0.0068,
+        "shadow_low": 0.0784,
+        "shadow_mid": 0.0,
+        "norm_height": 0.0,
+        "d_relief": 0.101,
+        "d_hurst": 0.1819,
+        "d_linearity": 0.0251,
+        "d_depression_area": 0.0034,
+        "d_depression_depth": -0.0047
+       }
       },
       {
        "index": 2043,
@@ -3517,7 +3811,7 @@
        "lat": -80.0161,
        "lon": -130.9464,
        "href": "https://pgda.gsfc.nasa.gov/data/LOLA_20mpp/LDEM_80S_20MPP_ADJ.TIF",
-       "pair_score": 50.7574,
+       "pair_score": 7.8992,
        "logit": 0.0303,
        "scale_logits": {
         "site": 0.411,
@@ -3525,18 +3819,18 @@
        },
        "W": 2.7571,
        "contributions": {
-        "slope_mean": 0.0122,
+        "slope_mean": 0.0773,
         "rough_coarse": -0.0,
-        "geo_convex": 0.0644,
-        "geo_concave": 0.01,
-        "shadow_low": 0.1906,
+        "geo_convex": 0.4085,
+        "geo_concave": 0.0636,
+        "shadow_low": 1.208,
         "shadow_mid": 0.0,
         "norm_height": 0.0,
-        "d_relief": 0.1889,
-        "d_hurst": 0.1086,
-        "d_linearity": -0.027,
-        "d_depression_area": -0.0101,
-        "d_depression_depth": -0.0051
+        "d_relief": 1.1975,
+        "d_hurst": 0.6882,
+        "d_linearity": -0.1712,
+        "d_depression_area": -0.0641,
+        "d_depression_depth": -0.0326
        },
        "cell_cost": [
         [
@@ -3685,7 +3979,22 @@
         11,
         17,
         3
-       ]
+       ],
+       "pair_score_raw": 50.7574,
+       "contributions_logit": {
+        "slope_mean": 0.0122,
+        "rough_coarse": -0.0,
+        "geo_convex": 0.0644,
+        "geo_concave": 0.01,
+        "shadow_low": 0.1906,
+        "shadow_mid": 0.0,
+        "norm_height": 0.0,
+        "d_relief": 0.1889,
+        "d_hurst": 0.1086,
+        "d_linearity": -0.027,
+        "d_depression_area": -0.0101,
+        "d_depression_depth": -0.0051
+       }
       }
      ],
      "overall": 25.457
@@ -3703,7 +4012,7 @@
     "lat": 32.274,
     "lon": -75.974,
     "href": "https://astrogeo-ard.s3-us-west-2.amazonaws.com/moon/kaguya/terrain_camera/usgs_dtms_v2/TC1W2B0_01_05261N318E2841__TC2W2B0_01_05261N322E2841/TC1W2B0_01_05261N318E2841__TC2W2B0_01_05261N322E2841-DEM.tif",
-    "pair_score": 68.9153,
+    "pair_score": 61.1619,
     "logit": 0.7962,
     "scale_logits": {
      "site": 0.5233,
@@ -3711,18 +4020,18 @@
     },
     "W": 1.6246,
     "contributions": {
-     "slope_mean": 0.0228,
+     "slope_mean": 0.4276,
      "rough_coarse": -0.0,
-     "geo_convex": 0.0301,
-     "geo_concave": 0.0233,
-     "shadow_low": 0.2743,
+     "geo_convex": 0.5654,
+     "geo_concave": 0.4374,
+     "shadow_low": 5.1487,
      "shadow_mid": 0.0,
      "norm_height": 0.0,
-     "d_relief": 0.1777,
-     "d_hurst": 0.0706,
-     "d_linearity": 0.0348,
-     "d_depression_area": 0.0074,
-     "d_depression_depth": 0.0037
+     "d_relief": 3.3343,
+     "d_hurst": 1.3255,
+     "d_linearity": 0.6531,
+     "d_depression_area": 0.1395,
+     "d_depression_depth": 0.0692
     },
     "cell_cost": [
      [
@@ -3871,7 +4180,22 @@
      10,
      16,
      25
-    ]
+    ],
+    "pair_score_raw": 68.9153,
+    "contributions_logit": {
+     "slope_mean": 0.0228,
+     "rough_coarse": -0.0,
+     "geo_convex": 0.0301,
+     "geo_concave": 0.0233,
+     "shadow_low": 0.2743,
+     "shadow_mid": 0.0,
+     "norm_height": 0.0,
+     "d_relief": 0.1777,
+     "d_hurst": 0.0706,
+     "d_linearity": 0.0348,
+     "d_depression_area": 0.0074,
+     "d_depression_depth": 0.0037
+    }
    }
   },
   "mars": {
@@ -3905,7 +4229,7 @@
        "lat": -4.4108,
        "lon": 152.2518,
        "href": "https://astrogeo-ard.s3-us-west-2.amazonaws.com/mars/mro/ctx/controlled/usgs/B10_013724_1750_XI_05S207W__G09_021649_1750_XI_05S207W/B10_013724_1750_XI_05S207W__G09_021649_1750_XI_05S207W-DEM.tif",
-       "pair_score": 65.7911,
+       "pair_score": 38.0865,
        "logit": 0.654,
        "scale_logits": {
         "site": 0.2855,
@@ -3913,18 +4237,18 @@
        },
        "W": 6.9734,
        "contributions": {
-        "slope_mean": 0.0021,
+        "slope_mean": 0.0339,
         "rough_coarse": -0.0,
-        "geo_convex": 0.0709,
-        "geo_concave": 0.0185,
-        "shadow_low": 0.1282,
+        "geo_convex": 1.1189,
+        "geo_concave": 0.2914,
+        "shadow_low": 2.022,
         "shadow_mid": 0.0,
         "norm_height": 0.0,
-        "d_relief": 0.0402,
-        "d_hurst": 0.1654,
-        "d_linearity": -0.0053,
-        "d_depression_area": -0.0094,
-        "d_depression_depth": -0.0038
+        "d_relief": 0.6342,
+        "d_hurst": 2.6096,
+        "d_linearity": -0.0838,
+        "d_depression_area": -0.1482,
+        "d_depression_depth": -0.0601
        },
        "cell_cost": [
         [
@@ -4073,7 +4397,22 @@
         48,
         42,
         49
-       ]
+       ],
+       "pair_score_raw": 65.7911,
+       "contributions_logit": {
+        "slope_mean": 0.0021,
+        "rough_coarse": -0.0,
+        "geo_convex": 0.0709,
+        "geo_concave": 0.0185,
+        "shadow_low": 0.1282,
+        "shadow_mid": 0.0,
+        "norm_height": 0.0,
+        "d_relief": 0.0402,
+        "d_hurst": 0.1654,
+        "d_linearity": -0.0053,
+        "d_depression_area": -0.0094,
+        "d_depression_depth": -0.0038
+       }
       },
       {
        "index": 4620,
@@ -4083,7 +4422,7 @@
        "lat": -0.0867,
        "lon": -173.1602,
        "href": "https://astrogeo-ard.s3-us-west-2.amazonaws.com/mars/mro/ctx/controlled/usgs/B18_016782_1810_XN_01N173W__N15_068158_1817_XI_01N173W/B18_016782_1810_XN_01N173W__N15_068158_1817_XI_01N173W-DEM.tif",
-       "pair_score": 65.7518,
+       "pair_score": 38.0589,
        "logit": 0.6523,
        "scale_logits": {
         "site": 0.4118,
@@ -4091,18 +4430,18 @@
        },
        "W": 5.992,
        "contributions": {
-        "slope_mean": 0.0078,
+        "slope_mean": 0.1225,
         "rough_coarse": -0.0,
-        "geo_convex": 0.0779,
-        "geo_concave": 0.0219,
-        "shadow_low": 0.2644,
+        "geo_convex": 1.2288,
+        "geo_concave": 0.3455,
+        "shadow_low": 4.1711,
         "shadow_mid": 0.0,
         "norm_height": 0.0,
-        "d_relief": 0.0676,
-        "d_hurst": 0.1163,
-        "d_linearity": -0.0198,
-        "d_depression_area": 0.0032,
-        "d_depression_depth": -0.0059
+        "d_relief": 1.0665,
+        "d_hurst": 1.8343,
+        "d_linearity": -0.3121,
+        "d_depression_area": 0.05,
+        "d_depression_depth": -0.0935
        },
        "cell_cost": [
         [
@@ -4251,7 +4590,22 @@
         52,
         41,
         60
-       ]
+       ],
+       "pair_score_raw": 65.7518,
+       "contributions_logit": {
+        "slope_mean": 0.0078,
+        "rough_coarse": -0.0,
+        "geo_convex": 0.0779,
+        "geo_concave": 0.0219,
+        "shadow_low": 0.2644,
+        "shadow_mid": 0.0,
+        "norm_height": 0.0,
+        "d_relief": 0.0676,
+        "d_hurst": 0.1163,
+        "d_linearity": -0.0198,
+        "d_depression_area": 0.0032,
+        "d_depression_depth": -0.0059
+       }
       },
       {
        "index": 4406,
@@ -4261,7 +4615,7 @@
        "lat": 36.4865,
        "lon": 82.7164,
        "href": "https://astrogeo-ard.s3-us-west-2.amazonaws.com/mars/mro/ctx/controlled/usgs/J01_045163_2159_XN_35N277W__J01_045308_2159_XN_35N277W/J01_045163_2159_XN_35N277W__J01_045308_2159_XN_35N277W_dtm.tif",
-       "pair_score": 64.2165,
+       "pair_score": 36.9885,
        "logit": 0.5848,
        "scale_logits": {
         "site": 0.3086,
@@ -4269,18 +4623,18 @@
        },
        "W": 6.9111,
        "contributions": {
-        "slope_mean": 0.0023,
+        "slope_mean": 0.0362,
         "rough_coarse": -0.0,
-        "geo_convex": 0.0076,
-        "geo_concave": 0.0224,
-        "shadow_low": 0.1651,
+        "geo_convex": 0.1206,
+        "geo_concave": 0.3579,
+        "shadow_low": 2.6327,
         "shadow_mid": 0.0,
         "norm_height": 0.0,
-        "d_relief": 0.0323,
-        "d_hurst": 0.1751,
-        "d_linearity": 0.03,
-        "d_depression_area": 0.0013,
-        "d_depression_depth": -0.0061
+        "d_relief": 0.5147,
+        "d_hurst": 2.7909,
+        "d_linearity": 0.4784,
+        "d_depression_area": 0.0202,
+        "d_depression_depth": -0.0966
        },
        "cell_cost": [
         [
@@ -4429,7 +4783,22 @@
         27,
         52,
         60
-       ]
+       ],
+       "pair_score_raw": 64.2165,
+       "contributions_logit": {
+        "slope_mean": 0.0023,
+        "rough_coarse": -0.0,
+        "geo_convex": 0.0076,
+        "geo_concave": 0.0224,
+        "shadow_low": 0.1651,
+        "shadow_mid": 0.0,
+        "norm_height": 0.0,
+        "d_relief": 0.0323,
+        "d_hurst": 0.1751,
+        "d_linearity": 0.03,
+        "d_depression_area": 0.0013,
+        "d_depression_depth": -0.0061
+       }
       },
       {
        "index": 4407,
@@ -4439,7 +4808,7 @@
        "lat": -10.8627,
        "lon": 164.9219,
        "href": "https://astrogeo-ard.s3-us-west-2.amazonaws.com/mars/mro/ctx/controlled/usgs/J08_047771_1674_XN_12S194W__D07_029890_1674_XI_12S194W/J08_047771_1674_XN_12S194W__D07_029890_1674_XI_12S194W-DEM.tif",
-       "pair_score": 63.9507,
+       "pair_score": 36.8043,
        "logit": 0.5732,
        "scale_logits": {
         "site": 0.3219,
@@ -4447,18 +4816,18 @@
        },
        "W": 6.5281,
        "contributions": {
-        "slope_mean": 0.0039,
+        "slope_mean": 0.0617,
         "rough_coarse": -0.0,
-        "geo_convex": 0.0661,
-        "geo_concave": 0.0239,
-        "shadow_low": 0.2937,
+        "geo_convex": 1.0549,
+        "geo_concave": 0.3812,
+        "shadow_low": 4.6897,
         "shadow_mid": 0.0,
         "norm_height": 0.0,
-        "d_relief": 0.0994,
-        "d_hurst": -0.0306,
-        "d_linearity": -0.0056,
-        "d_depression_area": -0.0029,
-        "d_depression_depth": -0.0046
+        "d_relief": 1.5872,
+        "d_hurst": -0.488,
+        "d_linearity": -0.0894,
+        "d_depression_area": -0.0458,
+        "d_depression_depth": -0.0728
        },
        "cell_cost": [
         [
@@ -4607,7 +4976,22 @@
         50,
         56,
         47
-       ]
+       ],
+       "pair_score_raw": 63.9507,
+       "contributions_logit": {
+        "slope_mean": 0.0039,
+        "rough_coarse": -0.0,
+        "geo_convex": 0.0661,
+        "geo_concave": 0.0239,
+        "shadow_low": 0.2937,
+        "shadow_mid": 0.0,
+        "norm_height": 0.0,
+        "d_relief": 0.0994,
+        "d_hurst": -0.0306,
+        "d_linearity": -0.0056,
+        "d_depression_area": -0.0029,
+        "d_depression_depth": -0.0046
+       }
       },
       {
        "index": 4425,
@@ -4617,7 +5001,7 @@
        "lat": 16.3109,
        "lon": -51.0074,
        "href": "https://astrogeo-ard.s3-us-west-2.amazonaws.com/mars/mro/ctx/controlled/usgs/F02_036715_1941_XI_14N050W__F04_037348_1941_XI_14N050W/F02_036715_1941_XI_14N050W__F04_037348_1941_XI_14N050W_dtm.tif",
-       "pair_score": 63.5335,
+       "pair_score": 36.5157,
        "logit": 0.5552,
        "scale_logits": {
         "site": 0.3527,
@@ -4625,18 +5009,18 @@
        },
        "W": 7.0138,
        "contributions": {
-        "slope_mean": 0.0028,
+        "slope_mean": 0.0449,
         "rough_coarse": -0.0,
-        "geo_convex": 0.0336,
-        "geo_concave": 0.0213,
-        "shadow_low": 0.1935,
+        "geo_convex": 0.5375,
+        "geo_concave": 0.3406,
+        "shadow_low": 3.0968,
         "shadow_mid": 0.0,
         "norm_height": 0.0,
-        "d_relief": 0.081,
-        "d_hurst": 0.115,
-        "d_linearity": 0.0303,
-        "d_depression_area": 0.0025,
-        "d_depression_depth": -0.0059
+        "d_relief": 1.2963,
+        "d_hurst": 1.8412,
+        "d_linearity": 0.4852,
+        "d_depression_area": 0.0402,
+        "d_depression_depth": -0.0947
        },
        "cell_cost": [
         [
@@ -4785,7 +5169,22 @@
         11,
         42,
         38
-       ]
+       ],
+       "pair_score_raw": 63.5335,
+       "contributions_logit": {
+        "slope_mean": 0.0028,
+        "rough_coarse": -0.0,
+        "geo_convex": 0.0336,
+        "geo_concave": 0.0213,
+        "shadow_low": 0.1935,
+        "shadow_mid": 0.0,
+        "norm_height": 0.0,
+        "d_relief": 0.081,
+        "d_hurst": 0.115,
+        "d_linearity": 0.0303,
+        "d_depression_area": 0.0025,
+        "d_depression_depth": -0.0059
+       }
       }
      ],
      "overall": 55.1381
@@ -4819,7 +5218,7 @@
        "lat": 38.924,
        "lon": -57.1024,
        "href": "https://astrogeo-ard.s3-us-west-2.amazonaws.com/mars/mro/ctx/controlled/usgs/D20_035080_2183_XN_38N056W__D21_035370_2183_XN_38N056W/D20_035080_2183_XN_38N056W__D21_035370_2183_XN_38N056W_dtm.tif",
-       "pair_score": 64.7047,
+       "pair_score": 36.4299,
        "logit": 0.6061,
        "scale_logits": {
         "site": 0.3831,
@@ -4827,18 +5226,18 @@
        },
        "W": 7.0078,
        "contributions": {
-        "slope_mean": 0.004,
+        "slope_mean": 0.0756,
         "rough_coarse": -0.0,
-        "geo_convex": 0.0237,
-        "geo_concave": 0.0234,
-        "shadow_low": 0.2488,
+        "geo_convex": 0.4433,
+        "geo_concave": 0.4366,
+        "shadow_low": 4.6514,
         "shadow_mid": 0.0,
         "norm_height": 0.0,
-        "d_relief": 0.0658,
-        "d_hurst": 0.1174,
-        "d_linearity": 0.0199,
-        "d_depression_area": 0.0071,
-        "d_depression_depth": -0.0056
+        "d_relief": 1.2303,
+        "d_hurst": 2.1943,
+        "d_linearity": 0.3712,
+        "d_depression_area": 0.1322,
+        "d_depression_depth": -0.1041
        },
        "cell_cost": [
         [
@@ -4987,7 +5386,22 @@
         46,
         36,
         59
-       ]
+       ],
+       "pair_score_raw": 64.7047,
+       "contributions_logit": {
+        "slope_mean": 0.004,
+        "rough_coarse": -0.0,
+        "geo_convex": 0.0237,
+        "geo_concave": 0.0234,
+        "shadow_low": 0.2488,
+        "shadow_mid": 0.0,
+        "norm_height": 0.0,
+        "d_relief": 0.0658,
+        "d_hurst": 0.1174,
+        "d_linearity": 0.0199,
+        "d_depression_area": 0.0071,
+        "d_depression_depth": -0.0056
+       }
       },
       {
        "index": 2570,
@@ -4997,7 +5411,7 @@
        "lat": -5.4258,
        "lon": 9.4256,
        "href": "https://astrogeo-ard.s3-us-west-2.amazonaws.com/mars/mro/ctx/controlled/usgs/J19_052128_1746_XN_05S350W__J18_051983_1745_XN_05S350W/J19_052128_1746_XN_05S350W__J18_051983_1745_XN_05S350W_dtm.tif",
-       "pair_score": 63.7427,
+       "pair_score": 35.6477,
        "logit": 0.5642,
        "scale_logits": {
         "site": 0.2899,
@@ -5005,18 +5419,18 @@
        },
        "W": 6.39,
        "contributions": {
-        "slope_mean": 0.005,
+        "slope_mean": 0.0925,
         "rough_coarse": -0.0,
-        "geo_convex": 0.0603,
-        "geo_concave": 0.0256,
-        "shadow_low": 0.2047,
+        "geo_convex": 1.1261,
+        "geo_concave": 0.4785,
+        "shadow_low": 3.8204,
         "shadow_mid": 0.0,
         "norm_height": 0.0,
-        "d_relief": 0.1224,
-        "d_hurst": 0.0243,
-        "d_linearity": -0.0253,
-        "d_depression_area": 0.0005,
-        "d_depression_depth": -0.0062
+        "d_relief": 2.2836,
+        "d_hurst": 0.4533,
+        "d_linearity": -0.4722,
+        "d_depression_area": 0.0095,
+        "d_depression_depth": -0.115
        },
        "cell_cost": [
         [
@@ -5165,7 +5579,22 @@
         19,
         26,
         18
-       ]
+       ],
+       "pair_score_raw": 63.7427,
+       "contributions_logit": {
+        "slope_mean": 0.005,
+        "rough_coarse": -0.0,
+        "geo_convex": 0.0603,
+        "geo_concave": 0.0256,
+        "shadow_low": 0.2047,
+        "shadow_mid": 0.0,
+        "norm_height": 0.0,
+        "d_relief": 0.1224,
+        "d_hurst": 0.0243,
+        "d_linearity": -0.0253,
+        "d_depression_area": 0.0005,
+        "d_depression_depth": -0.0062
+       }
       },
       {
        "index": 2652,
@@ -5175,7 +5604,7 @@
        "lat": -17.9211,
        "lon": -161.7415,
        "href": "https://astrogeo-ard.s3-us-west-2.amazonaws.com/mars/mro/ctx/controlled/usgs/K19_060851_1607_XI_19S161W__K19_060917_1607_XI_19S161W/K19_060851_1607_XI_19S161W__K19_060917_1607_XI_19S161W-DEM.tif",
-       "pair_score": 63.6186,
+       "pair_score": 35.5476,
        "logit": 0.5588,
        "scale_logits": {
         "site": 0.4903,
@@ -5183,18 +5612,18 @@
        },
        "W": 5.6108,
        "contributions": {
-        "slope_mean": 0.0085,
+        "slope_mean": 0.1586,
         "rough_coarse": -0.0,
-        "geo_convex": 0.0565,
-        "geo_concave": 0.0231,
-        "shadow_low": 0.2744,
+        "geo_convex": 1.0551,
+        "geo_concave": 0.4308,
+        "shadow_low": 5.1205,
         "shadow_mid": 0.0,
         "norm_height": 0.0,
-        "d_relief": 0.0962,
-        "d_hurst": 0.1227,
-        "d_linearity": 0.0309,
-        "d_depression_area": 0.0046,
-        "d_depression_depth": -0.0052
+        "d_relief": 1.7945,
+        "d_hurst": 2.2891,
+        "d_linearity": 0.5762,
+        "d_depression_area": 0.0867,
+        "d_depression_depth": -0.097
        },
        "cell_cost": [
         [
@@ -5343,7 +5772,22 @@
         5,
         4,
         48
-       ]
+       ],
+       "pair_score_raw": 63.6186,
+       "contributions_logit": {
+        "slope_mean": 0.0085,
+        "rough_coarse": -0.0,
+        "geo_convex": 0.0565,
+        "geo_concave": 0.0231,
+        "shadow_low": 0.2744,
+        "shadow_mid": 0.0,
+        "norm_height": 0.0,
+        "d_relief": 0.0962,
+        "d_hurst": 0.1227,
+        "d_linearity": 0.0309,
+        "d_depression_area": 0.0046,
+        "d_depression_depth": -0.0052
+       }
       },
       {
        "index": 2354,
@@ -5353,7 +5797,7 @@
        "lat": -26.7174,
        "lon": 158.8101,
        "href": "https://astrogeo-ard.s3-us-west-2.amazonaws.com/mars/mro/ctx/controlled/usgs/J05_046611_1532_XI_26S201W__J06_046967_1513_XI_28S201W/J05_046611_1532_XI_26S201W__J06_046967_1513_XI_28S201W-DEM.tif",
-       "pair_score": 63.0076,
+       "pair_score": 35.0571,
        "logit": 0.5325,
        "scale_logits": {
         "site": 0.4439,
@@ -5361,18 +5805,18 @@
        },
        "W": 6.5168,
        "contributions": {
-        "slope_mean": 0.0031,
+        "slope_mean": 0.0582,
         "rough_coarse": -0.0,
-        "geo_convex": 0.0693,
-        "geo_concave": 0.0247,
-        "shadow_low": 0.2323,
+        "geo_convex": 1.2919,
+        "geo_concave": 0.4608,
+        "shadow_low": 4.3276,
         "shadow_mid": 0.0,
         "norm_height": 0.0,
-        "d_relief": 0.095,
-        "d_hurst": 0.1438,
-        "d_linearity": -0.0024,
-        "d_depression_area": 0.0053,
-        "d_depression_depth": -0.0058
+        "d_relief": 1.7695,
+        "d_hurst": 2.6794,
+        "d_linearity": -0.0443,
+        "d_depression_area": 0.0991,
+        "d_depression_depth": -0.1089
        },
        "cell_cost": [
         [
@@ -5521,7 +5965,22 @@
         18,
         25,
         9
-       ]
+       ],
+       "pair_score_raw": 63.0076,
+       "contributions_logit": {
+        "slope_mean": 0.0031,
+        "rough_coarse": -0.0,
+        "geo_convex": 0.0693,
+        "geo_concave": 0.0247,
+        "shadow_low": 0.2323,
+        "shadow_mid": 0.0,
+        "norm_height": 0.0,
+        "d_relief": 0.095,
+        "d_hurst": 0.1438,
+        "d_linearity": -0.0024,
+        "d_depression_area": 0.0053,
+        "d_depression_depth": -0.0058
+       }
       },
       {
        "index": 2314,
@@ -5531,7 +5990,7 @@
        "lat": -33.9542,
        "lon": -152.9361,
        "href": "https://astrogeo-ard.s3-us-west-2.amazonaws.com/mars/mro/ctx/controlled/usgs/D22_035941_1468_XI_33S153W__D22_035875_1468_XI_33S153W/D22_035941_1468_XI_33S153W__D22_035875_1468_XI_33S153W_dtm.tif",
-       "pair_score": 62.3628,
+       "pair_score": 34.544,
        "logit": 0.505,
        "scale_logits": {
         "site": 0.3508,
@@ -5539,18 +5998,18 @@
        },
        "W": 4.5233,
        "contributions": {
-        "slope_mean": 0.0123,
+        "slope_mean": 0.2289,
         "rough_coarse": -0.0,
-        "geo_convex": 0.0462,
-        "geo_concave": -0.0067,
-        "shadow_low": 0.0387,
+        "geo_convex": 0.8586,
+        "geo_concave": -0.1242,
+        "shadow_low": 0.7194,
         "shadow_mid": 0.0,
         "norm_height": 0.0,
-        "d_relief": 0.183,
-        "d_hurst": 0.1758,
-        "d_linearity": 0.0265,
-        "d_depression_area": 0.0023,
-        "d_depression_depth": -0.0058
+        "d_relief": 3.4035,
+        "d_hurst": 3.27,
+        "d_linearity": 0.4922,
+        "d_depression_area": 0.0424,
+        "d_depression_depth": -0.1085
        },
        "cell_cost": [
         [
@@ -5699,7 +6158,22 @@
         45,
         6,
         13
-       ]
+       ],
+       "pair_score_raw": 62.3628,
+       "contributions_logit": {
+        "slope_mean": 0.0123,
+        "rough_coarse": -0.0,
+        "geo_convex": 0.0462,
+        "geo_concave": -0.0067,
+        "shadow_low": 0.0387,
+        "shadow_mid": 0.0,
+        "norm_height": 0.0,
+        "d_relief": 0.183,
+        "d_hurst": 0.1758,
+        "d_linearity": 0.0265,
+        "d_depression_area": 0.0023,
+        "d_depression_depth": -0.0058
+       }
       }
      ],
      "overall": 52.4568
@@ -5733,7 +6207,7 @@
        "lat": -12.6425,
        "lon": -98.3475,
        "href": "https://astrogeo-ard.s3-us-west-2.amazonaws.com/mars/mro/ctx/controlled/usgs/J16_050932_1677_XN_12S098W__J16_051077_1677_XN_12S098W/J16_050932_1677_XN_12S098W__J16_051077_1677_XN_12S098W-DEM.tif",
-       "pair_score": 65.1176,
+       "pair_score": 27.7841,
        "logit": 0.6242,
        "scale_logits": {
         "site": 0.583,
@@ -5741,18 +6215,18 @@
        },
        "W": 3.4326,
        "contributions": {
-        "slope_mean": 0.0143,
+        "slope_mean": 0.208,
         "rough_coarse": -0.0,
-        "geo_convex": 0.034,
-        "geo_concave": 0.022,
-        "shadow_low": 0.3494,
+        "geo_convex": 0.4946,
+        "geo_concave": 0.3193,
+        "shadow_low": 5.0824,
         "shadow_mid": 0.0,
         "norm_height": 0.0,
-        "d_relief": 0.0768,
-        "d_hurst": 0.1729,
-        "d_linearity": 0.0327,
-        "d_depression_area": 0.0049,
-        "d_depression_depth": -0.0025
+        "d_relief": 1.1175,
+        "d_hurst": 2.5154,
+        "d_linearity": 0.4757,
+        "d_depression_area": 0.0709,
+        "d_depression_depth": -0.0369
        },
        "cell_cost": [
         [
@@ -5901,7 +6375,22 @@
         32,
         13,
         14
-       ]
+       ],
+       "pair_score_raw": 65.1176,
+       "contributions_logit": {
+        "slope_mean": 0.0143,
+        "rough_coarse": -0.0,
+        "geo_convex": 0.034,
+        "geo_concave": 0.022,
+        "shadow_low": 0.3494,
+        "shadow_mid": 0.0,
+        "norm_height": 0.0,
+        "d_relief": 0.0768,
+        "d_hurst": 0.1729,
+        "d_linearity": 0.0327,
+        "d_depression_area": 0.0049,
+        "d_depression_depth": -0.0025
+       }
       },
       {
        "index": 3713,
@@ -5911,7 +6400,7 @@
        "lat": -12.8452,
        "lon": -121.2612,
        "href": "https://astrogeo-ard.s3-us-west-2.amazonaws.com/mars/mro/ctx/controlled/usgs/D04_028938_1674_XN_12S121W__P18_008117_1647_XN_15S121W/D04_028938_1674_XN_12S121W__P18_008117_1647_XN_15S121W-DEM.tif",
-       "pair_score": 65.1142,
+       "pair_score": 27.7819,
        "logit": 0.6241,
        "scale_logits": {
         "site": 0.3321,
@@ -5919,18 +6408,18 @@
        },
        "W": 4.3744,
        "contributions": {
-        "slope_mean": 0.0093,
+        "slope_mean": 0.1356,
         "rough_coarse": -0.0,
-        "geo_convex": 0.0625,
-        "geo_concave": 0.0161,
-        "shadow_low": 0.0733,
+        "geo_convex": 0.9084,
+        "geo_concave": 0.2339,
+        "shadow_low": 1.0661,
         "shadow_mid": 0.0,
         "norm_height": 0.0,
-        "d_relief": 0.1792,
-        "d_hurst": 0.1451,
-        "d_linearity": -0.0265,
-        "d_depression_area": 0.0007,
-        "d_depression_depth": -0.0061
+        "d_relief": 2.6066,
+        "d_hurst": 2.1101,
+        "d_linearity": -0.3852,
+        "d_depression_area": 0.0101,
+        "d_depression_depth": -0.0895
        },
        "cell_cost": [
         [
@@ -6079,7 +6568,22 @@
         15,
         17,
         19
-       ]
+       ],
+       "pair_score_raw": 65.1142,
+       "contributions_logit": {
+        "slope_mean": 0.0093,
+        "rough_coarse": -0.0,
+        "geo_convex": 0.0625,
+        "geo_concave": 0.0161,
+        "shadow_low": 0.0733,
+        "shadow_mid": 0.0,
+        "norm_height": 0.0,
+        "d_relief": 0.1792,
+        "d_hurst": 0.1451,
+        "d_linearity": -0.0265,
+        "d_depression_area": 0.0007,
+        "d_depression_depth": -0.0061
+       }
       },
       {
        "index": 3864,
@@ -6089,7 +6593,7 @@
        "lat": 15.7753,
        "lon": -176.8418,
        "href": "https://astrogeo-ard.s3-us-west-2.amazonaws.com/mars/mro/ctx/controlled/usgs/B11_014092_1956_XI_15N176W__B12_014158_1956_XI_15N176W/B11_014092_1956_XI_15N176W__B12_014158_1956_XI_15N176W_dtm.tif",
-       "pair_score": 64.0078,
+       "pair_score": 27.0794,
        "logit": 0.5757,
        "scale_logits": {
         "site": 0.509,
@@ -6097,18 +6601,18 @@
        },
        "W": 1.0226,
        "contributions": {
-        "slope_mean": 0.0256,
+        "slope_mean": 0.372,
         "rough_coarse": -0.0,
-        "geo_convex": 0.0668,
-        "geo_concave": 0.0241,
-        "shadow_low": 0.2265,
+        "geo_convex": 0.9696,
+        "geo_concave": 0.3492,
+        "shadow_low": 3.2858,
         "shadow_mid": 0.0,
         "norm_height": 0.0,
-        "d_relief": 0.1466,
-        "d_hurst": 0.1024,
-        "d_linearity": 0.0353,
-        "d_depression_area": 0.0003,
-        "d_depression_depth": 0.0028
+        "d_relief": 2.1261,
+        "d_hurst": 1.4855,
+        "d_linearity": 0.5114,
+        "d_depression_area": 0.004,
+        "d_depression_depth": 0.0405
        },
        "cell_cost": [
         [
@@ -6257,7 +6761,22 @@
         49,
         47,
         39
-       ]
+       ],
+       "pair_score_raw": 64.0078,
+       "contributions_logit": {
+        "slope_mean": 0.0256,
+        "rough_coarse": -0.0,
+        "geo_convex": 0.0668,
+        "geo_concave": 0.0241,
+        "shadow_low": 0.2265,
+        "shadow_mid": 0.0,
+        "norm_height": 0.0,
+        "d_relief": 0.1466,
+        "d_hurst": 0.1024,
+        "d_linearity": 0.0353,
+        "d_depression_area": 0.0003,
+        "d_depression_depth": 0.0028
+       }
       },
       {
        "index": 3556,
@@ -6267,7 +6786,7 @@
        "lat": 18.7829,
        "lon": -150.093,
        "href": "https://astrogeo-ard.s3-us-west-2.amazonaws.com/mars/mro/ctx/controlled/usgs/G23_027251_1990_XI_19N150W__D02_028029_1990_XI_19N150W/G23_027251_1990_XI_19N150W__D02_028029_1990_XI_19N150W-DEM.tif",
-       "pair_score": 63.8832,
+       "pair_score": 27.001,
        "logit": 0.5703,
        "scale_logits": {
         "site": 0.3293,
@@ -6275,18 +6794,18 @@
        },
        "W": 4.2135,
        "contributions": {
-        "slope_mean": 0.0126,
+        "slope_mean": 0.1822,
         "rough_coarse": -0.0,
-        "geo_convex": 0.0211,
-        "geo_concave": 0.0194,
-        "shadow_low": 0.2322,
+        "geo_convex": 0.306,
+        "geo_concave": 0.282,
+        "shadow_low": 3.3667,
         "shadow_mid": 0.0,
         "norm_height": 0.0,
-        "d_relief": 0.054,
-        "d_hurst": 0.0792,
-        "d_linearity": 0.0305,
-        "d_depression_area": 0.0044,
-        "d_depression_depth": -0.0027
+        "d_relief": 0.7832,
+        "d_hurst": 1.1481,
+        "d_linearity": 0.4416,
+        "d_depression_area": 0.064,
+        "d_depression_depth": -0.0386
        },
        "cell_cost": [
         [
@@ -6435,7 +6954,22 @@
         9,
         8,
         0
-       ]
+       ],
+       "pair_score_raw": 63.8832,
+       "contributions_logit": {
+        "slope_mean": 0.0126,
+        "rough_coarse": -0.0,
+        "geo_convex": 0.0211,
+        "geo_concave": 0.0194,
+        "shadow_low": 0.2322,
+        "shadow_mid": 0.0,
+        "norm_height": 0.0,
+        "d_relief": 0.054,
+        "d_hurst": 0.0792,
+        "d_linearity": 0.0305,
+        "d_depression_area": 0.0044,
+        "d_depression_depth": -0.0027
+       }
       },
       {
        "index": 3814,
@@ -6445,7 +6979,7 @@
        "lat": 18.7608,
        "lon": -174.8496,
        "href": "https://astrogeo-ard.s3-us-west-2.amazonaws.com/mars/mro/ctx/controlled/usgs/P19_008567_1978_XI_17N174W__P20_008923_1978_XN_17N174W/P19_008567_1978_XI_17N174W__P20_008923_1978_XN_17N174W_dtm.tif",
-       "pair_score": 63.7509,
+       "pair_score": 26.918,
        "logit": 0.5646,
        "scale_logits": {
         "site": 0.6937,
@@ -6453,18 +6987,18 @@
        },
        "W": 1.5699,
        "contributions": {
-        "slope_mean": 0.0223,
+        "slope_mean": 0.3233,
         "rough_coarse": -0.0,
-        "geo_convex": 0.067,
-        "geo_concave": 0.0243,
-        "shadow_low": 0.3524,
+        "geo_convex": 0.9716,
+        "geo_concave": 0.3515,
+        "shadow_low": 5.1071,
         "shadow_mid": 0.0,
         "norm_height": 0.0,
-        "d_relief": 0.14,
-        "d_hurst": 0.1624,
-        "d_linearity": 0.0352,
-        "d_depression_area": 0.005,
-        "d_depression_depth": 0.0066
+        "d_relief": 2.0282,
+        "d_hurst": 2.3538,
+        "d_linearity": 0.5102,
+        "d_depression_area": 0.0722,
+        "d_depression_depth": 0.0955
        },
        "cell_cost": [
         [
@@ -6613,7 +7147,22 @@
         54,
         41,
         3
-       ]
+       ],
+       "pair_score_raw": 63.7509,
+       "contributions_logit": {
+        "slope_mean": 0.0223,
+        "rough_coarse": -0.0,
+        "geo_convex": 0.067,
+        "geo_concave": 0.0243,
+        "shadow_low": 0.3524,
+        "shadow_mid": 0.0,
+        "norm_height": 0.0,
+        "d_relief": 0.14,
+        "d_hurst": 0.1624,
+        "d_linearity": 0.0352,
+        "d_depression_area": 0.005,
+        "d_depression_depth": 0.0066
+       }
       }
      ],
      "overall": 47.5038
@@ -6647,7 +7196,7 @@
        "lat": 33.2872,
        "lon": 96.1403,
        "href": "https://astrogeo-ard.s3-us-west-2.amazonaws.com/mars/mro/ctx/controlled/usgs/J03_045835_2121_XN_32N263W__J04_046257_2122_XN_32N263W/J03_045835_2121_XN_32N263W__J04_046257_2122_XN_32N263W_dtm.tif",
-       "pair_score": 67.1025,
+       "pair_score": 25.1975,
        "logit": 0.7128,
        "scale_logits": {
         "site": 0.7068,
@@ -6655,18 +7204,18 @@
        },
        "W": 0.8763,
        "contributions": {
-        "slope_mean": 0.0206,
+        "slope_mean": 0.3046,
         "rough_coarse": -0.0,
-        "geo_convex": 0.0711,
-        "geo_concave": 0.0221,
-        "shadow_low": 0.3497,
+        "geo_convex": 1.0521,
+        "geo_concave": 0.3273,
+        "shadow_low": 5.1741,
         "shadow_mid": 0.0,
         "norm_height": 0.0,
-        "d_relief": 0.172,
-        "d_hurst": 0.1694,
-        "d_linearity": 0.019,
-        "d_depression_area": 0.0044,
-        "d_depression_depth": -0.0
+        "d_relief": 2.5452,
+        "d_hurst": 2.5063,
+        "d_linearity": 0.2805,
+        "d_depression_area": 0.0653,
+        "d_depression_depth": -0.0006
        },
        "cell_cost": [
         [
@@ -6815,7 +7364,22 @@
         34,
         25,
         3
-       ]
+       ],
+       "pair_score_raw": 67.1025,
+       "contributions_logit": {
+        "slope_mean": 0.0206,
+        "rough_coarse": -0.0,
+        "geo_convex": 0.0711,
+        "geo_concave": 0.0221,
+        "shadow_low": 0.3497,
+        "shadow_mid": 0.0,
+        "norm_height": 0.0,
+        "d_relief": 0.172,
+        "d_hurst": 0.1694,
+        "d_linearity": 0.019,
+        "d_depression_area": 0.0044,
+        "d_depression_depth": -0.0
+       }
       },
       {
        "index": 3110,
@@ -6825,7 +7389,7 @@
        "lat": 23.7283,
        "lon": 100.0337,
        "href": "https://astrogeo-ard.s3-us-west-2.amazonaws.com/mars/mro/ctx/controlled/usgs/D16_033281_2025_XN_22N259W__D17_033703_2025_XN_22N259W/D16_033281_2025_XN_22N259W__D17_033703_2025_XN_22N259W_dtm.tif",
-       "pair_score": 66.0053,
+       "pair_score": 24.4713,
        "logit": 0.6635,
        "scale_logits": {
         "site": 0.5758,
@@ -6833,18 +7397,18 @@
        },
        "W": 1.452,
        "contributions": {
-        "slope_mean": 0.0254,
+        "slope_mean": 0.373,
         "rough_coarse": -0.0,
-        "geo_convex": 0.0381,
-        "geo_concave": 0.0225,
-        "shadow_low": 0.2313,
+        "geo_convex": 0.5591,
+        "geo_concave": 0.33,
+        "shadow_low": 3.3915,
         "shadow_mid": 0.0,
         "norm_height": 0.0,
-        "d_relief": 0.193,
-        "d_hurst": 0.1451,
-        "d_linearity": 0.0291,
-        "d_depression_area": 0.0076,
-        "d_depression_depth": 0.005
+        "d_relief": 2.8294,
+        "d_hurst": 2.1275,
+        "d_linearity": 0.4268,
+        "d_depression_area": 0.112,
+        "d_depression_depth": 0.0732
        },
        "cell_cost": [
         [
@@ -6993,7 +7557,22 @@
         6,
         46,
         13
-       ]
+       ],
+       "pair_score_raw": 66.0053,
+       "contributions_logit": {
+        "slope_mean": 0.0254,
+        "rough_coarse": -0.0,
+        "geo_convex": 0.0381,
+        "geo_concave": 0.0225,
+        "shadow_low": 0.2313,
+        "shadow_mid": 0.0,
+        "norm_height": 0.0,
+        "d_relief": 0.193,
+        "d_hurst": 0.1451,
+        "d_linearity": 0.0291,
+        "d_depression_area": 0.0076,
+        "d_depression_depth": 0.005
+       }
       },
       {
        "index": 3290,
@@ -7003,7 +7582,7 @@
        "lat": 34.1948,
        "lon": -20.6237,
        "href": "https://astrogeo-ard.s3-us-west-2.amazonaws.com/mars/mro/ctx/controlled/usgs/J01_045180_2157_XN_35N020W__J20_052696_2157_XN_35N020W/J01_045180_2157_XN_35N020W__J20_052696_2157_XN_35N020W_dtm.tif",
-       "pair_score": 65.5843,
+       "pair_score": 24.1976,
        "logit": 0.6448,
        "scale_logits": {
         "site": 0.6881,
@@ -7011,18 +7590,18 @@
        },
        "W": 1.4065,
        "contributions": {
-        "slope_mean": 0.0227,
+        "slope_mean": 0.3319,
         "rough_coarse": -0.0,
-        "geo_convex": 0.0643,
-        "geo_concave": 0.022,
-        "shadow_low": 0.3251,
+        "geo_convex": 0.9397,
+        "geo_concave": 0.3216,
+        "shadow_low": 4.7493,
         "shadow_mid": 0.0,
         "norm_height": 0.0,
-        "d_relief": 0.1727,
-        "d_hurst": 0.1572,
-        "d_linearity": 0.0353,
-        "d_depression_area": 0.0056,
-        "d_depression_depth": 0.0044
+        "d_relief": 2.523,
+        "d_hurst": 2.2965,
+        "d_linearity": 0.5152,
+        "d_depression_area": 0.0817,
+        "d_depression_depth": 0.0647
        },
        "cell_cost": [
         [
@@ -7171,7 +7750,22 @@
         24,
         0,
         4
-       ]
+       ],
+       "pair_score_raw": 65.5843,
+       "contributions_logit": {
+        "slope_mean": 0.0227,
+        "rough_coarse": -0.0,
+        "geo_convex": 0.0643,
+        "geo_concave": 0.022,
+        "shadow_low": 0.3251,
+        "shadow_mid": 0.0,
+        "norm_height": 0.0,
+        "d_relief": 0.1727,
+        "d_hurst": 0.1572,
+        "d_linearity": 0.0353,
+        "d_depression_area": 0.0056,
+        "d_depression_depth": 0.0044
+       }
       },
       {
        "index": 3070,
@@ -7181,7 +7775,7 @@
        "lat": 34.6648,
        "lon": -29.3311,
        "href": "https://astrogeo-ard.s3-us-west-2.amazonaws.com/mars/mro/ctx/controlled/usgs/D18_034156_2156_XN_35N029W__D18_034433_2156_XN_35N029W/D18_034156_2156_XN_35N029W__D18_034433_2156_XN_35N029W_dtm.tif",
-       "pair_score": 65.3171,
+       "pair_score": 24.0252,
        "logit": 0.633,
        "scale_logits": {
         "site": 0.5081,
@@ -7189,18 +7783,18 @@
        },
        "W": 1.0153,
        "contributions": {
-        "slope_mean": 0.0154,
+        "slope_mean": 0.2238,
         "rough_coarse": -0.0,
-        "geo_convex": 0.0578,
-        "geo_concave": 0.0235,
-        "shadow_low": 0.3058,
+        "geo_convex": 0.8423,
+        "geo_concave": 0.3419,
+        "shadow_low": 4.456,
         "shadow_mid": 0.0,
         "norm_height": 0.0,
-        "d_relief": 0.1219,
-        "d_hurst": 0.1006,
-        "d_linearity": -0.006,
-        "d_depression_area": 0.0086,
-        "d_depression_depth": 0.002
+        "d_relief": 1.7756,
+        "d_hurst": 1.4657,
+        "d_linearity": -0.0872,
+        "d_depression_area": 0.1249,
+        "d_depression_depth": 0.0287
        },
        "cell_cost": [
         [
@@ -7349,7 +7943,22 @@
         56,
         18,
         41
-       ]
+       ],
+       "pair_score_raw": 65.3171,
+       "contributions_logit": {
+        "slope_mean": 0.0154,
+        "rough_coarse": -0.0,
+        "geo_convex": 0.0578,
+        "geo_concave": 0.0235,
+        "shadow_low": 0.3058,
+        "shadow_mid": 0.0,
+        "norm_height": 0.0,
+        "d_relief": 0.1219,
+        "d_hurst": 0.1006,
+        "d_linearity": -0.006,
+        "d_depression_area": 0.0086,
+        "d_depression_depth": 0.002
+       }
       },
       {
        "index": 2960,
@@ -7359,7 +7968,7 @@
        "lat": 35.0153,
        "lon": 103.2132,
        "href": "https://astrogeo-ard.s3-us-west-2.amazonaws.com/mars/mro/ctx/controlled/usgs/J03_046138_2148_XN_34N256W__J03_046072_2148_XN_34N256W/J03_046138_2148_XN_34N256W__J03_046072_2148_XN_34N256W_dtm.tif",
-       "pair_score": 64.9544,
+       "pair_score": 23.7929,
        "logit": 0.617,
        "scale_logits": {
         "site": 0.3741,
@@ -7367,18 +7976,18 @@
        },
        "W": 5.5951,
        "contributions": {
-        "slope_mean": 0.0074,
+        "slope_mean": 0.1068,
         "rough_coarse": -0.0,
-        "geo_convex": 0.0497,
-        "geo_concave": 0.0209,
-        "shadow_low": 0.2363,
+        "geo_convex": 0.7217,
+        "geo_concave": 0.3037,
+        "shadow_low": 3.4306,
         "shadow_mid": 0.0,
         "norm_height": 0.0,
-        "d_relief": 0.0788,
-        "d_hurst": 0.0948,
-        "d_linearity": 0.0058,
-        "d_depression_area": 0.0074,
-        "d_depression_depth": -0.0054
+        "d_relief": 1.1436,
+        "d_hurst": 1.3761,
+        "d_linearity": 0.0837,
+        "d_depression_area": 0.1079,
+        "d_depression_depth": -0.0787
        },
        "cell_cost": [
         [
@@ -7527,7 +8136,22 @@
         42,
         6,
         28
-       ]
+       ],
+       "pair_score_raw": 64.9544,
+       "contributions_logit": {
+        "slope_mean": 0.0074,
+        "rough_coarse": -0.0,
+        "geo_convex": 0.0497,
+        "geo_concave": 0.0209,
+        "shadow_low": 0.2363,
+        "shadow_mid": 0.0,
+        "norm_height": 0.0,
+        "d_relief": 0.0788,
+        "d_hurst": 0.0948,
+        "d_linearity": 0.0058,
+        "d_depression_area": 0.0074,
+        "d_depression_depth": -0.0054
+       }
       }
      ],
      "overall": 44.5056
@@ -7545,7 +8169,7 @@
     "lat": 33.2872,
     "lon": 96.1403,
     "href": "https://astrogeo-ard.s3-us-west-2.amazonaws.com/mars/mro/ctx/controlled/usgs/J03_045835_2121_XN_32N263W__J04_046257_2122_XN_32N263W/J03_045835_2121_XN_32N263W__J04_046257_2122_XN_32N263W_dtm.tif",
-    "pair_score": 67.1025,
+    "pair_score": 25.1975,
     "logit": 0.7128,
     "scale_logits": {
      "site": 0.7068,
@@ -7553,18 +8177,18 @@
     },
     "W": 0.8763,
     "contributions": {
-     "slope_mean": 0.0206,
+     "slope_mean": 0.3046,
      "rough_coarse": -0.0,
-     "geo_convex": 0.0711,
-     "geo_concave": 0.0221,
-     "shadow_low": 0.3497,
+     "geo_convex": 1.0521,
+     "geo_concave": 0.3273,
+     "shadow_low": 5.1741,
      "shadow_mid": 0.0,
      "norm_height": 0.0,
-     "d_relief": 0.172,
-     "d_hurst": 0.1694,
-     "d_linearity": 0.019,
-     "d_depression_area": 0.0044,
-     "d_depression_depth": -0.0
+     "d_relief": 2.5452,
+     "d_hurst": 2.5063,
+     "d_linearity": 0.2805,
+     "d_depression_area": 0.0653,
+     "d_depression_depth": -0.0006
     },
     "cell_cost": [
      [
@@ -7713,7 +8337,22 @@
      34,
      25,
      3
-    ]
+    ],
+    "pair_score_raw": 67.1025,
+    "contributions_logit": {
+     "slope_mean": 0.0206,
+     "rough_coarse": -0.0,
+     "geo_convex": 0.0711,
+     "geo_concave": 0.0221,
+     "shadow_low": 0.3497,
+     "shadow_mid": 0.0,
+     "norm_height": 0.0,
+     "d_relief": 0.172,
+     "d_hurst": 0.1694,
+     "d_linearity": 0.019,
+     "d_depression_area": 0.0044,
+     "d_depression_depth": -0.0
+    }
    }
   }
  },

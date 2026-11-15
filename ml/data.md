@@ -22,6 +22,14 @@ The click flow is the same: same call, same two live reads. The response and a f
 - `model.npz` grows to roughly 20–60 MB at v1. Measure memory on Render after the first deploy.
 - About-page credit to add: LOLA polar DEMs (NASA GSFC PGDA, Barker et al.).
 
+## What changes for James in v1.3.2 (display only, `regions-1.3.2-v1`)
+
+- Copy `ml/export/analog_runtime.py` over `api/analog_core/ml/analog_runtime.py` again.
+- `best[].pair_score` is now on the same scale as the region score: the best sites sit around the region score (e.g. region 53, sites 57-61; farmland region 21, sites 24-27). The old one-to-one number is in `pair_score_raw`.
+- `best[].contributions` are now score points (e.g. "shadow at a low Sun +5.1"), not logit points. The old values are in `contributions_logit`.
+- `conditions.terms` are now surface-score points (e.g. "open ground +19.7", "farmland -11.5"). The old values are in `conditions.terms_logit`.
+- Version bumped, so cached rows re-score.
+
 ## What changes for James in v1.3.1 (display fix, `regions-1.3.1-v1`)
 
 Same trained model as v1.3; only the score scale changed. No ranking changes anywhere.
