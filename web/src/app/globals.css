@@ -244,23 +244,6 @@
   }
 }
 
-/* covers the globe while a block is scored */
-.score-loader {
-  position: absolute;
-  inset: 0;
-  z-index: 30;
-  display: grid;
-  place-content: center;
-  background: color-mix(in oklab, var(--space) 82%, transparent);
-  backdrop-filter: blur(6px);
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.4s ease;
-}
-.score-loader[data-on] {
-  opacity: 1;
-  pointer-events: auto;
-}
 /* photos crossfade in one frame, the incoming one settles from a slight zoom */
 .score-loader-photo {
   position: absolute;
