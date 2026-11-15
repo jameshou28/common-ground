@@ -4,7 +4,7 @@ import type { Tile } from "@/lib/tiles";
 import type { CesiumNS } from "./cesium";
 import type { GlobeHandle } from "./use-cesium-viewer";
 
-const N = 33;
+const N = 25;
 
 // the matched block drawn as coloured lines over the real, textured block, stretched to its height range; returns the undo
 export function drawBlockWire(handle: GlobeHandle, tile: Tile, block: Grid, over: Grid, ex: number) {
@@ -17,6 +17,9 @@ export function drawBlockWire(handle: GlobeHandle, tile: Tile, block: Grid, over
   const at = (g: Grid, r: number, c: number) => g.z[Math.round((r * (g.n - 1)) / (N - 1)) * g.n + Math.round((c * (g.n - 1)) / (N - 1))];
   const k = matchScale(block, over);
   let dead = false;
+  // full resolution while the lines are up, at the reduced default thin lines shimmer as the camera moves
+  const scale = v.resolutionScale;
+  v.resolutionScale = 1;
   let prim: CesiumNS.Primitive | null = null;
 
   (async () => {
@@ -50,7 +53,7 @@ export function drawBlockWire(handle: GlobeHandle, tile: Tile, block: Grid, over
           positions: pts.map((p) => p[0]) as never,
           colors: pts.map((p) => p[1]) as never,
           colorsPerVertex: true,
-          width: 1.5,
+          width: 1,
           arcType: C.ArcType.NONE,
           ellipsoid,
         }),
@@ -73,6 +76,10 @@ export function drawBlockWire(handle: GlobeHandle, tile: Tile, block: Grid, over
 
   return () => {
     dead = true;
+    if (!v.isDestroyed()) {
+      v.resolutionScale = scale;
+      scene.requestRender();
+    }
     if (prim && !v.isDestroyed()) {
       scene.primitives.remove(prim);
       scene.requestRender();
