@@ -6,6 +6,8 @@
 
 /* quiet gis chrome: neutral dark, one accent, no blur or animated overlays over the canvas */
 :root {
+  /* the globe's pin labels are drawn by cesium on a canvas, so they read their font from here */
+  --pin-font: var(--font-space-grotesk), system-ui, -apple-system, "Segoe UI", sans-serif;
   --app: oklch(0.14 0 0);
   --panel: oklch(0.185 0 0);
   --raised: oklch(0.235 0 0);
@@ -99,7 +101,7 @@
   --color-chart-4: var(--chart-4);
   --color-chart-5: var(--chart-5);
 
-  --font-sans: system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-sans: var(--font-space-grotesk), system-ui, -apple-system, "Segoe UI", sans-serif;
   --font-heading: var(--font-sans);
   --font-mono: ui-monospace, "SF Mono", Menlo, monospace;
 
@@ -144,11 +146,14 @@
 }
 
 
-/* the canvas is transparent, this is the sky */
+/* the canvas is transparent, this is the sky. globe-view moves the two star layers with the camera (background-position,
+   every frame): the far layer slowly, the near one faster, so turning the globe turns the sky */
 .sky {
   background:
-    url("/starfield-a.svg"),
+    url("/starfield-d.svg"),
     url("/starfield-b.svg"),
+    url("/starfield-a.svg"),
+    url("/starfield-c.svg"),
     var(--space);
 }
 .globe {
@@ -253,7 +258,7 @@
   object-fit: cover;
   opacity: 0;
   transform: scale(1.06);
-  transition: opacity 0.5s ease, transform 1.2s ease-out;
+  transition: opacity 0.9s ease, transform 2.4s ease-out;
 }
 .score-loader-photo[data-on] {
   opacity: 1;

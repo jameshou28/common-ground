@@ -21,7 +21,7 @@ export function PointCard({ point, id, matchName }: { point: CellPoint; id: stri
       id={id}
       role="group"
       aria-label={title}
-      className="pointer-events-auto absolute bottom-4 left-4 w-64 rounded-md border border-line bg-panel p-3 text-xs shadow-lg group-data-[below]:top-4 group-data-[below]:bottom-auto group-data-[flip]:right-4 group-data-[flip]:left-auto"
+      className="pointer-events-auto w-64 rounded-md border border-line bg-panel p-3 text-xs shadow-lg"
     >
       <h3 className="flex items-baseline justify-between gap-2 text-[13px] font-semibold">
         {title}

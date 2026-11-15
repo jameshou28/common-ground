@@ -84,6 +84,31 @@ export default function GlobeView({ world, onStatus, onAltitude, onHover, onPick
     return () => obs.disconnect();
   }, [handle]);
 
+  // the sky turns with the view, like a real star field behind the globe. the offsets come from where the camera
+  // looks, in earth's frame; each layer moves a whole number of its tiles per turn, so it wraps without a seam. set
+  // straight on background-position, every rendered frame
+  useEffect(() => {
+    const sky = el.current?.parentElement;
+    if (!handle || !sky) return;
+    const { v } = handle;
+    const TAU = 2 * Math.PI;
+    const place = () => {
+      const d = v.camera.directionWC;
+      const yaw = Math.atan2(d.y, d.x) / TAU;                                    // -0.5 .. 0.5 of a turn
+      const pitch = Math.asin(Math.max(-1, Math.min(1, d.z))) / TAU;             // -0.25 .. 0.25
+      // four layers, nearest first (the css order): bright haloed stars, big stars, small stars, a dense faint field.
+      // each moves a whole number of its own tiles per turn, nearer layers more
+      const at = (tile: number, turns: number) => `${(-yaw * turns * tile).toFixed(1)}px ${(pitch * turns * tile).toFixed(1)}px`;
+      sky.style.backgroundPosition = `${at(1500, 6)}, ${at(730, 6)}, ${at(420, 3)}, ${at(1100, 2)}`;
+    };
+    place();
+    v.scene.postRender.addEventListener(place);
+    return () => {
+      if (!v.isDestroyed()) v.scene.postRender.removeEventListener(place);
+      sky.style.backgroundPosition = "";
+    };
+  }, [handle]);
+
   useEffect(() => {
     if (!handle) return;
     return shareCapture(capture, () => {

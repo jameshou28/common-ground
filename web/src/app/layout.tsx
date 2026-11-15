@@ -1,10 +1,14 @@
 import type { Metadata } from "next";
+import { Space_Grotesk } from "next/font/google";
 import { Suspense } from "react";
 import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
 import { Header } from "@/components/shell/header";
 import { Providers } from "@/components/shell/providers";
 import { StatusBar } from "@/components/shell/status-bar";
+
+// the site font, self-hosted by next at build time (no request to google from the browser)
+const spaceGrotesk = Space_Grotesk({ subsets: ["latin"], variable: "--font-space-grotesk", display: "swap" });
 
 export const metadata: Metadata = {
   title: { default: "Common Ground", template: "%s · Common Ground" },
@@ -14,7 +18,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className="h-full antialiased">
+    <html lang="en" className={`${spaceGrotesk.variable} h-full antialiased`}>
       <body className="flex h-full flex-col">
         <Providers>
           {/* usepathname needs a suspense boundary */}

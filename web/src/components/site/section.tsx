@@ -1,5 +1,5 @@
 // one collapsible block of the result panel
-export function Section({ title, note, open = true, children }: { title: string; note?: string; open?: boolean; children: React.ReactNode }) {
+export function Section({ title, note, open = true, children }: { title: string; note?: React.ReactNode; open?: boolean; children: React.ReactNode }) {
   return (
     <details open={open} className="group border-b border-line">
       <summary className="flex cursor-pointer list-none items-baseline justify-between px-4 py-2.5 font-semibold hover:bg-hover [&::-webkit-details-marker]:hidden">

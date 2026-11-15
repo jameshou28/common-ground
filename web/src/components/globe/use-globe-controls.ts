@@ -17,6 +17,11 @@ export function flyHome({ C, v, world, ellipsoid, motion }: GlobeHandle) {
     destination: C.Cartesian3.fromDegrees(s.lon, s.lat, s.height, ellipsoid),
     orientation: { heading: 0, pitch: -Math.PI / 2, roll: 0 },
     duration: 2.2,
+    // back at the opening view, the globe spins slowly again, as on arrival (any input stops it)
+    complete: () => {
+      motion.current = "spin";
+      v.scene.requestRender();
+    },
   });
 }
 

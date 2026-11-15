@@ -47,3 +47,7 @@ data/*
 # the exported model is small enough to track
 !ml/export/model.npz
 !ml/export/regions.npz
+
+# anurati is a demo / trial licence: local font preview only, never shipped
+web/public/anurati-font.zip
+web/public/fonts/Anurati*
