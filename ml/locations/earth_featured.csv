@@ -1,0 +1,10 @@
+name,lat,lon,expected_rank
+Dutch farmland,52.52,5.6,1
+Amazon rainforest,-3.4,-62.0,1
+Himalayan ridge,27.95,86.95,2
+Utah near MDRS,38.4,-110.8,3
+Holuhraun lava field,64.87,-16.83,4
+Lanzarote Timanfaya,29.0,-13.75,5
+Meteor Crater,35.027,-111.022,5
+Haughton crater,75.38,-89.67,6
+McMurdo Dry Valleys,-77.52,161.8,6
