@@ -32,7 +32,8 @@ TOKEN_FEATURES = (
 BLOCK_FEATURES = ("relief", "hurst", "linearity", "depression_area", "depression_depth")   # hypsometry ~ norm_height
 INPUT_NAMES = TOKEN_FEATURES + tuple("d_" + b for b in BLOCK_FEATURES)
 N_TOK, N_IN = len(TOKEN_FEATURES), len(TOKEN_FEATURES) + len(BLOCK_FEATURES)
-GATE_NAMES = ("tree", "crop", "built", "water", "snow", "bare", "precip")
+ENV_NAMES = ("tree", "crop", "built", "water", "snow", "bare", "sparse", "precip")   # what the readers return for a click
+GATE_NAMES = ("tree", "crop", "built", "water", "open", "sparse", "precip")           # what the conditions model sees
 GRID = np.linspace(0.0, 1.0, 1001)
 QUANTILES = (np.arange(8) + 0.5) / 8
 
@@ -253,6 +254,11 @@ class Model:
         self.gate_table, self.gate_curve = z["gate_table"], z["gate_curve_vals"]
         self.gate_bias = float(z["gate_bias"])
         self.discount_floor = float(z["discount_floor"])
+        self.built_penalty = float(z["built_penalty"]) if "built_penalty" in z else 0.0
+        self.built_full = float(z["built_full"]) if "built_full" in z else 0.05
+        # Earth-relative factor: each region's similarity is discounted when that much similarity is common on Earth
+        self.earth_floor = float(z["earth_floor"]) if "earth_floor" in z else 1.0
+        self.earth_ref = [np.sort(z[f"earth_ref__{r}"]) if f"earth_ref__{r}" in z else None for r in range(len(self.region_keys))]
         self.precip = z["precip_grid"]                        # mm per year, row 0 = 90 N, col 0 = 180 W
 
 
@@ -327,7 +333,7 @@ def to_logit(score_0_100: float) -> float:
 
 
 def region_scores(model: Model, emb: dict, world: str, exclude: np.ndarray | None = None,
-                  n_best: int = 3, with_cells: bool = False):
+                  n_best: int = 5, with_cells: bool = False):
     out = []
     for r, key in enumerate(model.region_keys):
         if model.region_world[r] != world:
@@ -356,7 +362,7 @@ def region_scores(model: Model, emb: dict, world: str, exclude: np.ndarray | Non
 
         lead = "site" if "site" in cand else next(iter(cand))
         c0 = cand[lead]
-        top = np.argsort(-c0["lg"])[:max(10, n_best)]
+        top = np.argsort(-c0["lg"])[:max(30, n_best)]        # the 30 best at the lead scale are re-ranked with every scale
         joint = c0["lg"][top].copy()
         others = {}
         for s in emb:
@@ -384,22 +390,40 @@ def region_scores(model: Model, emb: dict, world: str, exclude: np.ndarray | Non
                 b["cell_cost"] = (d * d).sum(1).reshape(8, 8).tolist()
                 b["partner"] = c0["partner"][i].tolist()
             best.append(b)
-        out.append(dict(region_id=r, region=key, title=model.region_title[r], score=float(100 * expit(L)),
+        sim = float(100 * expit(L))
+        ref = model.earth_ref[r]
+        pct = float(np.searchsorted(ref, L, side="right") / len(ref)) if ref is not None and len(ref) else 1.0
+        factor = model.earth_floor + (1.0 - model.earth_floor) * pct
+        out.append(dict(region_id=r, region=key, title=model.region_title[r], score=sim * factor, similarity=sim,
+                        earth_percentile=100.0 * pct, earth_factor=factor,
                         logit=float(L), scales=per_scale, n_members=int(len(mem)), best=best))
     out.sort(key=lambda d: -d["score"])
     return out
 
 
+def gate_inputs(env: dict, names=GATE_NAMES) -> np.ndarray:
+    # conditions inputs from the raw land-cover shares. "open" = bare ground + snow and ice: neither hides the
+    # terrain, so snow isn't penalised (polar analogs like the Dry Valleys are mostly snow, ice and bare rock)
+    e = {k: float(v) for k, v in env.items()}
+    bare = e.get("bare", np.nan)
+    e["open"] = np.nan if np.isnan(bare) else bare + float(np.nan_to_num(e.get("snow", 0.0)))
+    return np.array([e.get(n, np.nan) for n in names], dtype=float)
+
+
 def conditions(model: Model, env: dict):
     # Earth-side conditions: (logit, {input: contribution in logit points}). One-sided curves.
-    x = np.array([env.get(n, np.nan) for n in model.gate_names], dtype=float)
+    x = gate_inputs(env, model.gate_names)
+    built = float(np.nan_to_num(env.get("built", 0.0)))
     Z = to_z(model.gate_table, np.nan_to_num(x, nan=0.0)[None, :])[0]
     Z[np.isnan(x)] = 0.5                 # missing -> typical land
     h = np.array([np.interp(Z[m], GRID, model.gate_curve[m]) for m in range(len(x))])
-    return float(model.gate_bias + h.sum()), {n: float(v) for n, v in zip(model.gate_names, h)}
+    terms = {n: float(v) for n, v in zip(model.gate_names, h)}
+    fixed = -model.built_penalty * min(built / model.built_full, 1.0)       # buildings never occur at analog sites
+    terms["built"] = terms.get("built", 0.0) + fixed
+    return float(model.gate_bias + h.sum() + fixed), terms
 
 
-def score_click(model: Model, dems: dict, env: dict, worlds=WORLDS, n_best: int = 3) -> dict:
+def score_click(model: Model, dems: dict, env: dict, worlds=WORLDS, n_best: int = 5) -> dict:
     # Everything the API returns for one Earth click: one entry per world (the two tabs).
     emb = embed(model, dems, RADIUS_M["earth"])
     G, terms = conditions(model, env)
@@ -420,3 +444,22 @@ def score_click(model: Model, dems: dict, env: dict, worlds=WORLDS, n_best: int 
         out["worlds"][w] = dict(regions=regs, best_region=regs[0]["region"], landscape_score=regs[0]["score"],
                                 overall=regs[0]["overall"], best_match=best)
     return out
+
+
+_WORKER_MODELS = {}
+
+
+def region_logits_task(args):
+    # (model path, embedding) -> (region logits (R,), per-scale scores (R, n_scales)). for process pools: the
+    # notebook scores thousands of Earth blocks with it; the server doesn't need it
+    path, emb = args
+    m = _WORKER_MODELS.get(path)
+    if m is None:
+        m = _WORKER_MODELS[path] = load(path)
+    logit = np.full(len(m.region_keys), np.nan)
+    per = np.full((len(m.region_keys), len(m.scales)), np.nan)
+    for w in WORLDS:
+        for reg in region_scores(m, emb, w, n_best=1):
+            logit[reg["region_id"]] = reg["logit"]
+            per[reg["region_id"]] = [reg["scales"].get(s, {}).get("score", np.nan) for s in m.scales]
+    return logit, per

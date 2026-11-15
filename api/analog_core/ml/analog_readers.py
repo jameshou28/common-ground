@@ -31,7 +31,7 @@ POLAR_LAT = -80.0
 UA = "Mozilla/5.0 (analog-explorer)"
 WC = {10: "tree", 20: "shrub", 30: "grass", 40: "crop", 50: "built", 60: "bare", 70: "snow",
       80: "water", 90: "wetland", 95: "mangrove", 100: "moss"}
-WC_NAMES = ("tree", "crop", "built", "water", "snow", "bare")
+WC_NAMES = ("tree", "crop", "built", "water", "snow", "bare", "sparse")
 _TILES = None
 
 
@@ -169,13 +169,16 @@ def worldcover_shares(lat, lon, half_m=2000.0):
             w = w.round_offsets().round_lengths().intersection(rasterio.windows.Window(0, 0, ds.width, ds.height))
             a = ds.read(1, window=w)
     except Exception:
+        if lat < -60.0:                                # WorldCover has no Antarctic tiles; down there it's ice or bare rock
+            return dict(tree=0.0, crop=0.0, built=0.0, water=0.0, snow=1.0, bare=0.0, sparse=0.0)
         return {n: np.nan for n in WC_NAMES}           # no tile (ocean edge, outside coverage): unknown
     a = a[a > 0]
     if a.size == 0:
         return {n: np.nan for n in WC_NAMES}
     s = {name: float(np.mean(a == k)) for k, name in WC.items()}
     return dict(tree=s["tree"] + s["mangrove"], crop=s["crop"], built=s["built"],
-                water=s["water"] + s["wetland"], snow=s["snow"], bare=s["bare"])
+                water=s["water"] + s["wetland"], snow=s["snow"], bare=s["bare"],
+                sparse=s["shrub"] + s["grass"] + s["moss"])     # shrubland, grassland, moss and lichen
 
 
 #  one click, start to finish
