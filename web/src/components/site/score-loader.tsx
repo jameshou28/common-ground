@@ -13,6 +13,15 @@ const PHOTOS = [
   ["earthrise", "Earthrise from Apollo 8"],
   ["lunar-crater", "A lunar crater"],
   ["mount-sharp", "Mount Sharp on Mars"],
+  ["grand-canyon", "The Grand Canyon from the ISS"],
+  ["far-side", "The far side of the Moon"],
+  ["gale-crater", "Gale Crater on Mars"],
+  ["sahara", "The Sahara coast from the ISS"],
+  ["apollo-15", "The Apollo 15 rover at Hadley"],
+  ["jezero", "The Jezero delta on Mars"],
+  ["lunar-highlands", "The Apollo 16 lander"],
+  ["perseverance", "Perseverance on Mars"],
+  ["valles-marineris", "Valles Marineris on Mars"],
 ] as const;
 const STEP_MS = 700;
 

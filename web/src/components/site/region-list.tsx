@@ -73,7 +73,7 @@ export function RegionList() {
                     className={`${link} block rounded-lg px-3 py-2.5 ${on ? "" : "hover:bg-hover"}`}
                   >
                     <span className="flex items-center gap-2">
-                      <span className={`min-w-0 truncate ${on ? "font-semibold" : ""}`}>{g.title}</span>
+                      <span className={`min-w-0 break-words ${on ? "font-semibold" : ""}`}>{g.title}</span>
                       {best && <span className="rounded bg-warn/15 px-1.5 py-0.5 text-[11px] font-semibold text-warn">Best</span>}
                       <b className="ml-auto shrink-0 font-semibold">{Math.round(g.score)}</b>
                     </span>
@@ -101,7 +101,7 @@ export function RegionList() {
                                   {i + 1}
                                 </span>
                                 <span className="min-w-0 flex-1">
-                                  <span className={`block truncate text-sm first-letter:uppercase ${pick ? "font-semibold text-text" : "text-text"}`}>{s.name}</span>
+                                  <span className={`block break-words text-sm first-letter:uppercase ${pick ? "font-semibold text-text" : "text-text"}`}>{s.name}</span>
                                   {/* ponytail: coordinates, swap for "x km from <named feature>" once the api sends a gazetteer name */}
                                   <span className="block truncate text-xs text-text-2">{fmtLatLon(s.lat, s.lon)}</span>
                                 </span>

@@ -304,6 +304,7 @@ export function ExploreShell({ children }: { children: React.ReactNode }) {
                 overName={match.site.name}
                 relief={relief}
                 moonSun={moonSun}
+                points={points}
               />
             )}
           </section>

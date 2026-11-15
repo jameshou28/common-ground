@@ -2,7 +2,7 @@
 
 import { OrbitControls } from "@react-three/drei";
 import { Canvas, useThree } from "@react-three/fiber";
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, type ReactNode } from "react";
 import * as THREE from "three";
 import type { Grid } from "@/lib/grid";
 import { BLOCK_KM, meshHeights } from "@/lib/grid-mesh";
@@ -150,10 +150,12 @@ export type GridBlockProps = {
   link?: CameraLink;
   // moon light: grey ground lit from this many degrees above the horizon, with cast shadows
   moonSun?: number | null;
+  // extra scene content in block units, such as markers
+  children?: ReactNode;
 };
 
 // a 4 km block from a height grid: displaced mesh, walls, fixed light from the north-west, orbit camera
-export default function GridBlock({ grid, relief = 1, tone, wire, label, link, moonSun = null }: GridBlockProps) {
+export default function GridBlock({ grid, relief = 1, tone, wire, label, link, moonSun = null, children }: GridBlockProps) {
   const top = ((grid.hi - grid.lo) * relief) / 1000;
   return (
     <Canvas shadows frameloop="demand" dpr={[1, 2]} camera={{ position: [-3.4, 4.4, 7.4], fov: 35 }} role="img" aria-label={label}>
@@ -179,6 +181,7 @@ export default function GridBlock({ grid, relief = 1, tone, wire, label, link, m
       )}
       <Surface grid={grid} scale={relief} tone={tone} grey={moonSun !== null} />
       {wire && <Wire grid={wire.grid} scale={wire.scale} />}
+      {children}
       {/* linked blocks orbit one shared point, or the same camera would frame each differently */}
       <OrbitControls makeDefault enablePan={false} target={[0, link ? 0.2 : top / 2, 0]} minDistance={3} maxDistance={16} maxPolarAngle={Math.PI * 0.49} />
       {link && <LinkedCamera link={link} />}
