@@ -1,0 +1,9 @@
+{
+  "status": "placeholder",
+  "note": "same shape as the file the model run will write, every list is empty until it is computed",
+  "model_version": null,
+  "worlds": {
+    "moon": [],
+    "mars": []
+  }
+}

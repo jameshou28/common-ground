@@ -1,0 +1,117 @@
+{
+  "status": "placeholder",
+  "note": "same shape as the file the training run will write, every figure is null until it is measured",
+  "written": null,
+  "model_version": null,
+  "sites": null,
+  "recall": [
+    {
+      "title": "In the top 10",
+      "rows": [
+        {
+          "name": "Trained model",
+          "value": null,
+          "low": null,
+          "high": null,
+          "ours": true
+        },
+        {
+          "name": "Physics baseline",
+          "value": null,
+          "low": null,
+          "high": null
+        },
+        {
+          "name": "Aridity only",
+          "value": null,
+          "low": null,
+          "high": null
+        },
+        {
+          "name": "Latitude only",
+          "value": null,
+          "low": null,
+          "high": null
+        },
+        {
+          "name": "Random order",
+          "value": null,
+          "low": null,
+          "high": null
+        }
+      ]
+    },
+    {
+      "title": "In the top 50",
+      "rows": [
+        {
+          "name": "Trained model",
+          "value": null,
+          "low": null,
+          "high": null,
+          "ours": true
+        },
+        {
+          "name": "Physics baseline",
+          "value": null,
+          "low": null,
+          "high": null
+        },
+        {
+          "name": "Aridity only",
+          "value": null,
+          "low": null,
+          "high": null
+        },
+        {
+          "name": "Latitude only",
+          "value": null,
+          "low": null,
+          "high": null
+        },
+        {
+          "name": "Random order",
+          "value": null,
+          "low": null,
+          "high": null
+        }
+      ]
+    }
+  ],
+  "held_out": [
+    {
+      "programme": "ESA PANGAEA",
+      "sites": null,
+      "median_percentile": null,
+      "random_percentile": null
+    },
+    {
+      "programme": "AMADEE, Austrian Space Forum",
+      "sites": null,
+      "median_percentile": null,
+      "random_percentile": null
+    },
+    {
+      "programme": "Europlanet field sites",
+      "sites": null,
+      "median_percentile": null,
+      "random_percentile": null
+    }
+  ],
+  "planet_check": {
+    "ours": null,
+    "chance": 33.3,
+    "worlds": 3
+  },
+  "check_sites": {
+    "rank_correlation": null
+  },
+  "limits": [
+    "The model running now is a test version. Every score will change when the final one ships.",
+    "There aren't many known lunar analog sites, so any Moon result leans on a handful of them.",
+    "Only about 9% of the pixels in the 5 m lunar elevation data are real measurements. The rest is filled in, and it's smoother than the actual ground.",
+    "Earth is scored from 30 m elevation data, so anything smaller than that is invisible to the model.",
+    "A bar shows how much one measurement pushes the match up or down. It isn't a number of score points.",
+    "No place on Earth has lunar gravity, vacuum or radiation. The score is about the ground and the surface, nothing else."
+  ]
+}

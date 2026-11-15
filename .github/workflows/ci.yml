@@ -29,6 +29,8 @@ jobs:
       - if: hashFiles('web/package-lock.json') != ''
         run: npx tsc --noEmit
       - if: hashFiles('web/package-lock.json') != ''
+        run: npx vitest run
+      - if: hashFiles('web/package-lock.json') != ''
         run: npm run build
 
   api:
