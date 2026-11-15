@@ -40,7 +40,8 @@ BLOCK_FEATURES = ("relief", "hurst", "linearity", "depression_area", "depression
 INPUT_NAMES = TOKEN_FEATURES + tuple("d_" + b for b in BLOCK_FEATURES)
 N_TOK, N_IN = len(TOKEN_FEATURES), len(TOKEN_FEATURES) + len(BLOCK_FEATURES)
 ENV_NAMES = ("tree", "crop", "built", "water", "snow", "bare", "sparse", "precip", "aridity")   # what the readers return for a click
-GATE_NAMES = ("tree", "crop", "built", "water", "open", "sparse", "precip", "aridity")  # what the conditions model sees (v2.1: + aridity)
+GATE_NAMES = ("tree", "crop", "built", "water", "open", "sparse", "precip")  # what the conditions model sees. v2.1.1: aridity dropped again,
+# it reads cold polar deserts (Devon Island, Iceland) as humid because their evaporation is low, and didn't help held-out ranks
 GRID = np.linspace(0.0, 1.0, 1001)
 QUANTILES = (np.arange(8) + 0.5) / 8
 
@@ -314,6 +315,7 @@ class Model:
         self.earth_gamma = float(z["earth_gamma"]) if "earth_gamma" in z else 1.0          # v2.1
         self.surface_beta = float(z["surface_beta"]) if "surface_beta" in z else None     # v2.1; None = v2.0's sqrt(landscape x surface)
         self.terrain_power = float(z["terrain_power"]) if "terrain_power" in z else 1.0   # v2.1: similarity = 100 x p^k
+        self.surface_weight = float(z["surface_weight"]) if "surface_weight" in z else None  # v2.1.1: weighted geometric mean
         self.aridity = z["aridity_grid"] if "aridity_grid" in z else None                 # v2.1: aridity index x 10000, same grid as precip
         self.earth_ref = [np.sort(z[f"earth_ref__{r}"]) if f"earth_ref__{r}" in z else None for r in range(len(self.region_keys))]
         self.precip = z["precip_grid"]                        # mm per year, row 0 = 90 N, col 0 = 180 W
@@ -367,6 +369,9 @@ def earth_factor(model, pct: float) -> float:
 def overall_of(model, landscape: float, surface: float) -> float:
     # v2.1: surface as a soft discount, landscape x (surface / 100)^beta, so a bare place keeps nearly its terrain score
     # and surface can't lift a weak terrain match. older models: the v1.3.1 geometric mean
+    w = getattr(model, "surface_weight", None)
+    if w is not None:            # v2.1.1: landscape^(1-w) x surface^w, so it always sits between the two numbers
+        return float(max(landscape, 0.0) ** (1.0 - w) * max(surface, 0.0) ** w)
     beta = getattr(model, "surface_beta", None)
     if beta is None:
         return float(np.sqrt(max(landscape, 0.0) * surface))
@@ -707,6 +712,8 @@ def score_click(model: Model, dems: dict, env: dict, worlds=WORLDS, n_best: int 
         for reg in regs:
             # geometric mean: both terrain and surface have to be good, without squashing two good scores into a low one
             reg["overall"] = overall_of(model, reg["score"], surface)
+            if reg.get("landform"):                            # v2.1.1: the feature's overall, the same formula
+                reg["landform"]["overall"] = overall_of(model, reg["landform"]["score"], surface)
         regs.sort(key=lambda d: -d["overall"])
         best = max((b for reg in regs for b in reg["best"]), key=lambda b: b["logit"])
         ref = model.overall_ref.get(w)
