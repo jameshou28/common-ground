@@ -102,7 +102,7 @@ function Sheet({ tile, name, result: r, match, image }: Props & { image: string 
           {lf && (
             <>
               <br />
-              Feature score <b className="font-semibold">{Math.round(Math.sqrt(Math.max(lf.score, 0) * r.conditions.score))}</b> as {lf.label.toLowerCase()}, terrain{" "}
+              Feature score <b className="font-semibold">{Math.round(typeof lf.overall === "number" ? lf.overall : Math.sqrt(Math.max(lf.score, 0) * r.conditions.score))}</b> as {lf.label.toLowerCase()}, terrain{" "}
               {Math.round(lf.score)}
               {lf.validated ? "" : " (not validated yet)"}
             </>

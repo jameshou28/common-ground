@@ -85,6 +85,8 @@ export type Landform = {
   score: number;
   similarity: number;
   earth_percentile?: number;
+  // v2.1.1: the feature's overall, the same formula as the region's
+  overall?: number;
   validated: boolean;
   badge?: boolean;
   matches: { index: number; name: string; lat: number; lon: number }[];

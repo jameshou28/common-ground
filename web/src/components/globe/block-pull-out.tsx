@@ -25,8 +25,11 @@ type Lifted = { ring: CesiumNS.Cartesian3[]; heights: number[] };
 function blockControls(
   C: CesiumLib,
   ctl: CesiumNS.ScreenSpaceCameraController,
+  camera: CesiumNS.Camera,
 ) {
   const T = C.CameraEventType;
+  // in the block's local frame z is straight up: drags spin the block around its vertical and never tumble it
+  camera.constrainedAxis = C.Cartesian3.UNIT_Z;
   ctl.zoomEventTypes = [T.WHEEL, T.PINCH];
   ctl.rotateEventTypes = [T.LEFT_DRAG, T.RIGHT_DRAG, T.MIDDLE_DRAG];
   ctl.tiltEventTypes = undefined;
@@ -232,7 +235,7 @@ function liftBlock(
           tileset.clippingPlanes.enabled = true;
         }
         v.camera.lookAt(mid.center, view);
-        blockControls(C, scene.screenSpaceCameraController);
+        blockControls(C, scene.screenSpaceCameraController, v.camera);
         motion.current = "orbit";
         scene.requestRender();
         onLifted({ ring, heights });
@@ -258,7 +261,16 @@ function liftBlock(
     if (scene.globe) scene.globe.showSkirts = saved.skirts ?? true;
     scene.fog.enabled = saved.fog;
     v.camera.lookAtTransform(C.Matrix4.IDENTITY);
-    globeControls(C, scene.screenSpaceCameraController);
+    // back on the globe: straight down over the block, north up (a block left at an angle doesn't tilt the globe), from
+    // high enough that the 4 km block spans about a third of the screen's height, so it's about a ninth of the view
+    const fovy = (v.camera.frustum as CesiumNS.PerspectiveFrustum).fovy ?? C.Math.toRadians(40);
+    const above = (3 * 4000) / 2 / Math.tan(fovy / 2);
+    const c = ellipsoid.cartesianToCartographic(C.BoundingSphere.fromPoints(ring).center);
+    v.camera.setView({
+      destination: C.Cartesian3.fromRadians(c.longitude, c.latitude, above, ellipsoid),
+      orientation: { heading: 0, pitch: -Math.PI / 2, roll: 0 },
+    });
+    globeControls(C, scene.screenSpaceCameraController, undefined, v.camera);
     motion.current = null;
     scene.requestRender();
   };

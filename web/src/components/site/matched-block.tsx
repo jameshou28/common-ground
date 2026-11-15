@@ -17,13 +17,17 @@ export function MatchedBlock({
   relief,
   moonSun,
   alignment = null,
+  blank = false,
 }: {
   grid?: Grid;
   match?: Match | null;
   relief: number;
   moonSun: number | null;
   alignment?: Alignment | null;
+  // water: nothing to match, the pane stays empty
+  blank?: boolean;
 }) {
+  if (blank) return <section aria-hidden className="relative min-h-[180px] border-t border-line bg-space" />;
   if (!grid || !match)
     return (
       <section aria-label="Matched block" aria-busy className="relative grid min-h-[180px] place-items-center border-t border-line bg-space">

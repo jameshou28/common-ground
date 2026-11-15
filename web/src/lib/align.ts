@@ -26,6 +26,9 @@ export type Alignment = {
 // a weak fit moved around is no better than the cut
 export const MIN_GAIN = 0.05;
 export const MIN_FIT = 0.3;
+// the turn and shift are picked on shape (heights minus their tilt) plus this much of the raw heights' correlation, so
+// when several fits match the bumps about equally, the one whose ground also slopes the same way wins
+export const TILT_WEIGHT = 0.5;
 
 // (r, c) of the turned grid -> (r, c) of the original grid, both n x n
 function source(r: number, c: number, n: number, t: Turn): [number, number] {
@@ -118,40 +121,49 @@ export function alignBlock(block: Grid, padded: Grid, pad: number): Alignment {
   const n = padded.n;
   const plain: Alignment = { grid: crop(padded.z, n, pad, pad, k, block.cellM), turn: 0, dx: 0, dy: 0, before: 0, after: 0, pad, size: k };
   if (pad <= 0 || n !== k + 2 * pad) return { ...plain, grid: pad > 0 ? plain.grid : padded };
+  // shape: heights minus their best-fit plane. raw: heights minus their mean, so the tilt counts
   const tFull = normalise(detrend(block.z, k));
   const pFull = detrend(padded.z, n);
+  const tRaw = normalise(block.z);
   const before = ncc(pFull, n, tFull, k, pad, pad);
+  const pick = (shape: number, raw: number) => shape + TILT_WEIGHT * raw;
 
   // coarse: 4 px steps, every turn and shift
   const f = 4;
   const kc = Math.floor(k / f), nc = Math.floor(n / f), pc = Math.floor(pad / f);
   const tC = normalise(downsample(tFull, k, f));
+  const tRC = normalise(downsample(block.z, k, f));
   const pC = downsample(pFull, n, f);
+  const pRC = downsample(padded.z, n, f);
   let best = { t: 0, y: pc, x: pc, v: -Infinity };
   for (let t = 0; t < 8; t++) {
     const z = turnGrid(pC, nc, t);
+    const zr = turnGrid(pRC, nc, t);
     for (let y = 0; y <= 2 * pc; y++)
       for (let x = 0; x <= 2 * pc; x++) {
-        const v = ncc(z, nc, tC, kc, y, x);
+        const v = pick(ncc(z, nc, tC, kc, y, x), ncc(zr, nc, tRC, kc, y, x));
         if (v > best.v) best = { t, y, x, v };
       }
   }
   // fine: full resolution around the coarse winner, for its turn
   const zt = turnGrid(pFull, n, best.t);
-  let fine = { y: best.y * f, x: best.x * f, v: -Infinity };
+  const zrt = turnGrid(padded.z, n, best.t);
+  let fine = { y: best.y * f, x: best.x * f, v: -Infinity, shape: -Infinity };
   for (let y = Math.max(0, best.y * f - f); y <= Math.min(2 * pad, best.y * f + f); y++)
     for (let x = Math.max(0, best.x * f - f); x <= Math.min(2 * pad, best.x * f + f); x++) {
-      const v = ncc(zt, n, tFull, k, y, x);
-      if (v > fine.v) fine = { y, x, v };
+      const shape = ncc(zt, n, tFull, k, y, x);
+      const v = pick(shape, ncc(zrt, n, tRaw, k, y, x));
+      if (v > fine.v) fine = { y, x, v, shape };
     }
-  if (fine.v - before < MIN_GAIN || fine.v < MIN_FIT) return { ...plain, before, after: before };
+  // before and after are shape correlations, so the thresholds mean the same as before the tilt term
+  if (fine.shape - before < MIN_GAIN || fine.shape < MIN_FIT) return { ...plain, before, after: before };
   return {
     grid: crop(turnGrid(padded.z, n, best.t), n, fine.y, fine.x, k, block.cellM),
     turn: best.t,
     dx: fine.x - pad,
     dy: fine.y - pad,
     before,
-    after: fine.v,
+    after: fine.shape,
     pad,
     size: k,
   };

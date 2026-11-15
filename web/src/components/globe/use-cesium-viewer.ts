@@ -159,6 +159,8 @@ export function useCesiumViewer({ world, el, credits, onStatus, onAltitude }: Op
       };
 
       const s = START[world];
+      // shared with the block view: set while a block is open or flying in
+      const inBlock = { current: false };
       // the first globe of the visit eases in from further out once its tiles are drawn
       const flyIn = !flownIn;
       flownIn = true;
@@ -169,7 +171,9 @@ export function useCesiumViewer({ world, el, credits, onStatus, onAltitude }: Op
         if (shown || dead) return;
         shown = true;
         cb.current.onStatus({ state: "ready" });
-        if (flyIn) viewer.camera.flyTo({ destination: C.Cartesian3.fromDegrees(s.lon, s.lat, s.height, ellipsoid), duration: 1.4 });
+        // a block that's already flying in (opened straight from a link, e.g. Best sites) keeps its flight: a new
+        // flyTo would cancel it and the block would never lift out
+        if (flyIn && !inBlock.current) viewer.camera.flyTo({ destination: C.Cartesian3.fromDegrees(s.lon, s.lat, s.height, ellipsoid), duration: 1.4 });
       };
       setTimeout(show, 8000);
       // moon and mars tilesets are huge and never settle quickly, show once the first coarse tile is drawn
@@ -227,7 +231,7 @@ export function useCesiumViewer({ world, el, credits, onStatus, onAltitude }: Op
       emitAlt();
 
       if (process.env.NODE_ENV !== "production") (window as unknown as { __viewer: unknown }).__viewer = viewer;
-      setHandle({ C, v: viewer, world, ellipsoid, tileset, motion, inBlock: { current: false }, terrainReady, sun, relight: emitAlt });
+      setHandle({ C, v: viewer, world, ellipsoid, tileset, motion, inBlock, terrainReady, sun, relight: emitAlt });
     })();
 
     return () => {

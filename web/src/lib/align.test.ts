@@ -56,8 +56,11 @@ describe("alignBlock", () => {
     const p = padded(N / 2 - 12, N / 2 + 20);
     const earth = window(p.z, N, PAD - 12, PAD + 20);
     const a = alignBlock(earth, p, PAD);
-    expect([a.turn, a.dx, a.dy]).toEqual([0, 20, -12]);
-    expect(a.after).toBeGreaterThan(0.99);
+    // within a pixel: the earth window is tilted differently on purpose, and the tilt term can nudge the pick by one
+    expect(a.turn).toBe(0);
+    expect(Math.abs(a.dx - 20)).toBeLessThanOrEqual(1);
+    expect(Math.abs(a.dy + 12)).toBeLessThanOrEqual(1);
+    expect(a.after).toBeGreaterThan(0.98);
     expect(a.after - a.before).toBeGreaterThan(0.1);
     expect(a.grid.n).toBe(K);
     expect(describeAlignment(a, a.grid.cellM)).toMatch(/^moved 0\.7 km/);

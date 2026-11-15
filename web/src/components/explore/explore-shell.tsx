@@ -7,6 +7,9 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { alignedCell } from "@/lib/align";
 import { useAlignedLibraryGrid, useGrid, useTargets } from "@/lib/queries";
 import { cellPoints, type CellPoint } from "@/lib/regions";
+import { ApiError } from "@/lib/api";
+import { isLandCell } from "@/lib/land-mask";
+import { placeNear, placesOn } from "@/lib/places";
 import { CHECK_SITES, siteHref } from "@/lib/sites";
 import { fmtAltitude, fmtLatLon } from "@/lib/format";
 import {
@@ -34,16 +37,10 @@ const GlobeView = dynamic(() => import("@/components/globe/globe-view"), {
   ssr: false,
 });
 
-const CHECK_PINS: Pin[] = CHECK_SITES.map((s) => ({
-  id: s.id,
-  name: s.name,
-  lat: s.lat,
-  lon: s.lon,
-  kind: "check",
-}));
-
 // earth places the ml notebook lists as mars or moon analogs
 const ANALOG_PINS: Pin[] = analogSites.map((s) => ({ id: `analog-${s.id}`, name: s.name, lat: s.lat, lon: s.lon, kind: s.world as "mars" | "moon" }));
+// the check sites float on the earth globe as named points, so the model can be checked by eye; no sidebar list
+const CHECK_PINS: Pin[] = CHECK_SITES.map((s) => ({ id: s.id, name: s.name, lat: s.lat, lon: s.lon, kind: "check" }));
 const EARTH_PINS = [...ANALOG_PINS, ...CHECK_PINS];
 
 const NO_POINTS: CellPoint[] = [];
@@ -64,10 +61,13 @@ const parseWorld = (v: string | null): World =>
 // holds the one viewer for every explore route
 export function ExploreShell({ children }: { children: React.ReactNode }) {
   const search = useSearchParams();
-  const world = parseWorld(search.get("world"));
   const router = useRouter();
   const { tileId } = useParams<{ tileId?: string }>();
   const selected = useMemo(() => parseTile(tileId), [tileId]);
+  // an open block shows its own world's globe; otherwise the ?world= param picks it
+  const world = selected?.world ?? parseWorld(search.get("world"));
+  // only earth blocks are scored and get the region list and the matched block under the globe
+  const scored = selected?.world === "earth";
   const [status, setStatus] = useState<GlobeStatus>({ state: "loading" });
   const [altitude, setAltitude] = useState(0);
   const [hovered, setHover] = useState<{ at: LatLon; tile: Tile } | null>(null);
@@ -97,6 +97,10 @@ export function ExploreShell({ children }: { children: React.ReactNode }) {
   // the same cached result the panel shows
   const { q: score, match } = useMatch(selected);
   const result = score.data;
+  // water isn't scored: open sea never asks the api, a mostly-water coastal block comes back no_terrain
+  const water =
+    selected?.world === "earth" &&
+    (!isLandCell(selected.center.lat, selected.center.lon) || (score.error instanceof ApiError && score.error.code === "no_terrain"));
   const blockGrid = useGrid(result?.grid_url).data;
   // the matched block lined up with this one for display, the bottom pane exists only once its grid has loaded
   const { grid: matchedGrid, alignment } = useAlignedLibraryGrid(match?.site.index, blockGrid);
@@ -116,15 +120,18 @@ export function ExploreShell({ children }: { children: React.ReactNode }) {
     () =>
       world === "earth"
         ? EARTH_PINS
-        : (targets ?? [])
-            .filter((t) => t.world === world)
-            .map((t) => ({
-              id: t.id,
-              name: t.name,
-              lat: t.lat,
-              lon: t.lon,
-              kind: "target",
-            })),
+        : [
+            ...placesOn(world).map((p): Pin => ({ id: p.id, name: p.name, lat: p.lat, lon: p.lon, kind: "target" })),
+            ...(targets ?? [])
+              .filter((t) => t.world === world)
+              .map((t): Pin => ({
+                id: t.id,
+                name: t.name,
+                lat: t.lat,
+                lon: t.lon,
+                kind: "target",
+              })),
+          ],
     [world, targets],
   );
   const value = useMemo(
@@ -154,14 +161,13 @@ export function ExploreShell({ children }: { children: React.ReactNode }) {
   );
   const onPick = useCallback(
     (p: LatLon | null, pinId: string | null) => {
-      const at = pins.find((x) => x.id === pinId) ?? p;
+      const near = !pinId && p && world !== "earth" ? placeNear(world, p.lat, p.lon) : undefined;
+      const at = pins.find((x) => x.id === pinId) ?? near ?? p;
       if (!at) return;
-      // only earth is scored, on the moon and mars a click flies there
-      if (world === "earth")
-        router.push(siteHref(pointTile("earth", at.lat, at.lon).id));
-      else flyTo(at);
+      // every world opens the block; only earth blocks get scored
+      router.push(siteHref(pointTile(world, at.lat, at.lon).id));
     },
-    [pins, flyTo, world, router],
+    [pins, world, router],
   );
 
   // esc on a result steps back to the globe, capture so the globe's own esc does not also fire
@@ -185,15 +191,15 @@ export function ExploreShell({ children }: { children: React.ReactNode }) {
     <ExploreContext.Provider value={value}>
       <div
         className={
-          selected
+          scored
             ? "grid min-h-0 flex-1 grid-cols-[220px_minmax(0,1fr)_420px] max-lg:grid-cols-[minmax(0,1fr)_380px] max-lg:grid-rows-[auto_minmax(0,1fr)] max-md:grid-cols-1 max-md:grid-rows-[auto_minmax(260px,42vh)_minmax(0,1fr)]"
             : "grid min-h-0 flex-1 grid-cols-[minmax(0,1fr)_420px] max-md:grid-cols-1 max-md:grid-rows-[minmax(260px,42vh)_minmax(0,1fr)]"
         }
       >
-        {selected && <RegionList />}
+        {scored && <RegionList />}
         <div
           className={
-            selected && matchedGrid
+            scored && matchedGrid
               ? "grid min-h-0 grid-rows-[minmax(0,3fr)_minmax(0,2fr)]"
               : selected
                 ? "grid min-h-0"
@@ -304,10 +310,11 @@ export function ExploreShell({ children }: { children: React.ReactNode }) {
               </p>
             )}
           </section>
-          {selected && (
+          {scored && (
             <MatchedBlock
               grid={matchedGrid}
               alignment={alignment}
+              blank={water}
               match={match}
               relief={world === "earth" ? relief : 1}
               moonSun={moonSun}
