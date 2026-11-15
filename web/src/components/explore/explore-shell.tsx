@@ -302,7 +302,7 @@ export function ExploreShell({ children }: { children: React.ReactNode }) {
               />
             )}
           </section>
-          {selected && match && matchedGrid && (
+          {selected && (
             <MatchedBlock
               grid={matchedGrid}
               match={match}

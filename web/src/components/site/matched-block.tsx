@@ -9,8 +9,14 @@ import { terrainStats } from "@/lib/terrain";
 // three needs the browser
 const GridBlock = dynamic(() => import("@/components/grid/grid-block"), { ssr: false });
 
-// the matched moon or mars block under the earth block, only drawn once its grid is in
-export function MatchedBlock({ grid, match, relief, moonSun }: { grid: Grid; match: Match; relief: number; moonSun: number | null }) {
+// the matched moon or mars block under the earth block, a placeholder until the match and its grid are in
+export function MatchedBlock({ grid, match, relief, moonSun }: { grid?: Grid; match?: Match | null; relief: number; moonSun: number | null }) {
+  if (!grid || !match)
+    return (
+      <section aria-label="Matched block" aria-busy className="relative grid min-h-[180px] place-items-center border-t border-line bg-space">
+        <p className="animate-pulse text-xs text-text-2">Finding the closest match…</p>
+      </section>
+    );
   const { site, region, tab } = match;
   return (
     <section aria-label="Matched block" className="relative min-h-[180px] overflow-hidden border-t border-line bg-space">
