@@ -4,6 +4,7 @@ from __future__ import annotations
 import ssl
 import time
 import urllib.request
+from concurrent.futures import ThreadPoolExecutor
 
 import numpy as np
 import rasterio
@@ -33,6 +34,10 @@ WC = {10: "tree", 20: "shrub", 30: "grass", 40: "crop", 50: "built", 60: "bare",
       80: "water", 90: "wetland", 95: "mangrove", 100: "moss"}
 WC_NAMES = ("tree", "crop", "built", "water", "snow", "bare", "sparse")
 _TILES = None
+# v2.1 speed: the reads for one click run at the same time. rasterio/GDAL release the GIL while waiting on the network.
+# two pools so a window waiting on its tiles can never block the tiles themselves
+_READ_POOL = ThreadPoolExecutor(6, thread_name_prefix="read")
+_TILE_POOL = ThreadPoolExecutor(12, thread_name_prefix="tile")
 
 
 def http(url, body=None, timeout=60, tries=3, headers=None):
@@ -123,29 +128,36 @@ def read_glo30_window(lat, lon, res):
     out = np.full(lon_g.shape, np.nan)
     lat_f, lon_f = np.floor(lat_g).astype(int), np.floor(lon_g).astype(int)
     tiles = glo30_tiles()
-    with rasterio.Env(**GDAL_ENV):
-        for la, lo in {(int(a), int(b)) for a, b in zip(lat_f.ravel(), lon_f.ravel())}:
-            name = glo30_tile_name(la, lo)
-            if name not in tiles:
-                continue
-            sel = (lat_f == la) & (lon_f == lo)
-            with rasterio.open(f"/vsicurl/{GLO30}/{name}/{name}.tif") as ds:
-                dx, dy = ds.res
-                w = rasterio.windows.from_bounds(lon_g[sel].min() - 9 * dx, lat_g[sel].min() - 9 * dy,
-                                                 lon_g[sel].max() + 9 * dx, lat_g[sel].max() + 9 * dy, ds.transform)
-                w = w.round_offsets().round_lengths().intersection(rasterio.windows.Window(0, 0, ds.width, ds.height))
-                native_m = dy * np.pi / 180.0 * R
-                f = max((k for k in (1, 2, 4, 8) if k * native_m <= res), default=1)   # overview level
-                shape = (max(1, int(round(w.height / f))), max(1, int(round(w.width / f))))
-                arr = ds.read(1, window=w, out_shape=shape, resampling=rasterio.enums.Resampling.average).astype(np.float64)
-                t = ds.window_transform(w)
-            sx, sy = t.a * w.width / shape[1], t.e * w.height / shape[0]          # degrees per decimated pixel
-            factor = res / (abs(sy) * np.pi / 180.0 * R)
-            if factor > 1.2:
-                arr = ndimage.gaussian_filter(arr, 0.5 * factor, mode="nearest")
-            col = (lon_g[sel] - t.c) / sx - 0.5
-            row = (lat_g[sel] - t.f) / sy - 0.5
-            out[sel] = ndimage.map_coordinates(arr, [row, col], order=1, mode="nearest")
+
+    def one(la, lo):
+        # one GLO-30 tile's part of the window: (selection mask, heights), or None when the tile doesn't exist (sea)
+        name = glo30_tile_name(la, lo)
+        if name not in tiles:
+            return None
+        sel = (lat_f == la) & (lon_f == lo)
+        with rasterio.Env(**GDAL_ENV), rasterio.open(f"/vsicurl/{GLO30}/{name}/{name}.tif") as ds:
+            dx, dy = ds.res
+            w = rasterio.windows.from_bounds(lon_g[sel].min() - 9 * dx, lat_g[sel].min() - 9 * dy,
+                                             lon_g[sel].max() + 9 * dx, lat_g[sel].max() + 9 * dy, ds.transform)
+            w = w.round_offsets().round_lengths().intersection(rasterio.windows.Window(0, 0, ds.width, ds.height))
+            native_m = dy * np.pi / 180.0 * R
+            f = max((k for k in (1, 2, 4, 8) if k * native_m <= res), default=1)   # overview level
+            shape = (max(1, int(round(w.height / f))), max(1, int(round(w.width / f))))
+            arr = ds.read(1, window=w, out_shape=shape, resampling=rasterio.enums.Resampling.average).astype(np.float64)
+            t = ds.window_transform(w)
+        sx, sy = t.a * w.width / shape[1], t.e * w.height / shape[0]          # degrees per decimated pixel
+        factor = res / (abs(sy) * np.pi / 180.0 * R)
+        if factor > 1.2:
+            arr = ndimage.gaussian_filter(arr, 0.5 * factor, mode="nearest")
+        col = (lon_g[sel] - t.c) / sx - 0.5
+        row = (lat_g[sel] - t.f) / sy - 0.5
+        return sel, ndimage.map_coordinates(arr, [row, col], order=1, mode="nearest")
+
+    # v2.1 speed: the 1-4 tiles a window touches are read at the same time
+    keys = sorted({(int(a), int(b)) for a, b in zip(lat_f.ravel(), lon_f.ravel())})
+    for got in _TILE_POOL.map(lambda k: one(*k), keys):
+        if got is not None:
+            out[got[0]] = got[1]
     return out
 
 
@@ -185,15 +197,19 @@ def worldcover_shares(lat, lon, half_m=2000.0):
 
 def fetch_earth(model, lat, lon, scales=None):
     # Everything score_click needs for an Earth coordinate: ({scale: padded DEM}, env dict).
-    dems = {s: read_glo30_window(lat, lon, rt.SCALES[s]["res"]) for s in (scales or model.scales)}
+    # v2.1 speed: both elevation windows and the land cover are read at the same time (they used to go one by one)
+    futs = {s: _READ_POOL.submit(read_glo30_window, lat, lon, rt.SCALES[s]["res"]) for s in (scales or model.scales)}
+    f_env = _READ_POOL.submit(worldcover_shares, lat, lon)
+    dems = {s: f.result() for s, f in futs.items()}
     site = dems.get("site", next(iter(dems.values())))
     if np.isnan(site).mean() > 0.5 or flat_fraction(np.nan_to_num(site, nan=-1e9)) > 0.5:
         raise ValueError("no_terrain: the block is mostly ocean, lake or missing data")
     for s in list(dems):
         if np.isnan(dems[s]).mean() > 0.6:
             del dems[s]                                  # e.g. a small island: no regional context
-    env = worldcover_shares(lat, lon)
+    env = f_env.result()
     env["precip"] = rt.precip_at(model, lat, lon)
+    env["aridity"] = rt.aridity_at(model, lat, lon)      # v2.1, from the grid inside model.npz
     return dems, env
 
 

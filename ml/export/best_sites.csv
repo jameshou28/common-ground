@@ -1,0 +1,201 @@
+region,name,lat,lon,country,tile_id,score,terrain,surface,overall,lead,known,known_site,found_by,landform
+moon:maria,"32 km SW of Al Barakāt, LY",24.7341,9.9203,LY,earth:p:24.7341:9.9203,84.0,84.0,97.9,90.7,37.8,False,,screen,massif:76.0:0
+moon:maria,"734 km N of Iqaluit, CA",69.898,-74.63,CA,earth:p:69.8980:-74.6300,83.5,83.5,92.7,87.9,15.8,False,,screen,wrinkle_ridge:76.8:0
+moon:maria,"122 km NE of Tabuk, SA",29.2487,37.3638,SA,earth:p:29.2487:37.3638,83.3,83.3,99.9,91.3,62.0,False,,screen,sinuous_rille:75.7:0
+moon:maria,"148 km W of Bayanhongor, MN",46.012,98.8193,MN,earth:p:46.0120:98.8193,83.3,83.3,97.1,89.9,39.8,False,,screen,wrinkle_ridge:78.4:0
+moon:maria,"135 km N of Urt, MN",44.3753,100.4939,MN,earth:p:44.3753:100.4939,82.8,82.8,97.3,89.8,41.6,False,,screen,massif:78.2:0
+moon:maria,"248 km NE of Hami, CN",43.6917,96.3388,CN,earth:p:43.6917:96.3388,82.7,82.7,99.9,90.9,47.6,False,,screen,wrinkle_ridge:68.1:0
+moon:maria,"14 km NW of Bethanie, NA",-26.4373,17.0357,NA,earth:p:-26.4373:17.0357,82.7,82.7,95.6,88.9,40.6,False,,screen,wrinkle_ridge:76.8:0
+moon:maria,"162 km S of Turpan, CN",41.5514,89.7213,CN,earth:p:41.5514:89.7213,82.6,82.6,99.9,90.9,46.9,False,,screen,wrinkle_ridge:68.1:0
+moon:maria,"99 km W of Khūr, IR",34.0151,54.0531,IR,earth:p:34.0151:54.0531,82.4,82.4,99.8,90.7,50.0,False,,screen,sinuous_rille:72.4:0
+moon:maria,"94 km W of Uliastay, MN",47.7207,95.5851,MN,earth:p:47.7207:95.5851,82.2,82.2,95.7,88.7,15.9,False,,screen,wrinkle_ridge:76.8:0
+moon:maria,"174 km N of Sulţānah, SA",26.0111,39.9882,SA,earth:p:26.0111:39.9882,82.2,82.2,93.2,87.5,54.2,False,,screen,sinuous_rille:63.9:0
+moon:maria,"45 km SW of Cutral-Có, AR",-39.2436,-69.5751,AR,earth:p:-39.2436:-69.5751,82.1,82.1,93.3,87.5,41.8,False,,screen,massif:74.1:0
+moon:maria,"94 km N of Shofirkon Shahri, UZ",40.9039,64.0781,UZ,earth:p:40.9039:64.0781,82.1,82.1,97.0,89.2,49.3,False,,screen,massif:74.1:0
+moon:maria,"189 km NW of Uliastay, MN",48.62,94.663,MN,earth:p:48.6200:94.6630,81.9,81.9,96.5,88.9,16.8,False,,screen,wrinkle_ridge:78.4:0
+moon:maria,"168 km W of Opuwo, NA",-17.9657,12.2563,NA,earth:p:-17.9657:12.2563,81.9,81.9,99.9,90.4,42.5,False,,screen,sinuous_rille:72.4:0
+moon:maria,"89 km SW of Tabas, IR",33.0618,56.2149,IR,earth:p:33.0618:56.2149,81.9,81.9,93.0,87.3,27.6,False,,screen,wrinkle_ridge:76.8:0
+moon:maria,"108 km SW of Akureyri, IS",64.8618,-19.3267,IS,earth:p:64.8618:-19.3267,81.5,81.5,91.7,86.4,23.7,False,,screen,sinuous_rille:74.1:0
+moon:maria,"59 km NW of Ghat, LY",25.3096,9.739,LY,earth:p:25.3096:9.7390,81.4,81.4,94.8,87.9,41.3,False,,screen,massif:74.1:0
+moon:maria,"68 km SE of Lüderitz, NA",-27.0309,15.6937,NA,earth:p:-27.0309:15.6937,81.4,81.4,99.9,90.2,27.7,False,,screen,massif:81.8:0
+moon:maria,"220 km E of Dalain Hob, CN",41.2636,103.5358,CN,earth:p:41.2636:103.5358,81.4,81.4,99.9,90.2,53.6,False,,screen,sinuous_rille:72.4:0
+moon:maria,"26 km E of María Elena, CL",-22.3544,-69.4058,CL,earth:p:-22.3544:-69.4058,81.4,81.4,100.0,90.2,36.4,False,,screen,wrinkle_ridge:76.8:0
+moon:maria,"78 km W of Rosh Pinah, NA",-27.7503,16.0021,NA,earth:p:-27.7503:16.0021,81.4,81.4,99.9,90.2,51.1,False,,screen,sinuous_rille:72.4:0
+moon:maria,"127 km SE of Malargüe, AR",-36.3658,-68.695,AR,earth:p:-36.3658:-68.6950,81.4,81.4,80.9,81.2,36.8,False,,screen,wrinkle_ridge:73.9:0
+moon:maria,"311 km SW of Mūţ, EG",23.7088,26.6066,EG,earth:p:23.7088:26.6066,81.4,81.4,100.0,90.2,64.0,False,,screen,sinuous_rille:72.4:0
+moon:maria,"146 km W of Dunhuang, CN",39.9686,92.9923,CN,earth:p:39.9686:92.9923,81.4,81.4,100.0,90.2,43.1,False,,screen,massif:74.1:0
+moon:highlands,"115 km SE of Malargüe, AR",-36.2219,-68.695,AR,earth:p:-36.2219:-68.6950,83.0,83.0,94.1,88.4,6.8,False,,screen,wrinkle_ridge:88.2:1
+moon:highlands,"74 km NE of Taltal, CL",-24.9265,-69.9836,CL,earth:p:-24.9265:-69.9836,82.2,82.2,100.0,90.6,13.9,False,,screen,wrinkle_ridge:82.0:1
+moon:highlands,"131 km SW of Turpan, CN",41.8572,88.5642,CN,earth:p:41.8572:88.5642,81.8,81.8,99.9,90.4,3.7,False,,screen,wrinkle_ridge:82.0:1
+moon:highlands,"219 km NW of Cafayate, AR",-25.1423,-67.8992,AR,earth:p:-25.1423:-67.8992,81.6,81.6,97.8,89.3,17.8,False,,screen,sinuous_rille:74.8:1
+moon:highlands,"43 km SE of Bayanhongor, MN",45.8861,101.0643,MN,earth:p:45.8861:101.0643,81.2,81.2,91.3,86.1,6.2,False,,screen,wrinkle_ridge:82.0:1
+moon:highlands,Emuruangogolak,1.464,36.33,KE,earth:p:1.4640:36.3300,80.7,80.7,82.3,81.5,19.0,False,,volcano,sinuous_rille:76.2:1
+moon:highlands,"64 km NE of Khovd, MN",48.5301,91.9956,MN,earth:p:48.5301:91.9956,80.4,80.4,96.5,88.1,22.5,False,,screen,wrinkle_ridge:83.5:1
+moon:highlands,"112 km SW of Gobernador Gregores, AR",-49.4419,-71.3618,AR,earth:p:-49.4419:-71.3618,80.0,80.0,93.7,86.6,15.6,False,,screen,sinuous_rille:76.2:1
+moon:highlands,"65 km E of El Calafate, AR",-50.1614,-71.4084,AR,earth:p:-50.1614:-71.4084,80.0,80.0,95.4,87.4,22.2,False,,screen,wrinkle_ridge:80.1:1
+moon:highlands,"65 km S of Calama, CL",-23.0379,-68.9393,CL,earth:p:-23.0379:-68.9393,80.0,80.0,100.0,89.4,16.6,False,,screen,wrinkle_ridge:78.4:1
+moon:highlands,"66 km NE of Tocopilla, CL",-21.6889,-69.7293,CL,earth:p:-21.6889:-69.7293,79.8,79.8,97.6,88.2,10.8,False,,screen,wrinkle_ridge:83.5:1
+moon:highlands,"1062 km N of Yellowknife, CA",71.5348,-122.0921,CA,earth:p:71.5348:-122.0921,79.4,79.4,94.4,86.6,11.9,False,,screen,sinuous_rille:79.3:1
+moon:highlands,"836 km N of Yellowknife, CA",69.4663,-121.1202,CA,earth:p:69.4663:-121.1202,79.4,79.4,92.8,85.8,2.8,False,,screen,wrinkle_ridge:78.4:1
+moon:highlands,"65 km NE of Antofagasta, CL",-23.4156,-69.8166,CL,earth:p:-23.4156:-69.8166,79.2,79.2,100.0,89.0,12.3,False,,screen,sinuous_rille:84.2:1
+moon:highlands,"76 km E of Fort Irwin, US",35.436,-115.8768,US,earth:p:35.4360:-115.8768,78.6,78.6,94.9,86.3,28.9,False,,screen,sinuous_rille:76.2:1
+moon:highlands,"115 km S of Akureyri, IS",64.7179,-18.9894,IS,earth:p:64.7179:-18.9894,78.5,78.5,94.5,,25.1,False,,screen,sinuous_rille:84.2:1
+moon:highlands,"507 km NW of Xigazê, CN",33.1518,86.1229,CN,earth:p:33.1518:86.1229,78.4,78.4,93.0,85.4,19.5,False,,screen,sinuous_rille:84.2:1
+moon:highlands,"31 km S of Tupac Amaru, PE",-13.9907,-76.1292,PE,earth:p:-13.9907:-76.1292,78.4,78.4,100.0,88.6,3.6,False,,screen,sinuous_rille:81.0:1
+moon:highlands,"101 km SE of Akureyri, IS",64.8618,-17.1761,IS,earth:p:64.8618:-17.1761,78.3,78.3,92.4,85.1,3.6,True,Holuhraun,screen,wrinkle_ridge:79.0:1
+moon:highlands,"76 km S of Guerrero Negro, MX",27.3061,-114.273,MX,earth:p:27.3061:-114.2730,78.1,78.1,91.9,84.8,4.7,False,,screen,wrinkle_ridge:80.1:1
+moon:highlands,"55 km E of Semnan, IR",35.6698,53.9853,IR,earth:p:35.6698:53.9853,77.1,77.1,96.5,86.3,8.8,False,,screen,sinuous_rille:76.2:1
+moon:highlands,"78 km NW of Craig, US",40.9039,-108.3131,US,earth:p:40.9039:-108.3131,76.7,76.7,88.6,82.4,13.3,False,,screen,sinuous_rille:81.0:1
+moon:highlands,"238 km SW of Bayanhongor, MN",44.771,98.4376,MN,earth:p:44.7710:98.4376,76.5,76.5,96.6,86.0,29.0,False,,screen,wrinkle_ridge:78.4:1
+moon:highlands,"44 km W of Bayanhongor, MN",46.1739,100.1409,MN,earth:p:46.1739:100.1409,76.4,76.4,94.4,84.9,-0.2,False,,screen,wrinkle_ridge:80.7:1
+moon:highlands,"1270 km NE of Yellowknife, CA",71.1211,-95.1068,CA,earth:p:71.1211:-95.1068,75.9,75.9,93.2,84.1,5.6,False,,screen,wrinkle_ridge:78.9:1
+moon:basins,"108 km NE of Joshīmath, IN",31.1193,80.4871,IN,earth:p:31.1193:80.4871,73.6,73.6,92.2,82.4,4.5,False,,screen,crater_floor:66.2:1
+moon:basins,"143 km NE of Diego de Almagro, CL",-25.8078,-68.7713,CL,earth:p:-25.8078:-68.7713,73.6,73.6,98.0,84.9,-1.5,False,,screen,crater_floor:62.8:1
+moon:basins,Wrangell,62.006,-144.0936,US,earth:p:62.0060:-144.0936,73.3,73.3,97.2,,-2.5,False,,volcano,crater_floor:57.7:1
+moon:basins,Veniaminof,56.134,-159.38,US,earth:p:56.1340:-159.3800,72.7,72.7,96.3,,-0.9,False,,volcano,crater_floor:46.6:1
+moon:basins,"49 km NW of Santa María, AR",-26.3654,-66.372,AR,earth:p:-26.3654:-66.3720,72.3,72.3,95.1,82.9,-1.9,False,,screen,crater_floor:72.0:1
+moon:basins,"653 km N of Iqaluit, CA",69.5563,-70.6284,CA,earth:p:69.5563:-70.6284,69.7,69.7,94.1,81.0,1.8,False,,screen,crater_floor:72.0:1
+moon:basins,"160 km W of Cafayate, AR",-25.5559,-67.4648,AR,earth:p:-25.5559:-67.4648,67.9,67.9,97.5,81.3,1.7,False,,screen,crater_floor:59.1:1
+moon:basins,"128 km N of Fiambalá, AR",-26.5992,-68.0799,AR,earth:p:-26.5992:-68.0799,66.4,66.4,97.9,80.6,-2.6,False,,screen,crater_floor:59.2:1
+moon:basins,"138 km SE of Tierra Amarilla, CL",-28.0741,-69.0368,CL,earth:p:-28.0741:-69.0368,66.2,66.2,96.2,79.8,4.7,False,,screen,crater_floor:55.5:1
+moon:basins,"117 km NW of Fiambalá, AR",-27.2467,-68.6988,AR,earth:p:-27.2467:-68.6988,65.6,65.6,96.6,79.6,0.6,False,,screen,crater_floor:54.0:1
+moon:basins,"1589 km N of Sisimiut, GL",79.6107,-78.6213,GL,earth:p:79.6107:-78.6213,65.5,65.5,99.7,,-0.2,False,,screen,crater_floor:57.0:1
+moon:basins,Chimborazo,-1.469,-78.853,EC,earth:p:-1.4690:-78.8530,64.2,64.2,86.8,74.7,-0.2,False,,volcano,crater_floor:51.8:1
+moon:basins,"373 km N of Iqaluit, CA",67.0022,-66.5895,CA,earth:p:67.0022:-66.5895,64.1,64.1,93.1,77.2,4.2,False,,screen,crater_floor:62.8:1
+moon:basins,Lastarria,-25.15,-68.507,CL,earth:p:-25.1500:-68.5070,63.5,63.5,97.6,78.7,-0.5,False,,volcano,crater_floor:51.8:1
+moon:basins,"1729 km NW of Sisimiut, GL",78.9632,-90.1089,GL,earth:p:78.9632:-90.1089,63.0,63.0,96.4,,3.6,False,,screen,crater_floor:46.6:1
+moon:basins,"262 km NW of Xigazê, CN",31.3171,87.5802,CN,earth:p:31.3171:87.5802,62.6,62.6,93.6,76.5,2.7,False,,screen,crater_floor:62.8:1
+moon:basins,"142 km NE of Manāli, IN",32.774,78.5595,IN,earth:p:32.7740:78.5595,62.3,62.3,96.1,77.4,-0.7,False,,screen,crater_floor:51.8:1
+moon:basins,Andahua-Orcopampa,-15.456,-72.33,PE,earth:p:-15.4560:-72.3300,62.2,62.2,72.1,67.0,-0.1,False,,volcano,crater_floor:49.6:1
+moon:basins,"162 km S of San Pedro de Atacama, CL",-24.3509,-67.9823,CL,earth:p:-24.3509:-67.9823,61.2,61.2,97.7,77.3,-0.3,False,,screen,crater_floor:54.8:1
+moon:basins,"302 km NE of Burang, CN",31.7848,83.82,CN,earth:p:31.7848:83.8200,60.8,60.8,95.7,76.3,-2.7,False,,screen,crater_floor:55.5:1
+moon:basins,Purace,2.3095,-76.3588,CO,earth:p:2.3095:-76.3588,59.6,59.6,70.1,64.6,3.1,False,,volcano,crater_floor:46.7:1
+moon:basins,"163 km E of Jargalant, MN",46.3718,93.0669,MN,earth:p:46.3718:93.0669,59.6,59.6,88.4,72.6,0.0,False,,screen,crater_floor:48.7:1
+moon:basins,"67 km N of Jargalant, MN",47.5229,91.0108,MN,earth:p:47.5229:91.0108,59.4,59.4,92.6,74.1,1.4,False,,screen,crater_floor:55.5:1
+moon:basins,"202 km NE of Burang, CN",31.8387,82.2903,CN,earth:p:31.8387:82.2903,59.2,59.2,93.3,74.3,5.0,False,,screen,crater_floor:52.3:1
+moon:basins,Nylgimelkin,58.006,160.65,RU,earth:p:58.0060:160.6500,58.8,58.8,81.3,69.2,1.2,False,,volcano,crater_floor:47.1:1
+moon:south_pole,"509 km NW of Xigazê, CN",33.1158,86.0156,CN,earth:p:33.1158:86.0156,66.4,66.4,92.3,78.3,-2.6,False,,screen,small_crater:74.5:0
+moon:south_pole,Morning,-78.536,163.53,NZ,earth:p:-78.5360:163.5300,65.4,65.4,99.9,,4.9,False,,volcano,small_crater:72.8:0
+moon:south_pole,"240 km NW of Cafayate, AR",-25.0704,-68.0978,AR,earth:p:-25.0704:-68.0978,65.4,65.4,99.9,80.9,-2.0,False,,screen,small_crater:66.8:0
+moon:south_pole,Mauna Kea,19.802,-155.4318,US,earth:p:19.8020:-155.4318,59.9,59.9,91.7,74.1,0.2,True,Mauna Kea summit,volcano,small_crater:61.3:0
+moon:south_pole,Etna,37.802,14.999,IT,earth:p:37.8020:14.9990,57.2,57.2,81.9,68.5,1.5,True,Mount Etna,volcano,crater_rim:66.4:0
+moon:south_pole,"164 km N of Fiambalá, AR",-26.2754,-68.1373,AR,earth:p:-26.2754:-68.1373,56.5,56.5,97.3,74.1,-0.9,False,,screen,small_crater:70.5:0
+moon:south_pole,Melbourne,-74.386,164.7,NZ,earth:p:-74.3860:164.7000,55.0,55.0,99.8,,-1.1,False,,volcano,small_crater:57.3:0
+moon:south_pole,Erebus,-77.53,167.3366,NZ,earth:p:-77.5300:167.3366,53.5,53.5,99.8,,15.4,False,,volcano,crater_rim:62.9:0
+moon:south_pole,"169 km W of Cafayate, AR",-25.7358,-67.6244,AR,earth:p:-25.7358:-67.6244,53.2,53.2,97.3,72.0,-0.8,False,,screen,crater_rim:66.4:0
+moon:south_pole,"113 km N of Belén, AR",-26.6532,-67.2337,AR,earth:p:-26.6532:-67.2337,52.7,52.7,97.4,71.6,-0.6,False,,screen,crater_rim:51.2:0
+moon:south_pole,Tilocalar,-23.952,-68.1694,CL,earth:p:-23.9520:-68.1694,47.8,47.8,100.0,69.1,-1.5,False,,volcano,small_crater:52.8:0
+moon:south_pole,"31 km E of Pica, CL",-20.4118,-69.0412,CL,earth:p:-20.4118:-69.0412,47.2,47.2,96.6,67.6,1.5,False,,screen,small_crater:62.5:0
+moon:south_pole,Tenduruk Dagi,39.356,43.874,TR,earth:p:39.3560:43.8740,45.5,45.5,91.7,64.6,1.1,False,,volcano,small_crater:64.5:0
+moon:south_pole,"43 km N of Fort Irwin, US",35.6338,-116.5542,US,earth:p:35.6338:-116.5542,44.7,44.7,97.3,65.9,4.2,False,,screen,crater_rim:46.9:0
+moon:south_pole,"137 km E of Alto del Carmen, CL",-28.8116,-69.0869,CL,earth:p:-28.8116:-69.0869,43.6,43.6,97.4,65.2,-2.9,False,,screen,crater_rim:45.7:0
+moon:south_pole,Cameroon,4.203,9.17,CM,earth:p:4.2030:9.1700,43.3,43.3,74.7,56.9,8.6,False,,volcano,small_crater:51.1:0
+moon:south_pole,Teide and Las Canadas,28.2371,-16.6394,ES,earth:p:28.2371:-16.6394,42.6,42.6,86.2,60.6,0.7,True,Teide and Las Canadas,analog,small_crater:50.8:0
+moon:south_pole,"49 km NW of Calama, CL",-22.0486,-69.109,CL,earth:p:-22.0486:-69.1090,41.6,41.6,100.0,64.5,-0.4,False,,screen,crater_rim:40.7:0
+moon:south_pole,"43 km E of Vicente Guerrero, MX",30.8315,-115.5504,MX,earth:p:30.8315:-115.5504,39.3,39.3,81.1,56.5,-3.0,False,,screen,crater_rim:46.9:0
+moon:south_pole,"155 km E of Mammoth Lakes, US",37.1627,-117.3308,US,earth:p:37.1627:-117.3308,38.7,38.7,91.3,59.5,0.7,True,Ubehebe Crater,screen,small_crater:50.1:0
+moon:south_pole,"31 km W of Arta, DJ",11.622,42.5827,DJ,earth:p:11.6220:42.5827,37.8,37.8,96.6,60.4,-1.2,False,,screen,small_crater:64.5:0
+moon:south_pole,Amsterdam Island,-37.83,77.5655,MU,earth:p:-37.8300:77.5655,37.7,37.7,70.7,51.6,4.0,False,,volcano,crater_rim:38.6:0
+moon:south_pole,"65 km SE of Altai, MN",46.012,96.9275,MN,earth:p:46.0120:96.9275,37.2,37.2,96.4,59.9,-0.9,False,,screen,small_crater:40.9:0
+moon:south_pole,"77 km NE of Mammoth Lakes, US",38.0261,-118.2436,US,earth:p:38.0261:-118.2436,37.1,37.1,83.6,55.7,-2.1,False,,screen,crater_rim:43.9:0
+moon:south_pole,"Azul, Cerro",-0.92,-91.444,EC,earth:p:-0.9200:-91.4440,34.8,34.8,85.8,54.6,-1.9,False,,volcano,crater_rim:38.6:0
+mars:highlands,Mauna Kea,19.82,-155.5273,US,earth:p:19.8200:-155.5273,87.6,87.6,90.3,88.9,0.8,True,Mauna Kea summit,volcano,volcanic_edifice:80.0:1
+mars:highlands,"100 km S of Malargüe, AR",-36.3658,-69.3864,AR,earth:p:-36.3658:-69.3864,87.3,87.3,94.6,90.9,0.8,False,,screen,volcanic_edifice:63.3:1
+mars:highlands,Morning,-78.536,163.53,NZ,earth:p:-78.5360:163.5300,84.0,84.0,99.9,,-2.9,False,,volcano,volcanic_edifice:80.0:1
+mars:highlands,"113 km E of Taltal, CL",-25.0704,-69.4278,CL,earth:p:-25.0704:-69.4278,83.0,83.0,100.0,91.1,2.8,False,,screen,crater_rim:42.4:1
+mars:highlands,"118 km E of Antofagasta, CL",-23.7933,-69.2534,CL,earth:p:-23.7933:-69.2534,82.2,82.2,97.9,89.8,1.2,False,,screen,volcanic_edifice:77.1:1
+mars:highlands,"80 km E of El Calafate, AR",-50.1075,-71.2124,AR,earth:p:-50.1075:-71.2124,81.8,81.8,85.6,83.6,1.1,False,,screen,crater_rim:50.7:1
+mars:highlands,"219 km NW of Cafayate, AR",-25.1423,-67.8992,AR,earth:p:-25.1423:-67.8992,81.8,81.8,97.8,89.4,0.7,False,,screen,volcanic_edifice:80.0:1
+mars:highlands,Erebus,-77.566,167.17,NZ,earth:p:-77.5660:167.1700,81.4,81.4,99.8,,-2.0,False,,volcano,volcanic_edifice:74.1:1
+mars:highlands,"1504 km NW of Sisimiut, GL",77.9559,-81.2712,GL,earth:p:77.9559:-81.2712,80.3,80.3,99.6,,0.4,False,,screen,volcanic_edifice:68.9:1
+mars:highlands,"98 km SW of Gobernador Gregores, AR",-49.1002,-71.4724,AR,earth:p:-49.1002:-71.4724,79.7,79.7,94.4,86.7,-0.2,False,,screen,volcanic_edifice:49.7:1
+mars:highlands,Erciyes Volcanic Complex,38.531,35.493,TR,earth:p:38.5310:35.4930,79.4,79.4,89.4,84.2,1.2,False,,volcano,volcanic_edifice:78.6:1
+mars:highlands,"190 km NW of Uliastay, MN",48.602,94.6358,MN,earth:p:48.6020:94.6358,79.3,79.3,96.7,87.6,0.4,False,,screen,crater_rim:37.7:1
+mars:highlands,"509 km NW of Xigazê, CN",33.1158,86.0156,CN,earth:p:33.1158:86.0156,79.0,79.0,92.3,85.4,-0.5,False,,screen,volcanic_edifice:70.9:1
+mars:highlands,"Tujle, Cerro",-23.812,-67.9697,CL,earth:p:-23.8120:-67.9697,78.9,78.9,96.8,87.4,0.4,False,,volcano,volcanic_edifice:70.7:1
+mars:highlands,"67 km NE of Khovd, MN",48.5481,92.05,MN,earth:p:48.5481:92.0500,78.8,78.8,96.3,87.1,6.6,False,,screen,crater_rim:42.1:1
+mars:highlands,"90 km NE of Diego de Almagro, CL",-25.7358,-69.5192,CL,earth:p:-25.7358:-69.5192,78.7,78.7,100.0,88.7,1.3,False,,screen,volcanic_edifice:50.1:1
+mars:highlands,"330 km E of Gar, CN",32.7021,83.61,CN,earth:p:32.7021:83.6100,78.6,78.6,96.3,87.0,2.1,False,,screen,volcanic_edifice:39.1:1
+mars:highlands,"1073 km N of Yellowknife, CA",71.6787,-121.8067,CA,earth:p:71.6787:-121.8067,78.6,78.6,94.9,86.4,0.3,False,,screen,volcanic_edifice:49.7:1
+mars:highlands,"56 km W of Jīroft, IR",28.5292,57.1932,IR,earth:p:28.5292:57.1932,78.0,78.0,96.7,86.8,-1.5,False,,screen,volcanic_edifice:53.3:1
+mars:highlands,"115 km S of Akureyri, IS",64.7179,-18.9894,IS,earth:p:64.7179:-18.9894,78.0,78.0,94.5,,-2.2,False,,screen,volcanic_edifice:72.8:1
+mars:highlands,"98 km W of Uliastay, MN",47.7567,95.5315,MN,earth:p:47.7567:95.5315,77.8,77.8,96.1,86.5,1.0,False,,screen,crater_rim:37.7:1
+mars:highlands,Tenduruk Dagi,39.374,43.8973,TR,earth:p:39.3740:43.8973,77.7,77.7,89.6,83.5,-2.2,False,,volcano,volcanic_edifice:69.7:1
+mars:highlands,Katla,63.597,-19.083,IS,earth:p:63.5970:-19.0830,77.2,77.2,93.3,,0.0,False,,volcano,volcanic_edifice:68.0:1
+mars:highlands,"141 km W of Altai, MN",46.3718,94.4216,MN,earth:p:46.3718:94.4216,77.2,77.2,96.0,86.1,-2.3,False,,screen,crater_rim:37.7:1
+mars:highlands,"814 km N of Yellowknife, CA",69.3224,-120.6612,CA,earth:p:69.3224:-120.6612,77.2,77.2,92.1,84.3,1.1,False,,screen,volcanic_edifice:45.3:1
+mars:lowlands,"68 km S of Choyr, MN",45.5264,108.5514,MN,earth:p:45.5264:108.5514,81.0,81.0,96.4,88.4,17.2,False,,screen,crater_rim:44.6:1
+mars:lowlands,"85 km NW of Gaiman, AR",-42.769,-66.262,AR,earth:p:-42.7690:-66.2620,78.9,78.9,93.7,86.0,16.2,False,,screen,crater_rim:44.6:1
+mars:lowlands,"1059 km NW of Iqaluit, CA",71.1211,-84.4535,CA,earth:p:71.1211:-84.4535,78.1,78.1,92.0,84.8,7.9,False,,screen,crater_rim:42.6:1
+mars:lowlands,"184 km SW of Sandaoling Lutiankuang Wuqi Nongchang, CN",41.6054,91.7215,CN,earth:p:41.6054:91.7215,77.5,77.5,100.0,88.0,12.2,False,,screen,crater_rim:44.6:1
+mars:lowlands,"95 km N of Zamiin Uud, MN",44.5731,111.8345,MN,earth:p:44.5731:111.8345,77.3,77.3,96.1,86.2,16.5,False,,screen,crater_rim:44.6:1
+mars:lowlands,"55 km SE of Bor-Öndör, MN",46.03,110.0663,MN,earth:p:46.0300:110.0663,76.8,76.8,94.5,85.2,12.6,False,,screen,crater_rim:44.6:1
+mars:lowlands,"99 km SW of Choyr, MN",45.5983,107.6281,MN,earth:p:45.5983:107.6281,76.7,76.7,97.5,86.4,10.0,False,,screen,crater_rim:44.6:1
+mars:lowlands,"141 km NW of Tongyangdao, CN",42.9184,109.2304,CN,earth:p:42.9184:109.2304,76.3,76.3,96.8,85.9,6.8,False,,screen,crater_rim:44.6:1
+mars:lowlands,"193 km E of Hami, CN",42.5766,95.8458,CN,earth:p:42.5766:95.8458,76.2,76.2,97.9,86.3,11.7,False,,screen,crater_rim:44.6:1
+mars:lowlands,"30 km NE of Berriane, DZ",33.0618,3.9137,DZ,earth:p:33.0618:3.9137,76.1,76.1,97.3,86.1,9.5,False,,screen,crater_rim:44.6:1
+mars:lowlands,"279 km SW of Mūţ, EG",23.5829,27.1758,EG,earth:p:23.5829:27.1758,75.7,75.7,100.0,87.0,21.3,False,,screen,crater_rim:41.4:1
+mars:lowlands,"167 km SW of Ha'il, SA",26.5148,40.4349,SA,earth:p:26.5148:40.4349,75.7,75.7,90.1,82.6,12.3,False,,screen,crater_rim:47.3:1
+mars:lowlands,"96 km W of Zag, MA",27.8997,-10.2566,MA,earth:p:27.8997:-10.2566,75.5,75.5,97.9,86.0,22.5,False,,screen,crater_rim:31.9:1
+mars:lowlands,"93 km N of Kirdimi, TD",18.9604,18.3276,TD,earth:p:18.9604:18.3276,75.5,75.5,100.0,86.9,18.9,False,,screen,crater_rim:44.6:1
+mars:lowlands,"49 km SW of Qurayyat, SA",31.0473,36.95,SA,earth:p:31.0473:36.9500,75.4,75.4,96.8,85.5,14.4,False,,screen,crater_rim:49.6:1
+mars:lowlands,"177 km W of Aguelhok, ML",19.59,-0.827,ML,earth:p:19.5900:-0.8270,75.4,75.4,99.9,86.8,26.0,False,,screen,crater_rim:44.6:1
+mars:lowlands,"72 km SW of Ruwaished, JO",31.9286,37.8616,JO,earth:p:31.9286:37.8616,75.0,75.0,97.6,85.6,26.4,False,,screen,crater_rim:49.6:1
+mars:lowlands,"129 km N of Aousserd, MA",23.7088,-14.4557,MA,earth:p:23.7088:-14.4557,75.0,75.0,98.0,85.7,21.6,False,,screen,crater_rim:44.6:1
+mars:lowlands,"186 km W of Aguelhok, ML",18.9604,-0.828,ML,earth:p:18.9604:-0.8280,75.0,75.0,97.3,85.4,19.5,False,,screen,crater_rim:44.6:1
+mars:lowlands,"41 km NE of Dalain Hob, CN",42.1809,101.4641,CN,earth:p:42.1809:101.4641,74.9,74.9,99.9,86.5,14.8,False,,screen,crater_rim:44.6:1
+mars:lowlands,"262 km E of In Salah, DZ",27.522,5.1099,DZ,earth:p:27.5220:5.1099,74.8,74.8,100.0,86.5,15.0,False,,screen,crater_rim:44.6:1
+mars:lowlands,"120 km N of Uchkuduk, UZ",42.1269,62.7332,UZ,earth:p:42.1269:62.7332,74.7,74.7,97.2,85.2,8.9,False,,screen,crater_rim:51.8:1
+mars:lowlands,"131 km E of Zillah, LY",28.2415,18.8337,LY,earth:p:28.2415:18.8337,74.0,74.0,96.5,84.5,10.5,False,,screen,crater_rim:28.3:1
+mars:lowlands,"86 km SW of Mizdah, LY",31.1193,12.1677,LY,earth:p:31.1193:12.1677,74.0,74.0,99.9,86.0,26.0,False,,screen,crater_rim:42.6:1
+mars:lowlands,"55 km SE of Al Qaţrānah, JO",30.8495,36.3816,JO,earth:p:30.8495:36.3816,74.0,74.0,97.2,84.8,16.9,False,,screen,crater_rim:44.6:1
+mars:volcanic,Kau Desert,19.3906,-155.3158,US,earth:p:19.3906:-155.3158,86.4,86.4,85.0,85.7,1.4,True,Kau Desert,analog,volcanic_edifice:74.8:1
+mars:volcanic,"101 km E of Taltal, CL",-25.3582,-69.4848,CL,earth:p:-25.3582:-69.4848,80.0,80.0,100.0,89.5,1.8,False,,screen,volcanic_edifice:74.8:1
+mars:volcanic,"126 km S of Zillah, LY",27.45,17.8289,LY,earth:p:27.4500:17.8289,79.9,79.9,94.5,86.9,44.5,False,,screen,volcanic_edifice:26.1:1
+mars:volcanic,"133 km W of Bayanhongor, MN",46.084,99.0007,MN,earth:p:46.0840:99.0007,79.7,79.7,96.5,87.7,0.7,False,,screen,volcanic_edifice:68.2:1
+mars:volcanic,"98 km W of Uliastay, MN",47.7207,95.5315,MN,earth:p:47.7207:95.5315,79.3,79.3,95.8,87.2,2.0,False,,screen,volcanic_edifice:72.8:1
+mars:volcanic,"102 km SE of Malargüe, AR",-36.2939,-69.0741,AR,earth:p:-36.2939:-69.0741,79.3,79.3,91.5,85.2,5.4,False,,screen,volcanic_edifice:72.8:1
+mars:volcanic,"99 km SE of Akureyri, IS",64.8798,-17.1761,IS,earth:p:64.8798:-17.1761,78.5,78.5,94.9,86.3,3.9,True,Holuhraun,screen,volcanic_edifice:72.8:1
+mars:volcanic,"149 km N of Sulţānah, SA",25.8133,39.8282,SA,earth:p:25.8133:39.8282,78.5,78.5,95.3,86.5,0.4,False,,screen,volcanic_edifice:72.8:1
+mars:volcanic,"249 km E of Hami, CN",42.5766,96.5298,CN,earth:p:42.5766:96.5298,78.4,78.4,99.9,88.5,4.9,False,,screen,volcanic_edifice:63.6:1
+mars:volcanic,"99 km SW of Zillah, LY",27.9717,16.7754,LY,earth:p:27.9717:16.7754,78.1,78.1,98.0,87.5,27.1,False,,screen,volcanic_edifice:26.1:1
+mars:volcanic,"95 km S of Calama, CL",-23.2537,-69.2683,CL,earth:p:-23.2537:-69.2683,78.0,78.0,100.0,88.3,0.6,False,,screen,volcanic_edifice:74.8:1
+mars:volcanic,"44 km SW of Calama, CL",-22.822,-69.0963,CL,earth:p:-22.8220:-69.0963,77.8,77.8,100.0,88.2,0.8,False,,screen,volcanic_edifice:74.8:1
+mars:volcanic,"141 km W of Altai, MN",46.3718,94.4216,MN,earth:p:46.3718:94.4216,77.0,77.0,96.0,86.0,-2.5,False,,screen,volcanic_edifice:74.8:1
+mars:volcanic,"42 km NE of Diego de Almagro, CL",-26.0776,-69.8008,CL,earth:p:-26.0776:-69.8008,76.9,76.9,97.4,86.5,1.6,False,,screen,volcanic_edifice:72.8:1
+mars:volcanic,"71 km W of Mahd adh Dhahab, SA",23.493,40.1892,SA,earth:p:23.4930:40.1892,76.7,76.7,97.4,86.5,4.2,False,,screen,volcanic_edifice:63.8:1
+mars:volcanic,"90 km SE of Ulaangom, MN",49.4654,93.0246,MN,earth:p:49.4654:93.0246,76.5,76.5,96.9,86.1,-1.6,False,,screen,volcanic_edifice:72.8:1
+mars:volcanic,"165 km SW of Opuwo, NA",-18.6672,12.4175,NA,earth:p:-18.6672:12.4175,76.5,76.5,99.9,87.4,-1.5,False,,screen,volcanic_edifice:72.8:1
+mars:volcanic,Alayta,12.888,40.5361,ET,earth:p:12.8880:40.5361,76.3,76.3,94.4,84.9,-1.3,False,,volcano,volcanic_edifice:72.8:1
+mars:volcanic,"Negra, Sierra",-0.83,-91.206,EC,earth:p:-0.8300:-91.2060,76.3,76.3,84.9,80.4,11.5,False,,volcano,volcanic_edifice:72.8:1
+mars:volcanic,"100 km S of Sandaoling Lutiankuang Wuqi Nongchang, CN",42.1809,92.4411,CN,earth:p:42.1809:92.4411,76.1,76.1,100.0,87.2,2.7,False,,screen,volcanic_edifice:61.2:1
+mars:volcanic,"129 km S of Turpan, CN",41.8212,88.8294,CN,earth:p:41.8212:88.8294,76.1,76.1,99.9,87.2,-2.0,False,,screen,volcanic_edifice:72.8:1
+mars:volcanic,"86 km E of Fort Irwin, US",35.1483,-115.7523,US,earth:p:35.1483:-115.7523,75.6,75.6,88.6,81.8,0.3,False,,screen,volcanic_edifice:74.8:1
+mars:volcanic,"97 km SE of Turpan, CN",42.3967,90.1063,CN,earth:p:42.3967:90.1063,75.4,75.4,100.0,86.8,-1.4,False,,screen,volcanic_edifice:72.8:1
+mars:volcanic,"1514 km NW of Sisimiut, GL",78.0998,-81.2712,GL,earth:p:78.0998:-81.2712,75.0,75.0,99.6,,-0.4,False,,screen,volcanic_edifice:74.8:1
+mars:volcanic,"67 km SE of Lüderitz, NA",-27.0129,15.6937,NA,earth:p:-27.0129:15.6937,74.5,74.5,97.8,85.4,-0.5,False,,screen,volcanic_edifice:72.8:1
+mars:outflow,Mauna Kea,19.82,-155.4318,US,earth:p:19.8200:-155.4318,88.8,88.8,92.3,90.6,8.4,True,Mauna Kea summit,volcano,yardang:23.4:1
+mars:outflow,Tenduruk Dagi,39.392,43.874,TR,earth:p:39.3920:43.8740,87.0,87.0,86.4,86.7,7.1,False,,volcano,yardang:32.2:1
+mars:outflow,Morning,-78.536,163.53,NZ,earth:p:-78.5360:163.5300,87.0,87.0,99.9,,2.9,False,,volcano,yardang:26.6:1
+mars:outflow,"100 km S of Malargüe, AR",-36.3658,-69.3864,AR,earth:p:-36.3658:-69.3864,86.4,86.4,94.6,90.4,-0.8,False,,screen,yardang:61.4:1
+mars:outflow,"112 km S of San Pedro de Atacama, CL",-23.9012,-68.3879,CL,earth:p:-23.9012:-68.3879,85.0,85.0,100.0,92.2,3.2,False,,screen,yardang:60.0:1
+mars:outflow,Etna,37.712,14.999,IT,earth:p:37.7120:14.9990,84.7,84.7,73.2,78.8,3.9,True,Mount Etna,volcano,yardang:26.6:1
+mars:outflow,Kau Desert,19.3726,-155.3158,US,earth:p:19.3726:-155.3158,84.7,84.7,90.6,87.6,-1.3,True,Kau Desert,analog,yardang:60.0:1
+mars:outflow,Melbourne,-74.35,164.8334,NZ,earth:p:-74.3500:164.8334,84.0,84.0,99.8,,9.0,False,,volcano,yardang:26.6:1
+mars:outflow,"101 km SW of Akureyri, IS",64.8618,-18.9894,IS,earth:p:64.8618:-18.9894,83.3,83.3,95.0,,6.7,False,,screen,yardang:57.3:1
+mars:outflow,"111 km E of Antofagasta, CL",-23.8472,-69.3321,CL,earth:p:-23.8472:-69.3321,83.3,83.3,100.0,91.3,2.3,False,,screen,yardang:63.7:1
+mars:outflow,Erebus,-77.566,167.17,NZ,earth:p:-77.5660:167.1700,83.3,83.3,99.8,,2.0,False,,volcano,yardang:17.0:1
+mars:outflow,"67 km NE of Tocopilla, CL",-21.6889,-69.7099,CL,earth:p:-21.6889:-69.7099,82.5,82.5,97.6,89.7,8.9,False,,screen,yardang:80.6:1
+mars:outflow,"89 km SW of Sandaoling Lutiankuang Wuqi Nongchang, CN",42.4867,92.0586,CN,earth:p:42.4867:92.0586,81.5,81.5,100.0,90.3,7.3,False,,screen,yardang:74.0:1
+mars:outflow,"478 km E of Nuuk, GL",64.2143,-41.8308,GL,earth:p:64.2143:-41.8308,81.4,81.4,94.6,,8.4,False,,screen,yardang:63.7:1
+mars:outflow,"140 km S of Kezilexilike, CN",44.9329,90.1856,CN,earth:p:44.9329:90.1856,81.3,81.3,95.8,88.2,5.2,False,,screen,yardang:78.3:1
+mars:outflow,"507 km NW of Xigazê, CN",33.1338,86.0799,CN,earth:p:33.1338:86.0799,81.1,81.1,93.4,87.0,4.1,False,,screen,yardang:58.7:1
+mars:outflow,"219 km NW of Cafayate, AR",-25.1423,-67.8992,AR,earth:p:-25.1423:-67.8992,81.1,81.1,97.8,89.0,-0.7,False,,screen,yardang:26.6:1
+mars:outflow,"80 km E of El Calafate, AR",-50.1075,-71.2124,AR,earth:p:-50.1075:-71.2124,80.7,80.7,85.6,83.1,-1.1,False,,screen,yardang:77.9:1
+mars:outflow,"100 km S of Calama, CL",-23.3437,-69.1116,CL,earth:p:-23.3437:-69.1116,80.5,80.5,98.0,88.8,6.4,False,,screen,yardang:52.5:1
+mars:outflow,"176 km N of Fiambalá, AR",-26.1495,-68.1172,AR,earth:p:-26.1495:-68.1172,80.4,80.4,97.1,88.3,5.2,False,,screen,yardang:51.7:1
+mars:outflow,"27 km NE of Bam, IR",29.3206,58.4955,IR,earth:p:29.3206:58.4955,80.3,80.3,99.8,89.5,7.2,False,,screen,yardang:82.2:1
+mars:outflow,"33 km SW of Al Barakāt, LY",24.6981,9.9401,LY,earth:p:24.6981:9.9401,79.9,79.9,100.0,89.4,3.7,False,,screen,yardang:78.3:1
+mars:outflow,"1504 km NW of Sisimiut, GL",77.9559,-81.2712,GL,earth:p:77.9559:-81.2712,79.9,79.9,99.6,,-0.4,False,,screen,yardang:44.0:1
+mars:outflow,Shishaldin,54.792,-163.97,US,earth:p:54.7920:-163.9700,79.5,79.5,91.4,,13.2,False,,volcano,yardang:19.3:1
+mars:outflow,"56 km W of Jīroft, IR",28.5292,57.1932,IR,earth:p:28.5292:57.1932,79.5,79.5,96.7,87.7,1.5,False,,screen,yardang:61.9:1

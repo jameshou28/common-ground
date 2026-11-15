@@ -21,7 +21,7 @@ LOWPASS_PX = 1.0                    # the same Gaussian blur on every world: one
 ROUGH_FINE_PX, ROUGH_COARSE_PX, TPI_PX = 3, 11, 39      # filter window widths
 TPI_NEAR_PX, TPI_FAR_PX = 17, 97                         # v2.0 spatial context windows (the 64 px padding covers both)
 RING_PX, N_RINGS = 6, 10                                 # radial profile: 10 rings of 6 px around each candidate centre
-LF_SHORT, LF_K = 30, 5                                   # landform scores: shortlist and top-k
+LF_SHORT, LF_K = 15, 5                                   # landform scores: shortlist and top-k (v2.1: 30 -> 15, faster clicks)
 SHADOW_PX, SVF_PX = 64, 32          # horizon search distances
 RADIUS_M = {"earth": 6_371_000.0, "moon": 1_737_400.0, "mars": 3_396_190.0}
 WORLDS = ("moon", "mars")
@@ -39,8 +39,9 @@ BLOCK_FEATURES = ("relief", "hurst", "linearity", "depression_area", "depression
                   "bowl", "bowl_r", "cone", "cone_r")                  # v2.0: best radially symmetric bowl / cone, and its radius
 INPUT_NAMES = TOKEN_FEATURES + tuple("d_" + b for b in BLOCK_FEATURES)
 N_TOK, N_IN = len(TOKEN_FEATURES), len(TOKEN_FEATURES) + len(BLOCK_FEATURES)
-ENV_NAMES = ("tree", "crop", "built", "water", "snow", "bare", "sparse", "precip")   # what the readers return for a click
-GATE_NAMES = ("tree", "crop", "built", "water", "open", "sparse", "precip")           # what the conditions model sees
+ENV_NAMES = ("tree", "crop", "built", "water", "snow", "bare", "sparse", "precip", "aridity")   # what the readers return for a click
+GATE_NAMES = ("tree", "crop", "built", "water", "open", "sparse", "precip")  # what the conditions model sees. v2.1.1: aridity dropped again,
+# it reads cold polar deserts (Devon Island, Iceland) as humid because their evaporation is low, and didn't help held-out ranks
 GRID = np.linspace(0.0, 1.0, 1001)
 QUANTILES = (np.arange(8) + 0.5) / 8
 
@@ -311,6 +312,11 @@ class Model:
         self.built_full = float(z["built_full"]) if "built_full" in z else 0.05
         # Earth-relative factor: each region's similarity is discounted when that much similarity is common on Earth
         self.earth_floor = float(z["earth_floor"]) if "earth_floor" in z else 1.0
+        self.earth_gamma = float(z["earth_gamma"]) if "earth_gamma" in z else 1.0          # v2.1
+        self.surface_beta = float(z["surface_beta"]) if "surface_beta" in z else None     # v2.1; None = v2.0's sqrt(landscape x surface)
+        self.terrain_power = float(z["terrain_power"]) if "terrain_power" in z else 1.0   # v2.1: similarity = 100 x p^k
+        self.surface_weight = float(z["surface_weight"]) if "surface_weight" in z else None  # v2.1.1: weighted geometric mean
+        self.aridity = z["aridity_grid"] if "aridity_grid" in z else None                 # v2.1: aridity index x 10000, same grid as precip
         self.earth_ref = [np.sort(z[f"earth_ref__{r}"]) if f"earth_ref__{r}" in z else None for r in range(len(self.region_keys))]
         self.precip = z["precip_grid"]                        # mm per year, row 0 = 90 N, col 0 = 180 W
         # v1.3.1 display scale: surface is shown out of its real maximum, overall is the geometric mean, and the
@@ -335,6 +341,41 @@ class Model:
 def load(path) -> Model:
     with np.load(path, allow_pickle=False) as f:
         return Model({k: f[k] for k in f.files})
+
+
+def aridity_at(model, lat: float, lon: float) -> float:
+    # v2.1: aridity index (rain / potential evaporation; under 0.05 hyper-arid, over 0.65 humid) from the grid inside
+    # the model file (Global Aridity Index v3.1, Zomer et al. 2022, CC BY 4.0). NaN where unknown or with an older model
+    g = getattr(model, "aridity", None)
+    if g is None:
+        return float("nan")
+    i = min(max(int((90.0 - lat) / 180.0 * g.shape[0]), 0), g.shape[0] - 1)
+    j = min(max(int(((lon + 180.0) % 360.0) / 360.0 * g.shape[1]), 0), g.shape[1] - 1)
+    v = float(g[i, j])
+    return float("nan") if v >= 65535 else v / 10000.0
+
+
+def sim_curve(model, x):
+    # similarity (0-100) from a combined logit. v2.1: 100 x p^k with k <= 1 lifts mid-range matches more than the
+    # best ones, without changing the order (k = 1 is v2.0)
+    return 100.0 * float(expit(x)) ** getattr(model, "terrain_power", 1.0)
+
+
+def earth_factor(model, pct: float) -> float:
+    # landscape = similarity x this. v2.1 adds the gamma: under 1 it is gentler on land that is only mid-ranked
+    return model.earth_floor + (1.0 - model.earth_floor) * pct ** getattr(model, "earth_gamma", 1.0)
+
+
+def overall_of(model, landscape: float, surface: float) -> float:
+    # v2.1: surface as a soft discount, landscape x (surface / 100)^beta, so a bare place keeps nearly its terrain score
+    # and surface can't lift a weak terrain match. older models: the v1.3.1 geometric mean
+    w = getattr(model, "surface_weight", None)
+    if w is not None:            # v2.1.1: landscape^(1-w) x surface^w, so it always sits between the two numbers
+        return float(max(landscape, 0.0) ** (1.0 - w) * max(surface, 0.0) ** w)
+    beta = getattr(model, "surface_beta", None)
+    if beta is None:
+        return float(np.sqrt(max(landscape, 0.0) * surface))
+    return float(max(landscape, 0.0) * (max(surface, 0.0) / 100.0) ** beta)
 
 
 def precip_at(model: Model, lat: float, lon: float) -> float:
@@ -414,14 +455,14 @@ def _secant(g, a: float, b: float, min_w: float = 0.5) -> float:
     return float((g(hi) - g(lo)) / (hi - lo))
 
 
-def _breakdown(score: float, sim: float, parts: dict, L: float, common: float):
+def _breakdown(score: float, sim: float, parts: dict, L: float, common: float, power: float = 1.0):
     # score = base + sum(terms) + common + earth, all in score points.
     #   terms: each measurement (logit points of the combined logit L, times the average slope of the 0-100 score)
     #   common: the library weighting (matches against terrain that's common on Earth count less)
     #   earth: the Earth factor (score - similarity; this place looks like ordinary Earth land)
     #   base: what's left, i.e. the score of a typical match with every measurement at its typical value
     tot = float(sum(parts.values()) + common)
-    r = _secant(lambda x: 100.0 * float(expit(x)), L - tot, L)
+    r = _secant(lambda x: 100.0 * float(expit(x)) ** power, L - tot, L)
     terms = {n: float(r * v) for n, v in parts.items()}
     com = float(r * common)
     earth = float(score - sim)
@@ -502,14 +543,14 @@ def landform_score(model: Model, i: int, per: dict) -> dict:
         w_s += model.S[s]["weight"]
     if 0 < w_s < w_all:
         L = model.combo_bias + (L - model.combo_bias) * w_all / w_s
-    sim = float(100 * expit(L))
+    sim = sim_curve(model, L)
     ref = model.lf_earth[i] if i < len(model.lf_earth) else None
     pct = float(np.searchsorted(ref, L, side="right") / len(ref)) if ref is not None and len(ref) else 1.0
-    f = model.earth_floor + (1.0 - model.earth_floor) * pct
+    f = earth_factor(model, pct)
     out = dict(score=sim * f, similarity=sim, earth_percentile=100.0 * pct, logit=float(L), scales=scales)
     if all("cbar" in v for v in per.values()):
         items, comm = _scale_parts(model, per, lambda s: model.lf_calib.get(s, [None] * (i + 1))[i])
-        out["breakdown"], _ = _breakdown(sim * f, sim, dict(zip(INPUT_NAMES, items.tolist())), float(L), comm)
+        out["breakdown"], _ = _breakdown(sim * f, sim, dict(zip(INPUT_NAMES, items.tolist())), float(L), comm, model.terrain_power)
     return out
 
 
@@ -578,19 +619,20 @@ def region_scores(model: Model, emb: dict, world: str, exclude: np.ndarray | Non
                 b["partner"] = c0["partner"][i].tolist()
                 b["_d"] = d
             best.append(b)
-        sim = float(100 * expit(L))
+        sim = sim_curve(model, L)
         ref = model.earth_ref[r]
         pct = float(np.searchsorted(ref, L, side="right") / len(ref)) if ref is not None and len(ref) else 1.0
-        factor = model.earth_floor + (1.0 - model.earth_floor) * pct
+        factor = earth_factor(model, pct)
         # v1.3.2: put each best site on the region score's scale. the region's logit L sits where the average of its
         # top pairs sits, so a site's logit is shifted by the same amount, then gets the same Earth factor.
         # contributions become score points (logit points x the slope of the score at that site), so they read like "+4"
         ref_j = float(np.mean(np.sort(joint)[::-1][:min(k, len(joint))]))
         for b in best:
-            p = float(expit(b["logit"] - ref_j + L))
+            p0 = float(expit(b["logit"] - ref_j + L))
+            p = p0 ** model.terrain_power                     # v2.1: the same lift as the region's similarity
             b["pair_score_raw"] = b["pair_score"]
             b["pair_score"] = 100.0 * p * factor
-            slope = 100.0 * p * (1.0 - p) * factor
+            slope = 100.0 * model.terrain_power * p * (1.0 - p0) * factor
             b["contributions_logit"] = b["contributions"]
             b["contributions"] = {n: v * slope for n, v in b["contributions"].items()}
             # v2.0.1: exact breakdown of pair_score, averaged over the scales like the pair logit itself
@@ -600,13 +642,13 @@ def region_scores(model: Model, emb: dict, world: str, exclude: np.ndarray | Non
             feats = (c0["contrib"][i] + sum(others_c[s][o] for s in others)) / n_sc
             comm = (float(c0["lw"][i]) + sum(float(others_w[s][o]) for s in others)) / n_sc
             b["breakdown"], r_b = _breakdown(b["pair_score"], 100.0 * p, dict(zip(INPUT_NAMES, feats.tolist())),
-                                             b["logit"] - ref_j + L, comm)
+                                             b["logit"] - ref_j + L, comm, model.terrain_power)
             if "_d" in b:
                 # each cell's share of the 4 km cell features, in the same score points (they add up to those terms)
                 cl = _cell_logits(model, lead, c0["raw"][i], c0["contrib"][i], b.pop("_d"))
                 b["cell_points"] = (r_b * cl / n_sc).reshape(8, 8).tolist()
         items, comm_l = _scale_parts(model, parts, lambda s: model.calib[s][r])
-        region_bd, _ = _breakdown(sim * factor, sim, dict(zip(INPUT_NAMES, items.tolist())), float(L), comm_l)
+        region_bd, _ = _breakdown(sim * factor, sim, dict(zip(INPUT_NAMES, items.tolist())), float(L), comm_l, model.terrain_power)
         lf, lf_all = None, []
         if landforms and model.lf_keys:
             for i, per in landform_aggregates(model, emb, np.flatnonzero(model.lf_region == r), exclude).items():
@@ -669,7 +711,9 @@ def score_click(model: Model, dems: dict, env: dict, worlds=WORLDS, n_best: int 
         regs = region_scores(model, emb, w, n_best=n_best, with_cells=True, landforms=True)
         for reg in regs:
             # geometric mean: both terrain and surface have to be good, without squashing two good scores into a low one
-            reg["overall"] = float(np.sqrt(max(reg["score"], 0.0) * surface))
+            reg["overall"] = overall_of(model, reg["score"], surface)
+            if reg.get("landform"):                            # v2.1.1: the feature's overall, the same formula
+                reg["landform"]["overall"] = overall_of(model, reg["landform"]["score"], surface)
         regs.sort(key=lambda d: -d["overall"])
         best = max((b for reg in regs for b in reg["best"]), key=lambda b: b["logit"])
         ref = model.overall_ref.get(w)
