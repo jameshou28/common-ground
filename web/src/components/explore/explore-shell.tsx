@@ -110,7 +110,7 @@ export function ExploreShell({ children }: { children: React.ReactNode }) {
     [match, alignment],
   );
   // the earth pane as a plain height grid with the matched block drawn over it
-  const [wire, setWire] = useState(false);
+  const [wire, setWire] = useState(true);
   // light both blocks with a sun just above the horizon, as at the lunar poles
   const [moon, setMoon] = useState(false);
   const moonSun = moon && match?.tab === "moon" ? MOON_SUN_DEG : null;
