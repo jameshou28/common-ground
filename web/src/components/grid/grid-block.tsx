@@ -83,15 +83,16 @@ function Wire({ grid, scale }: { grid: Grid; scale: number }) {
     const c = new THREE.Color(), cols = new Float32Array(pos.count * 3);
     for (let k = 0; k < pos.count; k++) {
       const t = hi > lo ? (pos.getY(k) - lo) / (hi - lo) : 0.5;
-      c.setHSL(0.66 - t * 0.5, 0.9, 0.45 + t * 0.15).toArray(cols, k * 3);
+      c.setHSL(0.6 - t * 0.45, 1, 0.6 + t * 0.1).toArray(cols, k * 3);
     }
     g.setAttribute("color", new THREE.Float32BufferAttribute(cols, 3));
     return g;
   }, [grid, scale]);
   useEffect(() => () => geo.dispose(), [geo]);
+  // drawn over the block, unlit and untonemapped, so the ground never hides or dulls it
   return (
-    <mesh geometry={geo} position={[0, 0.004, 0]}>
-      <meshBasicMaterial vertexColors wireframe transparent opacity={0.9} />
+    <mesh geometry={geo} position={[0, 0.004, 0]} renderOrder={1}>
+      <meshBasicMaterial vertexColors wireframe depthTest={false} toneMapped={false} />
     </mesh>
   );
 }
