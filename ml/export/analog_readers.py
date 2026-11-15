@@ -181,9 +181,11 @@ def worldcover_shares(lat, lon, half_m=2000.0):
             w = w.round_offsets().round_lengths().intersection(rasterio.windows.Window(0, 0, ds.width, ds.height))
             a = ds.read(1, window=w)
     except Exception:
-        if lat < -60.0:                                # WorldCover has no Antarctic tiles; down there it's ice or bare rock
-            return dict(tree=0.0, crop=0.0, built=0.0, water=0.0, snow=1.0, bare=0.0, sparse=0.0)
-        return {n: np.nan for n in WC_NAMES}           # no tile (ocean edge, outside coverage): unknown
+        # no tile. Antarctica (WorldCover stops at 60 S): no trees, crops, buildings or open water down there, and the
+        # split between ice and bare rock is unknown (the surface head reads unknown as typical). elsewhere: all unknown
+        if lat < -60.0:
+            return dict(tree=0.0, crop=0.0, built=0.0, water=0.0, snow=np.nan, bare=np.nan, sparse=np.nan)
+        return {n: np.nan for n in WC_NAMES}
     a = a[a > 0]
     if a.size == 0:
         return {n: np.nan for n in WC_NAMES}

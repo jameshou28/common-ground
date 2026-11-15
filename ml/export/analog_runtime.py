@@ -5,7 +5,7 @@ import math
 import numpy as np
 from scipy import ndimage
 from scipy.optimize import linear_sum_assignment
-from scipy.special import expit
+from scipy.special import expit, ndtri
 
 #  grid and constants
 
@@ -42,6 +42,13 @@ N_TOK, N_IN = len(TOKEN_FEATURES), len(TOKEN_FEATURES) + len(BLOCK_FEATURES)
 ENV_NAMES = ("tree", "crop", "built", "water", "snow", "bare", "sparse", "precip", "aridity")   # what the readers return for a click
 GATE_NAMES = ("tree", "crop", "built", "water", "open", "sparse", "precip")  # what the conditions model sees. v2.1.1: aridity dropped again,
 # it reads cold polar deserts (Devon Island, Iceland) as humid because their evaporation is low, and didn't help held-out ranks
+# v3.0 heads. terrain head inputs: per scale, the mean and the spread of every cell measurement over the 64 cells, then
+# the block measurements (log relief). surface head inputs: land-cover shares and log rainfall
+SURFACE_INPUTS = ("tree", "crop", "built", "water", "snow", "bare", "sparse", "precip")
+HEAD_SCALES = ("site", "regional")
+HEAD_Z_CLIP = 4.0
+# which measurement each terrain-head input belongs to, so "why it matches" shows one row per measurement
+HEAD_T_GROUPS = tuple(n for _ in HEAD_SCALES for n in (TOKEN_FEATURES + TOKEN_FEATURES + tuple("d_" + b for b in BLOCK_FEATURES)))
 GRID = np.linspace(0.0, 1.0, 1001)
 QUANTILES = (np.arange(8) + 0.5) / 8
 
@@ -316,6 +323,13 @@ class Model:
         self.surface_beta = float(z["surface_beta"]) if "surface_beta" in z else None     # v2.1; None = v2.0's sqrt(landscape x surface)
         self.terrain_power = float(z["terrain_power"]) if "terrain_power" in z else 1.0   # v2.1: similarity = 100 x p^k
         self.surface_weight = float(z["surface_weight"]) if "surface_weight" in z else None  # v2.1.1: weighted geometric mean
+        # v3.0: heads trained on verified analog sites vs random land. None with older model files
+        self.head = None
+        if "head_t_w" in z:
+            self.head = dict(
+                t=dict(w=np.asarray(z["head_t_w"], float), mu=np.asarray(z["head_t_mu"], float), sd=np.asarray(z["head_t_sd"], float), b=float(z["head_t_b"])),
+                s=dict(w=np.asarray(z["head_s_w"], float), mu=np.asarray(z["head_s_mu"], float), sd=np.asarray(z["head_s_sd"], float), b=float(z["head_s_b"])),
+                cal_t=tuple(float(v) for v in z["head_cal_t"]), cal_s=tuple(float(v) for v in z["head_cal_s"]), alpha=float(z["head_alpha"]))
         self.aridity = z["aridity_grid"] if "aridity_grid" in z else None                 # v2.1: aridity index x 10000, same grid as precip
         self.earth_ref = [np.sort(z[f"earth_ref__{r}"]) if f"earth_ref__{r}" in z else None for r in range(len(self.region_keys))]
         self.precip = z["precip_grid"]                        # mm per year, row 0 = 90 N, col 0 = 180 W
@@ -353,6 +367,51 @@ def aridity_at(model, lat: float, lon: float) -> float:
     j = min(max(int(((lon + 180.0) % 360.0) / 360.0 * g.shape[1]), 0), g.shape[1] - 1)
     v = float(g[i, j])
     return float("nan") if v >= 65535 else v / 10000.0
+
+
+def head_terrain_x(emb: dict) -> np.ndarray:
+    # terrain head inputs from an embedding {scale: (tokens, block, sketch)}; NaN for a missing scale (read as typical)
+    x = []
+    for s in HEAD_SCALES:
+        if s in emb:
+            tok, blk = np.asarray(emb[s][0], dtype=np.float64), np.array(emb[s][1], dtype=np.float64)
+            blk[0] = np.log1p(max(blk[0], 0.0))
+            x += [tok.mean(0), tok.std(0), blk]
+        else:
+            x += [np.full(N_TOK, np.nan), np.full(N_TOK, np.nan), np.full(len(BLOCK_FEATURES), np.nan)]
+    return np.concatenate(x)
+
+
+def surface_x(env: dict) -> np.ndarray:
+    # surface head inputs: land-cover shares as they are, rainfall as log(1 + mm). NaN = unknown (read as typical)
+    def f(k):
+        v = env.get(k)
+        return float("nan") if v is None else float(v)
+    return np.array([np.log1p(max(f(n), 0.0)) if n == "precip" and not np.isnan(f(n)) else f(n) for n in SURFACE_INPUTS])
+
+
+def head_logit(H: dict, x: np.ndarray):
+    # (logit, contribution of every input). inputs are standardised on the training blocks and clipped, unknown = 0
+    z = np.clip(np.nan_to_num((np.asarray(x, dtype=float) - H["mu"]) / H["sd"]), -HEAD_Z_CLIP, HEAD_Z_CLIP)
+    c = H["w"] * z
+    return float(H["b"] + c.sum()), c
+
+
+def terrain_head(model, emb: dict):
+    # None with an older model. else dict(T=calibrated terrain logit, parts={measurement: logit points}, alpha)
+    if getattr(model, "head", None) is None:
+        return None
+    lg, c = head_logit(model.head["t"], head_terrain_x(emb))
+    a, c0 = model.head["cal_t"]
+    parts = {}
+    for n, v in zip(HEAD_T_GROUPS, c):
+        parts[n] = parts.get(n, 0.0) + a * float(v)
+    return dict(T=a * lg + c0, parts=parts, alpha=model.head["alpha"])
+
+
+def match_z(pct: float) -> float:
+    # how far above ordinary Earth land a region or landform match is, as a normal score of its percentile
+    return float(ndtri(min(max(pct, 0.005), 0.995)))
 
 
 def sim_curve(model, x):
@@ -531,7 +590,7 @@ def landform_aggregates(model: Model, emb: dict, ids, exclude: np.ndarray | None
     return out
 
 
-def landform_score(model: Model, i: int, per: dict) -> dict:
+def landform_score(model: Model, i: int, per: dict, head: dict | None = None) -> dict:
     # same steps as the region score: calibrate per scale, combine the scales, then the Earth factor
     w_all = sum(model.S[s]["weight"] for s in model.scales)
     L, w_s, scales = model.combo_bias, 0.0, {}
@@ -547,6 +606,15 @@ def landform_score(model: Model, i: int, per: dict) -> dict:
     ref = model.lf_earth[i] if i < len(model.lf_earth) else None
     pct = float(np.searchsorted(ref, L, side="right") / len(ref)) if ref is not None and len(ref) else 1.0
     f = earth_factor(model, pct)
+    if head is not None:
+        # v3.0: the terrain head, plus how far above ordinary land this landform's match is
+        z = match_z(pct)
+        Lr = head["T"] + head["alpha"] * z
+        sc = float(100.0 * expit(Lr))
+        out = dict(score=sc, similarity=sim, earth_percentile=100.0 * pct, logit=float(L), scales=scales, match_z=z)
+        out["breakdown"], _ = _breakdown(sc, sc, {**head["parts"], "region_match": head["alpha"] * z}, Lr, 0.0, 1.0)
+        out["breakdown"]["kind"] = "head"
+        return out
     out = dict(score=sim * f, similarity=sim, earth_percentile=100.0 * pct, logit=float(L), scales=scales)
     if all("cbar" in v for v in per.values()):
         items, comm = _scale_parts(model, per, lambda s: model.lf_calib.get(s, [None] * (i + 1))[i])
@@ -555,7 +623,9 @@ def landform_score(model: Model, i: int, per: dict) -> dict:
 
 
 def region_scores(model: Model, emb: dict, world: str, exclude: np.ndarray | None = None,
-                  n_best: int = 5, with_cells: bool = False, landforms: bool = False):
+                  n_best: int = 5, with_cells: bool = False, landforms: bool = False, head: dict | None = None):
+    # head (v3.0, from terrain_head): the region score becomes 100 x expit(terrain head + alpha x match_z); without it
+    # this is the v2 score (similarity x Earth factor), which the notebook still uses for the raw region logits
     out = []
     for r, key in enumerate(model.region_keys):
         if model.region_world[r] != world:
@@ -623,16 +693,22 @@ def region_scores(model: Model, emb: dict, world: str, exclude: np.ndarray | Non
         ref = model.earth_ref[r]
         pct = float(np.searchsorted(ref, L, side="right") / len(ref)) if ref is not None and len(ref) else 1.0
         factor = earth_factor(model, pct)
+        if head is not None:
+            zr = match_z(pct)
+            Lr = head["T"] + head["alpha"] * zr
+            factor = 1.0
         # v1.3.2: put each best site on the region score's scale. the region's logit L sits where the average of its
         # top pairs sits, so a site's logit is shifted by the same amount, then gets the same Earth factor.
         # contributions become score points (logit points x the slope of the score at that site), so they read like "+4"
         ref_j = float(np.mean(np.sort(joint)[::-1][:min(k, len(joint))]))
         for b in best:
-            p0 = float(expit(b["logit"] - ref_j + L))
-            p = p0 ** model.terrain_power                     # v2.1: the same lift as the region's similarity
+            L_site = (Lr if head is not None else L) + b["logit"] - ref_j
+            power = 1.0 if head is not None else model.terrain_power
+            p0 = float(expit(L_site))
+            p = p0 ** power                                   # v2.1: the same lift as the region's similarity
             b["pair_score_raw"] = b["pair_score"]
             b["pair_score"] = 100.0 * p * factor
-            slope = 100.0 * model.terrain_power * p * (1.0 - p0) * factor
+            slope = 100.0 * power * p * (1.0 - p0) * factor
             b["contributions_logit"] = b["contributions"]
             b["contributions"] = {n: v * slope for n, v in b["contributions"].items()}
             # v2.0.1: exact breakdown of pair_score, averaged over the scales like the pair logit itself
@@ -642,17 +718,22 @@ def region_scores(model: Model, emb: dict, world: str, exclude: np.ndarray | Non
             feats = (c0["contrib"][i] + sum(others_c[s][o] for s in others)) / n_sc
             comm = (float(c0["lw"][i]) + sum(float(others_w[s][o]) for s in others)) / n_sc
             b["breakdown"], r_b = _breakdown(b["pair_score"], 100.0 * p, dict(zip(INPUT_NAMES, feats.tolist())),
-                                             b["logit"] - ref_j + L, comm, model.terrain_power)
+                                             L_site, comm, power)
             if "_d" in b:
                 # each cell's share of the 4 km cell features, in the same score points (they add up to those terms)
                 cl = _cell_logits(model, lead, c0["raw"][i], c0["contrib"][i], b.pop("_d"))
                 b["cell_points"] = (r_b * cl / n_sc).reshape(8, 8).tolist()
         items, comm_l = _scale_parts(model, parts, lambda s: model.calib[s][r])
         region_bd, _ = _breakdown(sim * factor, sim, dict(zip(INPUT_NAMES, items.tolist())), float(L), comm_l, model.terrain_power)
+        score_r = sim * factor
+        if head is not None:
+            score_r = float(100.0 * expit(Lr))
+            region_bd, _ = _breakdown(score_r, score_r, {**head["parts"], "region_match": head["alpha"] * zr}, Lr, 0.0, 1.0)
+            region_bd["kind"] = "head"
         lf, lf_all = None, []
         if landforms and model.lf_keys:
             for i, per in landform_aggregates(model, emb, np.flatnonzero(model.lf_region == r), exclude).items():
-                d = landform_score(model, i, per)
+                d = landform_score(model, i, per, head)
                 lead_ = "site" if "site" in per else next(iter(per))
                 d.update(tag=str(model.lf_tag[i]), label=model.lf_label[i], validated=bool(model.lf_valid[i]),
                          matches=[dict(index=j, name=str(model.lib_name[j]), lat=float(model.lib_lat[j]), lon=float(model.lib_lon[j]))
@@ -661,8 +742,8 @@ def region_scores(model: Model, emb: dict, world: str, exclude: np.ndarray | Non
             if lf_all:
                 # v2.0.1: show the best validated landform when the region has one, else the best one (marked unvalidated)
                 lf = max([d for d in lf_all if d["validated"]] or lf_all, key=lambda d: d["score"])
-                lf["badge"] = bool(lf["validated"] and lf["score"] >= model.lf_badge_min and lf["score"] >= sim * factor)
-        out.append(dict(region_id=r, region=key, title=model.region_title[r], score=sim * factor, similarity=sim,
+                lf["badge"] = bool(lf["validated"] and lf["score"] >= model.lf_badge_min and lf["score"] >= score_r)
+        out.append(dict(region_id=r, region=key, title=model.region_title[r], score=score_r, similarity=sim,
                         earth_percentile=100.0 * pct, earth_factor=factor,
                         logit=float(L), scales=per_scale, n_members=int(len(mem)), best=best, breakdown=region_bd,
                         landform=lf, landform_scores={d["tag"]: float(d["score"]) for d in lf_all}))
@@ -680,7 +761,16 @@ def gate_inputs(env: dict, names=GATE_NAMES) -> np.ndarray:
 
 
 def conditions(model: Model, env: dict):
-    # Earth-side conditions: (logit, {input: contribution in logit points}). One-sided curves.
+    # Earth-side conditions: (logit, {input: contribution in logit points}).
+    if getattr(model, "head", None) is not None:
+        # v3.0: the surface head (trained on verified sites vs random land), plus the fixed building penalty
+        lg, c = head_logit(model.head["s"], surface_x(env))
+        a, c0 = model.head["cal_s"]
+        terms = {n: a * float(v) for n, v in zip(SURFACE_INPUTS, c)}
+        fixed = -model.built_penalty * min(float(np.nan_to_num(env.get("built", 0.0))) / model.built_full, 1.0)
+        terms["built"] = terms.get("built", 0.0) + fixed
+        return float(a * lg + c0 + fixed), terms
+    # older models: one-sided curves
     x = gate_inputs(env, model.gate_names)
     built = float(np.nan_to_num(env.get("built", 0.0)))
     Z = to_z(model.gate_table, np.nan_to_num(x, nan=0.0)[None, :])[0]
@@ -707,8 +797,11 @@ def score_click(model: Model, dems: dict, env: dict, worlds=WORLDS, n_best: int 
                                terms={n: v * 100.0 * (raw / 100.0) * (1.0 - raw / 100.0) * 100.0 / model.surface_max
                                       for n, v in terms.items()}),
                block={n: float(v) for n, v in zip(BLOCK_FEATURES, blk)}, worlds={})
+    head = terrain_head(model, emb)
+    if head is not None:
+        out["terrain_head"] = dict(score=float(100.0 * expit(head["T"])), logit=float(head["T"]))   # before any region match
     for w in worlds:
-        regs = region_scores(model, emb, w, n_best=n_best, with_cells=True, landforms=True)
+        regs = region_scores(model, emb, w, n_best=n_best, with_cells=True, landforms=True, head=head)
         for reg in regs:
             # geometric mean: both terrain and surface have to be good, without squashing two good scores into a low one
             reg["overall"] = overall_of(model, reg["score"], surface)
