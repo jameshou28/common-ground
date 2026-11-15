@@ -2,7 +2,7 @@ import type { ScoreResult } from "./api";
 import type { Match } from "./regions";
 
 export const CSV_HEADER = ["tile_id", "model_version", "world", "region", "site", "section", "key", "value"];
-const CITE = "Analog Explorer, NASA Space Apps 2026. Cite the tile id and model version with any use of this data.";
+const CITE = "Common Ground, NASA Space Apps 2026. Cite the tile id and model version with any use of this data.";
 
 // rfc 4180: quote every field, double any quotes inside
 const cell = (v: unknown) => `"${String(v ?? "").replace(/"/g, '""')}"`;

@@ -21,7 +21,7 @@ export function Header({ children }: { children?: React.ReactNode }) {
   return (
     <header className="flex h-11 shrink-0 items-center gap-5 border-b border-line bg-panel pr-3 pl-3.5">
       <Link href="/" className="text-sm font-semibold whitespace-nowrap text-text">
-        Analog Explorer
+        Common Ground
       </Link>
       <nav aria-label="Main" className="flex h-full min-w-0 overflow-x-auto">
         {NAV.map(({ href, label }) => {

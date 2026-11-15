@@ -7,7 +7,7 @@ import { Providers } from "@/components/shell/providers";
 import { StatusBar } from "@/components/shell/status-bar";
 
 export const metadata: Metadata = {
-  title: { default: "Analog Explorer", template: "%s · Analog Explorer" },
+  title: { default: "Common Ground", template: "%s · Common Ground" },
   description:
     "Click anywhere on Earth and see how much the ground there looks like the Moon or Mars, and why.",
 };

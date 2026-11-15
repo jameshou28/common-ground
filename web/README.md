@@ -1,4 +1,4 @@
-# Analog Explorer web
+# Common Ground web
 
 Next.js app (App Router, TypeScript, Tailwind). Vercel root directory is `web/`.
 
