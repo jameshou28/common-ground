@@ -9,7 +9,6 @@ import { describeError } from "@/lib/api";
 import { env } from "@/lib/env";
 import { bars, conditionLabel, contributionLabel } from "@/lib/regions";
 import { CHECK_SITES } from "@/lib/sites";
-import { CannotCopy } from "./cannot-copy";
 import { ChartsDialog } from "./charts-dialog";
 import { ContributionBars } from "./contribution-bars";
 import { FactsTable } from "./facts-table";
@@ -91,9 +90,6 @@ export function SiteResult() {
             </Section>
             <Section title="Surface and climate" note="the same for both worlds">
               <ContributionBars rows={surface!.rows} zero={surface!.zero} note="Bare, dry ground helps. Trees, fields and water hurt." />
-            </Section>
-            <Section title={`What no Earth site can copy`} open={false}>
-              <CannotCopy world={match.tab} />
             </Section>
           </>
         )}

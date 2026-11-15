@@ -1,0 +1,429 @@
+[
+{
+"id": "atacama-yungay",
+"name": "Atacama, Yungay",
+"lat": -24.08,
+"lon": -70.01,
+"world": "mars"
+},
+{
+"id": "atacama-maria-elena-south",
+"name": "Atacama, Maria Elena South",
+"lat": -22.26,
+"lon": -69.72,
+"world": "mars"
+},
+{
+"id": "valle-de-la-luna-atacama",
+"name": "Valle de la Luna, Atacama",
+"lat": -22.92,
+"lon": -68.29,
+"world": "mars"
+},
+{
+"id": "licancabur-foothills",
+"name": "Licancabur foothills",
+"lat": -22.83,
+"lon": -67.88,
+"world": "mars"
+},
+{
+"id": "pampas-de-la-joya",
+"name": "Pampas de La Joya",
+"lat": -16.7,
+"lon": -71.9,
+"world": "mars"
+},
+{
+"id": "rio-tinto",
+"name": "Rio Tinto",
+"lat": 37.72,
+"lon": -6.56,
+"world": "mars"
+},
+{
+"id": "tabernas-desert",
+"name": "Tabernas desert",
+"lat": 37.02,
+"lon": -2.43,
+"world": "mars"
+},
+{
+"id": "dallol",
+"name": "Dallol",
+"lat": 14.24,
+"lon": 40.3,
+"world": "mars"
+},
+{
+"id": "erta-ale",
+"name": "Erta Ale",
+"lat": 13.6,
+"lon": 40.67,
+"world": "mars"
+},
+{
+"id": "erg-chebbi-merzouga",
+"name": "Erg Chebbi, Merzouga",
+"lat": 31.1,
+"lon": -4.0,
+"world": "mars"
+},
+{
+"id": "kess-kess-mounds-erfoud",
+"name": "Kess Kess mounds, Erfoud",
+"lat": 31.37,
+"lon": -4.05,
+"world": "mars"
+},
+{
+"id": "ramon-crater-negev",
+"name": "Ramon crater, Negev",
+"lat": 30.6,
+"lon": 34.8,
+"world": "mars"
+},
+{
+"id": "wadi-rum",
+"name": "Wadi Rum",
+"lat": 29.58,
+"lon": 35.42,
+"world": "mars"
+},
+{
+"id": "dhofar-amadee-18",
+"name": "Dhofar, AMADEE-18",
+"lat": 18.35,
+"lon": 55.2,
+"world": "mars"
+},
+{
+"id": "lut-desert-yardangs",
+"name": "Lut desert yardangs",
+"lat": 30.6,
+"lon": 58.3,
+"world": "mars"
+},
+{
+"id": "qaidam-dalangtan",
+"name": "Qaidam, Dalangtan",
+"lat": 38.5,
+"lon": 91.4,
+"world": "mars"
+},
+{
+"id": "qaidam-lenghu",
+"name": "Qaidam, Lenghu",
+"lat": 38.75,
+"lon": 93.33,
+"world": "mars"
+},
+{
+"id": "tso-kar-ladakh",
+"name": "Tso Kar, Ladakh",
+"lat": 33.3,
+"lon": 77.98,
+"world": "mars"
+},
+{
+"id": "pilbara-north-pole-dome",
+"name": "Pilbara, North Pole Dome",
+"lat": -21.15,
+"lon": 119.43,
+"world": "mars"
+},
+{
+"id": "arkaroola",
+"name": "Arkaroola",
+"lat": -30.3,
+"lon": 139.33,
+"world": "mars"
+},
+{
+"id": "sossusvlei-dunes",
+"name": "Sossusvlei dunes",
+"lat": -24.73,
+"lon": 15.3,
+"world": "mars"
+},
+{
+"id": "great-kobuk-sand-dunes",
+"name": "Great Kobuk Sand Dunes",
+"lat": 67.07,
+"lon": -159.05,
+"world": "mars"
+},
+{
+"id": "white-sands",
+"name": "White Sands",
+"lat": 32.8,
+"lon": -106.33,
+"world": "mars"
+},
+{
+"id": "kelso-dunes",
+"name": "Kelso Dunes",
+"lat": 34.9,
+"lon": -115.72,
+"world": "mars"
+},
+{
+"id": "dumont-dunes",
+"name": "Dumont Dunes",
+"lat": 35.69,
+"lon": -116.22,
+"world": "mars"
+},
+{
+"id": "death-valley-ubehebe",
+"name": "Death Valley, Ubehebe",
+"lat": 37.01,
+"lon": -117.45,
+"world": "mars"
+},
+{
+"id": "death-valley-mars-hill",
+"name": "Death Valley, Mars Hill",
+"lat": 36.41,
+"lon": -116.84,
+"world": "mars"
+},
+{
+"id": "trona-pinnacles",
+"name": "Trona Pinnacles",
+"lat": 35.62,
+"lon": -117.37,
+"world": "mars"
+},
+{
+"id": "channeled-scablands-dry-falls",
+"name": "Channeled Scablands, Dry Falls",
+"lat": 47.6,
+"lon": -119.36,
+"world": "mars"
+},
+{
+"id": "skeidararsandur-outwash-plain",
+"name": "Skeidararsandur outwash plain",
+"lat": 63.9,
+"lon": -17.2,
+"world": "mars"
+},
+{
+"id": "lakagigar",
+"name": "Lakagigar",
+"lat": 64.07,
+"lon": -18.23,
+"world": "mars"
+},
+{
+"id": "krafla-leirhnjukur",
+"name": "Krafla, Leirhnjukur",
+"lat": 65.72,
+"lon": -16.78,
+"world": "mars"
+},
+{
+"id": "namafjall",
+"name": "Namafjall",
+"lat": 65.64,
+"lon": -16.81,
+"world": "mars"
+},
+{
+"id": "svalbard-sverrefjell",
+"name": "Svalbard, Sverrefjell",
+"lat": 79.43,
+"lon": 13.32,
+"world": "mars"
+},
+{
+"id": "axel-heiberg-expedition-fjord",
+"name": "Axel Heiberg, Expedition Fjord",
+"lat": 79.41,
+"lon": -90.75,
+"world": "mars"
+},
+{
+"id": "ka-u-desert",
+"name": "Ka'u Desert",
+"lat": 19.35,
+"lon": -155.35,
+"world": "mars"
+},
+{
+"id": "mauna-loa-hi-seas",
+"name": "Mauna Loa, HI-SEAS",
+"lat": 19.602,
+"lon": -155.487,
+"world": "mars"
+},
+{
+"id": "kilauea-mauna-ulu",
+"name": "Kilauea, Mauna Ulu",
+"lat": 19.37,
+"lon": -155.2,
+"world": "mars"
+},
+{
+"id": "tolbachik",
+"name": "Tolbachik",
+"lat": 55.83,
+"lon": 160.33,
+"world": "mars"
+},
+{
+"id": "payun-matru",
+"name": "Payun Matru",
+"lat": -36.42,
+"lon": -69.2,
+"world": "mars"
+},
+{
+"id": "carrizozo-lava-flow",
+"name": "Carrizozo lava flow",
+"lat": 33.7,
+"lon": -105.9,
+"world": "mars"
+},
+{
+"id": "el-malpais-zuni-bandera",
+"name": "El Malpais, Zuni-Bandera",
+"lat": 34.95,
+"lon": -108.05,
+"world": "mars"
+},
+{
+"id": "lake-salda-shore",
+"name": "Lake Salda shore",
+"lat": 37.52,
+"lon": 29.7,
+"world": "mars"
+},
+{
+"id": "mauna-kea-summit",
+"name": "Mauna Kea summit",
+"lat": 19.82,
+"lon": -155.47,
+"world": "moon"
+},
+{
+"id": "craters-of-the-moon",
+"name": "Craters of the Moon",
+"lat": 43.42,
+"lon": -113.52,
+"world": "moon"
+},
+{
+"id": "kings-bowl",
+"name": "Kings Bowl",
+"lat": 42.95,
+"lon": -113.22,
+"world": "moon"
+},
+{
+"id": "sp-crater",
+"name": "SP Crater",
+"lat": 35.58,
+"lon": -111.63,
+"world": "moon"
+},
+{
+"id": "black-point-lava-flow",
+"name": "Black Point lava flow",
+"lat": 35.69,
+"lon": -111.47,
+"world": "moon"
+},
+{
+"id": "cinder-lake-crater-field",
+"name": "Cinder Lake crater field",
+"lat": 35.32,
+"lon": -111.52,
+"world": "moon"
+},
+{
+"id": "sunset-crater",
+"name": "Sunset Crater",
+"lat": 35.36,
+"lon": -111.5,
+"world": "moon"
+},
+{
+"id": "kilbourne-hole",
+"name": "Kilbourne Hole",
+"lat": 31.97,
+"lon": -106.97,
+"world": "moon"
+},
+{
+"id": "aden-crater-potrillo",
+"name": "Aden Crater, Potrillo",
+"lat": 32.07,
+"lon": -107.06,
+"world": "moon"
+},
+{
+"id": "lunar-crater-volcanic-field",
+"name": "Lunar Crater volcanic field",
+"lat": 38.38,
+"lon": -116.07,
+"world": "moon"
+},
+{
+"id": "nevada-test-site-craters",
+"name": "Nevada Test Site craters",
+"lat": 37.18,
+"lon": -116.05,
+"world": "moon"
+},
+{
+"id": "amboy-crater",
+"name": "Amboy crater",
+"lat": 34.54,
+"lon": -115.79,
+"world": "moon"
+},
+{
+"id": "pisgah-crater",
+"name": "Pisgah crater",
+"lat": 34.75,
+"lon": -116.37,
+"world": "moon"
+},
+{
+"id": "cima-volcanic-field",
+"name": "Cima volcanic field",
+"lat": 35.25,
+"lon": -115.75,
+"world": "moon"
+},
+{
+"id": "pinacate",
+"name": "Pinacate",
+"lat": 31.77,
+"lon": -113.5,
+"world": "moon"
+},
+{
+"id": "etna-summit",
+"name": "Etna summit",
+"lat": 37.75,
+"lon": 14.99,
+"world": "moon"
+},
+{
+"id": "teide",
+"name": "Teide",
+"lat": 28.27,
+"lon": -16.64,
+"world": "moon"
+},
+{
+"id": "tibesti-trou-au-natron",
+"name": "Tibesti, Trou au Natron",
+"lat": 20.98,
+"lon": 16.57,
+"world": "moon"
+}
+]
