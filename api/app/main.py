@@ -40,6 +40,23 @@ app.add_middleware(
     allow_origins=[o for o in (os.environ.get("ALLOWED_ORIGIN"), "http://localhost:3000") if o],
     allow_methods=["GET", "POST"], allow_headers=["content-type"],
 )
+
+
+@app.middleware("http")
+async def log_io(request, call_next):
+    # one json line per call on stdout (render logs): what came in, what went out. grids are binary, skipped
+    t = time.time()
+    body = (await request.body()).decode(errors="replace")
+    resp = await call_next(request)
+    if request.url.path.startswith("/grids"):
+        return resp
+    out = b"".join([c async for c in resp.body_iterator])
+    print(json.dumps(dict(method=request.method, path=request.url.path, query=str(request.url.query), req=body,
+                          status=resp.status_code, ms=round(1000 * (time.time() - t)),
+                          resp=out.decode(errors="replace"))), flush=True)
+    return Response(out, status_code=resp.status_code, headers=dict(resp.headers), media_type=resp.media_type)
+
+
 store.LOCAL_GRIDS.mkdir(parents=True, exist_ok=True) # serve the grids we wrote to disk
 app.mount("/grids", StaticFiles(directory=store.LOCAL_GRIDS), name="grids")
 
