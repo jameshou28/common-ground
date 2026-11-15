@@ -74,8 +74,10 @@ def screen_task(args):
                 row["status"] = "no_terrain"
                 return row
             emb = rt.embed(m, {"regional": dem}, rt.RADIUS_M["earth"])
+            # v3.0 models: the terrain head on the 32 km measurements alone (the 4 km ones read as typical)
+            head = rt.terrain_head(m, emb) if hasattr(rt, "terrain_head") else None
             for w in rt.WORLDS:
-                for reg in rt.region_scores(m, emb, w, n_best=1):
+                for reg in (rt.region_scores(m, emb, w, n_best=1, head=head) if head is not None else rt.region_scores(m, emb, w, n_best=1)):
                     row[reg["region"]] = reg["score"]
             return row
         except Exception as e:
