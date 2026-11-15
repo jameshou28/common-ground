@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
+import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
 import { Header } from "@/components/shell/header";
 import { Providers } from "@/components/shell/providers";
@@ -23,6 +24,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <div className="flex min-h-0 flex-1 flex-col">{children}</div>
           <StatusBar />
         </Providers>
+        <Analytics />
       </body>
     </html>
   );
