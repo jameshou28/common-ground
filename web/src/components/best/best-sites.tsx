@@ -41,36 +41,36 @@ const cap = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
 // what each region is, shown above its ranking
 const REGION_INFO: Record<string, string> = {
   "moon:maria":
-    "The dark, smooth plains you can see from Earth. Old impact basins flooded by basalt lava over 3 billion years ago, so the ground is flat to gently rolling with scattered small craters and low ridges.",
+    "The dark patches you see on the Moon from Earth. They're old impact basins that filled with basalt lava more than 3 billion years ago, so the ground is mostly flat, with small craters and low ridges here and there.",
   "moon:highlands":
-    "The bright, heavily cratered crust that covers most of the Moon. Older than the maria and never flooded by lava, it's rough, hilly ground built from overlapping craters.",
+    "The bright, older crust that covers most of the Moon. Lava never reached it, so it's rough and hilly, craters on top of craters.",
   "moon:basins":
-    "The rings of mountains and blankets of thrown-out rock around the Moon's largest impacts, like Orientale. Steep, concentric ridges with rubbly ground between them.",
+    "Mountain rings and debris blankets around the Moon's biggest impacts, like Orientale. Expect steep ridges in circles with broken, rubbly ground between them.",
   "moon:south_pole":
-    "The Artemis landing zone. Heavily cratered ground where the Sun sits on the horizon, so crater floors stay in permanent shadow and may hold water ice.",
+    "Where Artemis plans to land. The Sun never gets far above the horizon here, so some crater floors are always in shadow and may hold water ice.",
   "mars:highlands":
-    "The old, cratered southern half of Mars. Rough ground with eroded craters and ancient valley networks carved when water flowed.",
+    "Most of Mars's southern half: old, worn-down craters and valley networks cut back when water still ran on the surface.",
   "mars:lowlands":
-    "The smooth northern plains, a few kilometres lower than the south. Flat, young-looking ground, possibly the floor of an ancient ocean.",
+    "Smooth plains in the north, a few kilometres lower than the southern highlands. Some scientists think an ocean once filled them.",
   "mars:volcanic":
-    "Tharsis and Elysium, home to the largest volcanoes in the solar system. Broad lava plains, shield volcanoes and long lava flows.",
+    "Tharsis and Elysium, where Olympus Mons and the other big shield volcanoes sit, surrounded by wide lava plains and long flows.",
   "mars:outflow":
-    "Huge channels cut by catastrophic floods, and the collapsed, jumbled 'chaos' ground they burst from. Streamlined islands and wide scoured floors.",
+    "Channels cut by sudden, enormous floods, plus the collapsed \"chaos\" ground the water burst out of. Look for teardrop-shaped islands and wide scoured floors.",
 };
 
 // what each feature is, the region it's in is named in the list title
 const FEATURE_INFO: Record<string, string> = {
-  crater_floor: "The flat or bowl-shaped bottom inside a crater, often filled with melted rock or debris that slumped from the walls.",
-  graben: "A long, straight trough where the crust pulled apart and a block dropped down between two parallel faults.",
-  sinuous_rille: "A winding channel carved by flowing lava, or a lava tube whose roof collapsed. Looks like a dry river valley.",
-  wrinkle_ridge: "A low, winding ridge where the surface was squeezed and buckled as lava plains cooled and sank.",
-  crater_rim: "The raised ring of rock around a crater, pushed up and piled with debris thrown out by the impact.",
-  volcanic_edifice: "A volcano's body: shield volcanoes, cones and domes built up by repeated eruptions.",
-  yardang: "A streamlined ridge carved by wind, lined up with the wind direction, in soft rock between scoured troughs.",
+  crater_floor: "The bottom of a crater. Often flat, because impact melt or rock that slid off the walls filled it in.",
+  graben: "A long, straight trough. The crust stretched, and a strip of it dropped down between two faults.",
+  sinuous_rille: "A winding channel cut by flowing lava, or a lava tube whose roof fell in. From above it looks a lot like a dried-up river.",
+  wrinkle_ridge: "A low, wavy ridge that formed when the lava plains cooled, sank and buckled.",
+  crater_rim: "The raised edge of a crater, rock pushed up by the impact and piled with what it threw out.",
+  volcanic_edifice: "The volcano itself, whether a broad shield, a cone or a dome, built up one eruption at a time.",
+  yardang: "A ridge carved out of soft rock by wind. They come in rows, all pointing the way the wind blows.",
 };
 
 const OVERALL_INFO =
-  "The places that best match this world overall: terrain score and surface score together, the same analog score a result page shows. Each place is listed under the region it fits best.";
+  "The places on Earth closest to this world overall, using the same analog score a result page shows (terrain and surface together). Each one is tagged with the region it fits best.";
 
 // every region's sites in one list, best analog score first, each place once
 function overallFor(regions: RegionList[]): Site[] {
