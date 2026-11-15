@@ -403,6 +403,69 @@ def to_logit(score_0_100: float) -> float:
     return float(np.log(p / (1 - p)))
 
 
+#  v2.0.1 breakdowns: every shown score split into score points that add up to it exactly
+
+def _secant(g, a: float, b: float, min_w: float = 0.5) -> float:
+    # average slope of g between a and b, taken over at least min_w so a step in a calibration table can't blow it up
+    lo, hi = min(a, b), max(a, b)
+    if hi - lo < min_w:
+        mid = 0.5 * (lo + hi)
+        lo, hi = mid - 0.5 * min_w, mid + 0.5 * min_w
+    return float((g(hi) - g(lo)) / (hi - lo))
+
+
+def _breakdown(score: float, sim: float, parts: dict, L: float, common: float):
+    # score = base + sum(terms) + common + earth, all in score points.
+    #   terms: each measurement (logit points of the combined logit L, times the average slope of the 0-100 score)
+    #   common: the library weighting (matches against terrain that's common on Earth count less)
+    #   earth: the Earth factor (score - similarity; this place looks like ordinary Earth land)
+    #   base: what's left, i.e. the score of a typical match with every measurement at its typical value
+    tot = float(sum(parts.values()) + common)
+    r = _secant(lambda x: 100.0 * float(expit(x)), L - tot, L)
+    terms = {n: float(r * v) for n, v in parts.items()}
+    com = float(r * common)
+    earth = float(score - sim)
+    return dict(base=float(score - sum(terms.values()) - com - earth), terms=terms, common=com, earth=earth,
+                total=float(score)), r
+
+
+def _cell_logits(model: "Model", scale: str, raw: np.ndarray, contrib: np.ndarray, d: np.ndarray) -> np.ndarray:
+    # each 500 m cell's share of the cell-feature part of one pair logit. a cell feature's input is the mean squared
+    # mismatch over the 64 matched cell pairs, so its effect is split evenly over the cells, then shifted towards cells
+    # that match better or worse than the block's average (by the local slope of that feature's curve). sums exactly
+    # to the cell features' contributions.
+    P = model.S[scale]
+    d2 = d * d
+    r0 = np.asarray(raw, dtype=float)[:N_TOK]
+    step = np.maximum(0.1 * r0, 1e-9)
+    hi, lo = np.array(raw, dtype=float), np.array(raw, dtype=float)
+    hi[:N_TOK] = r0 + step
+    lo[:N_TOK] = np.maximum(r0 - step, 0.0)
+    h = curves_at(P["curve"], to_z(P["pct_table"], np.stack([hi, lo])))
+    slope = (h[0, :N_TOK] - h[1, :N_TOK]) / np.maximum(hi[:N_TOK] - lo[:N_TOK], 1e-12)
+    n = d2.shape[0]
+    return ((np.asarray(contrib, dtype=float)[:N_TOK] / n)[None, :] + slope[None, :] * (d2 - r0[None, :]) / n).sum(1)
+
+
+def _scale_parts(model: "Model", per: dict, calib_of) -> tuple[np.ndarray, float]:
+    # per scale: (mean contributions of the top pairs, mean weighting term, aggregate). the shown score goes
+    # aggregate -> calibrated score -> logit -> weighted sum; each scale's step is replaced by its average slope from
+    # the typical pair (logit = bias) to this aggregate
+    w_all = sum(model.S[s]["weight"] for s in model.scales)
+    w_sum = sum(model.S[s]["weight"] for s in per)
+    rescale = w_all / w_sum if 0 < w_sum < w_all else 1.0
+    items, comm = np.zeros(N_IN), 0.0
+    for s, v in per.items():
+        cal = calib_of(s)
+        if cal is None or not len(cal):
+            continue
+        m = _secant(lambda a, cal=cal: to_logit(100.0 * calibrated(cal, a)), model.S[s]["bias"], v["aggregate"])
+        m *= model.S[s]["weight"] * rescale
+        items = items + m * np.asarray(v["cbar"])
+        comm += m * v["comm"]
+    return items, comm
+
+
 def landform_aggregates(model: Model, emb: dict, ids, exclude: np.ndarray | None = None) -> dict:
     # {landform id: {scale: dict(aggregate, top)}}: mean of the top LF_K weighted pair logits over the landform's blocks
     out = {}
@@ -417,9 +480,12 @@ def landform_aggregates(model: Model, emb: dict, ids, exclude: np.ndarray | None
             P = model.S[s]
             sh = memt[np.argsort(((P["sketch"][memt] - sk) ** 2).sum(1))[:LF_SHORT]]
             raw_t, _, _ = pair_inputs_many(tok, P["tokens"][sh], blk, P["block"][sh])
-            lg_t = pair_logit(model, s, raw_t)[0] + model.weight_lambda * P["logw"][sh]
+            lg_t, c_t = pair_logit(model, s, raw_t)
+            lw_t = model.weight_lambda * P["logw"][sh]
+            lg_t = lg_t + lw_t
             o = np.argsort(-lg_t)
-            per[s] = dict(aggregate=float(lg_t[o[:LF_K]].mean()), top=[int(j) for j in sh[o[:3]]])
+            per[s] = dict(aggregate=float(lg_t[o[:LF_K]].mean()), top=[int(j) for j in sh[o[:3]]],
+                          cbar=c_t[o[:LF_K]].mean(0), comm=float(lw_t[o[:LF_K]].mean()))
         out[int(i)] = per
     return out
 
@@ -440,7 +506,11 @@ def landform_score(model: Model, i: int, per: dict) -> dict:
     ref = model.lf_earth[i] if i < len(model.lf_earth) else None
     pct = float(np.searchsorted(ref, L, side="right") / len(ref)) if ref is not None and len(ref) else 1.0
     f = model.earth_floor + (1.0 - model.earth_floor) * pct
-    return dict(score=sim * f, similarity=sim, earth_percentile=100.0 * pct, logit=float(L), scales=scales)
+    out = dict(score=sim * f, similarity=sim, earth_percentile=100.0 * pct, logit=float(L), scales=scales)
+    if all("cbar" in v for v in per.values()):
+        items, comm = _scale_parts(model, per, lambda s: model.lf_calib.get(s, [None] * (i + 1))[i])
+        out["breakdown"], _ = _breakdown(sim * f, sim, dict(zip(INPUT_NAMES, items.tolist())), float(L), comm)
+    return out
 
 
 def region_scores(model: Model, emb: dict, world: str, exclude: np.ndarray | None = None,
@@ -455,17 +525,20 @@ def region_scores(model: Model, emb: dict, world: str, exclude: np.ndarray | Non
         if len(mem) < 4:
             continue
         k = top_k_for(model, len(mem))
-        per_scale, cand, w_sum, L = {}, {}, 0.0, model.combo_bias
+        per_scale, cand, parts, w_sum, L = {}, {}, {}, 0.0, model.combo_bias
         for s, (tok, blk, sk) in emb.items():
             P = model.S[s]
             short = mem[np.argsort(((P["sketch"][mem] - sk) ** 2).sum(1))[:model.shortlist]]
             raw, W, partner = pair_inputs_many(tok, P["tokens"][short], blk, P["block"][short])
             lg, contrib = pair_logit(model, s, raw)
-            lg = lg + model.weight_lambda * P["logw"][short]        # v2.0: matches against common terrain count less
-            A = float(np.sort(lg)[::-1][:k].mean())
+            lw = model.weight_lambda * P["logw"][short]
+            lg = lg + lw                                            # v2.0: matches against common terrain count less
+            o_k = np.argsort(-lg)[:k]
+            A = float(lg[o_k].mean())
             score = 100.0 * calibrated(model.calib[s][r], A)
             per_scale[s] = dict(score=score, aggregate=A)
-            cand[s] = dict(short=short, lg=lg, contrib=contrib, W=W, partner=partner, raw=raw)
+            parts[s] = dict(aggregate=A, cbar=contrib[o_k].mean(0), comm=float(lw[o_k].mean()))
+            cand[s] = dict(short=short, lg=lg, lw=lw, contrib=contrib, W=W, partner=partner, raw=raw)
             L += P["weight"] * to_logit(score)
             w_sum += P["weight"]
         w_all = sum(model.S[s]["weight"] for s in model.scales)
@@ -476,14 +549,16 @@ def region_scores(model: Model, emb: dict, world: str, exclude: np.ndarray | Non
         c0 = cand[lead]
         top = np.argsort(-c0["lg"])[:max(30, n_best)]        # the 30 best at the lead scale are re-ranked with every scale
         joint = c0["lg"][top].copy()
-        others = {}
+        others, others_c, others_w = {}, {}, {}
         for s in emb:
             if s == lead:
                 continue
             tok, blk, _ = emb[s]
             P = model.S[s]
             raw_o, _, _ = pair_inputs_many(tok, P["tokens"][c0["short"][top]], blk, P["block"][c0["short"][top]])
-            others[s] = pair_logit(model, s, raw_o)[0] + model.weight_lambda * P["logw"][c0["short"][top]]
+            lg_o, others_c[s] = pair_logit(model, s, raw_o)
+            others_w[s] = model.weight_lambda * P["logw"][c0["short"][top]]
+            others[s] = lg_o + others_w[s]
             joint = joint + others[s]
         joint = joint / (1 + len(others))
         best = []
@@ -495,12 +570,13 @@ def region_scores(model: Model, emb: dict, world: str, exclude: np.ndarray | Non
                      pair_score=float(100 * expit(joint[o])), logit=float(joint[o]),
                      scale_logits={lead: float(c0["lg"][i]), **{s: float(v[o]) for s, v in others.items()}},
                      W=float(c0["W"][i]),
-                     contributions={n: float(v) for n, v in zip(INPUT_NAMES, c0["contrib"][i])})
+                     contributions={n: float(v) for n, v in zip(INPUT_NAMES, c0["contrib"][i])}, _o=int(o))
             if with_cells:
                 tok = emb[lead][0]
                 d = tok - model.S[lead]["tokens"][j].astype(np.float64)[c0["partner"][i]]
                 b["cell_cost"] = (d * d).sum(1).reshape(8, 8).tolist()
                 b["partner"] = c0["partner"][i].tolist()
+                b["_d"] = d
             best.append(b)
         sim = float(100 * expit(L))
         ref = model.earth_ref[r]
@@ -517,6 +593,20 @@ def region_scores(model: Model, emb: dict, world: str, exclude: np.ndarray | Non
             slope = 100.0 * p * (1.0 - p) * factor
             b["contributions_logit"] = b["contributions"]
             b["contributions"] = {n: v * slope for n, v in b["contributions"].items()}
+            # v2.0.1: exact breakdown of pair_score, averaged over the scales like the pair logit itself
+            o = b.pop("_o")
+            i = top[o]
+            n_sc = 1 + len(others)
+            feats = (c0["contrib"][i] + sum(others_c[s][o] for s in others)) / n_sc
+            comm = (float(c0["lw"][i]) + sum(float(others_w[s][o]) for s in others)) / n_sc
+            b["breakdown"], r_b = _breakdown(b["pair_score"], 100.0 * p, dict(zip(INPUT_NAMES, feats.tolist())),
+                                             b["logit"] - ref_j + L, comm)
+            if "_d" in b:
+                # each cell's share of the 4 km cell features, in the same score points (they add up to those terms)
+                cl = _cell_logits(model, lead, c0["raw"][i], c0["contrib"][i], b.pop("_d"))
+                b["cell_points"] = (r_b * cl / n_sc).reshape(8, 8).tolist()
+        items, comm_l = _scale_parts(model, parts, lambda s: model.calib[s][r])
+        region_bd, _ = _breakdown(sim * factor, sim, dict(zip(INPUT_NAMES, items.tolist())), float(L), comm_l)
         lf, lf_all = None, []
         if landforms and model.lf_keys:
             for i, per in landform_aggregates(model, emb, np.flatnonzero(model.lf_region == r), exclude).items():
@@ -527,11 +617,12 @@ def region_scores(model: Model, emb: dict, world: str, exclude: np.ndarray | Non
                                   for j in per[lead_]["top"]])
                 lf_all.append(d)
             if lf_all:
-                lf = max(lf_all, key=lambda d: d["score"])
+                # v2.0.1: show the best validated landform when the region has one, else the best one (marked unvalidated)
+                lf = max([d for d in lf_all if d["validated"]] or lf_all, key=lambda d: d["score"])
                 lf["badge"] = bool(lf["validated"] and lf["score"] >= model.lf_badge_min and lf["score"] >= sim * factor)
         out.append(dict(region_id=r, region=key, title=model.region_title[r], score=sim * factor, similarity=sim,
                         earth_percentile=100.0 * pct, earth_factor=factor,
-                        logit=float(L), scales=per_scale, n_members=int(len(mem)), best=best,
+                        logit=float(L), scales=per_scale, n_members=int(len(mem)), best=best, breakdown=region_bd,
                         landform=lf, landform_scores={d["tag"]: float(d["score"]) for d in lf_all}))
     out.sort(key=lambda d: -d["score"])
     return out

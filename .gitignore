@@ -39,4 +39,7 @@ data/*
 *.tif
 *.tiff
 *.npz
-!ml/export/*.npz
+
+# the exported model is small enough to track
+!ml/export/model.npz
+!ml/export/regions.npz
