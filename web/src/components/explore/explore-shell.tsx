@@ -4,7 +4,7 @@ import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { useLibraryGrid, useTargets } from "@/lib/queries";
+import { useGrid, useLibraryGrid, useTargets } from "@/lib/queries";
 import { cellPoints, type CellPoint } from "@/lib/regions";
 import { CHECK_SITES, siteHref } from "@/lib/sites";
 import { fmtAltitude, fmtLatLon } from "@/lib/format";
@@ -25,7 +25,6 @@ import { Toggle } from "@/components/ui/toggle";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { MatchedBlock } from "@/components/site/matched-block";
 import { useMatch } from "@/components/site/use-match";
-import { WireOverlay } from "@/components/site/wire-overlay";
 import { RegionList } from "@/components/site/region-list";
 import { ExploreContext } from "./explore-context";
 
@@ -100,6 +99,7 @@ export function ExploreShell({ children }: { children: React.ReactNode }) {
   const points = useMemo(() => (match ? cellPoints(match.site) : NO_POINTS), [match]);
   // the matched block, the bottom pane exists only once its grid has loaded
   const matchedGrid = useLibraryGrid(match?.site.index).data;
+  const blockGrid = useGrid(result?.grid_url).data;
   // the earth pane as a plain height grid with the matched block drawn over it
   const [wire, setWire] = useState(false);
   // light both blocks with a sun just above the horizon, as at the lunar poles
@@ -214,6 +214,7 @@ export function ExploreShell({ children }: { children: React.ReactNode }) {
               points={points}
               matchName={match?.site.name ?? "the match"}
               moonSun={moonSun}
+              wire={wire && blockGrid && matchedGrid ? { block: blockGrid, over: matchedGrid } : null}
               capture={captureSlot}
             />
             <WorldSwitcher world={world} />
@@ -250,7 +251,7 @@ export function ExploreShell({ children }: { children: React.ReactNode }) {
                       size="sm"
                       pressed={wire}
                       onPressedChange={setWire}
-                      disabled={!result || !matchedGrid}
+                      disabled={!blockGrid || !matchedGrid}
                     >
                       Overlay the match as wireframe
                     </Toggle>
@@ -296,16 +297,6 @@ export function ExploreShell({ children }: { children: React.ReactNode }) {
                   {status.message ?? "Check your connection and reload."}
                 </span>
               </p>
-            )}
-            {selected && wire && match && matchedGrid && (
-              <WireOverlay
-                gridUrl={result?.grid_url}
-                over={matchedGrid}
-                overName={match.site.name}
-                relief={relief}
-                moonSun={moonSun}
-                points={points}
-              />
             )}
           </section>
           {selected && (

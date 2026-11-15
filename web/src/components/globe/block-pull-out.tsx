@@ -1,10 +1,12 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import type { Grid } from "@/lib/grid";
 import type { CellPoint } from "@/lib/regions";
 import type { Tile, World } from "@/lib/tiles";
 import { FeaturePoints } from "@/components/site/feature-points";
 import type { CesiumLib, CesiumNS } from "./cesium";
+import { drawBlockWire } from "./block-wire";
 import { FOOTPRINT_COLOR } from "./config";
 import type { GlobeHandle } from "./use-cesium-viewer";
 import { globeControls } from "./use-globe-controls";
@@ -301,6 +303,7 @@ export function BlockPullOut({
   points,
   matchName,
   moonSun,
+  wire,
 }: {
   handle: GlobeHandle | null;
   tile: Tile | null;
@@ -311,6 +314,8 @@ export function BlockPullOut({
   matchName: string;
   // sun elevation in degrees for moon light, null for the normal look
   moonSun: number | null;
+  // this block's heights and the matched block's, drawn over it as lines; null when off
+  wire: { block: Grid; over: Grid } | null;
 }) {
   const [lifted, setLifted] = useState<Lifted | null>(null);
   const bar = useRef<SVGPathElement>(null);
@@ -326,6 +331,10 @@ export function BlockPullOut({
   useEffect(() => {
     if (handle && lifted && moonSun !== null) return moonLight(handle, moonSun);
   }, [handle, lifted, moonSun]);
+
+  useEffect(() => {
+    if (handle?.v.scene.globe && lifted && tile && wire) return drawBlockWire(handle, tile, wire.block, wire.over, relief);
+  }, [handle, lifted, tile, wire, relief]);
 
   // walls, base and cut edge, rebuilt when the relief changes
   useEffect(() => {
