@@ -6,6 +6,7 @@ import { CHECK_SITES } from "@/lib/sites";
 import { cn } from "@/lib/utils";
 
 const NAV = [
+  { href: "/", label: "Home" },
   { href: "/best", label: "Best sites" },
   { href: "/how-we-know", label: "How we know" },
   { href: "/about", label: "About" },
@@ -28,7 +29,7 @@ function Crumbs({ path }: { path: string }) {
       </>
     );
   }
-  const page = NAV.find((n) => path === n.href || path.startsWith(`${n.href}/`));
+  const page = NAV.find((n) => n.href !== "/" && (path === n.href || path.startsWith(`${n.href}/`)));
   return (
     <>
       <Sep />
@@ -49,7 +50,7 @@ export function Header() {
       </nav>
       <nav aria-label="Main" className="ml-auto flex gap-6 overflow-x-auto text-sm max-md:ml-0 max-md:w-full">
         {NAV.map(({ href, label }) => {
-          const on = path === href || path.startsWith(`${href}/`);
+          const on = href === "/" ? path === "/" : path === href || path.startsWith(`${href}/`);
           return (
             <Link
               key={href}
