@@ -1,5 +1,5 @@
 {
- "model_version": "regions-2.0.1-v1",
+ "model_version": "regions-2.1.1-v1",
  "scales_used": [
   "site",
   "regional"
@@ -170,7 +170,7 @@
          0.0066,
          0.1505,
          0.9811,
-         14.3893,
+         14.3892,
          6.1002,
          0.2999,
          0.3959,
@@ -1483,7 +1483,7 @@
         [
          0.9525,
          0.3754,
-         20.3541,
+         20.3542,
          62.029,
          43.4133,
          8.1154,
@@ -1737,7 +1737,7 @@
        "rough_coarse": 9.5911,
        "geo_convex": 5.4146,
        "geo_concave": 1.3986,
-       "shadow_low": 17.8265,
+       "shadow_low": 17.8264,
        "shadow_mid": 0.3814,
        "norm_height": 0.2213,
        "tpi_near": 3.0104,
@@ -1752,7 +1752,7 @@
        "d_spec3": 0.0146,
        "d_spec4": 0.0,
        "d_spec5": -0.044,
-       "d_spec6": -0.2159,
+       "d_spec6": -0.2158,
        "d_bowl": 0.1511,
        "d_bowl_r": -0.0,
        "d_cone": 0.3033,
@@ -1763,85 +1763,86 @@
       "total": 59.5796
      },
      "landform": {
-      "score": 61.4017,
-      "similarity": 62.7401,
-      "earth_percentile": 97.3333,
-      "logit": 0.5211,
+      "score": 29.5815,
+      "similarity": 37.9899,
+      "earth_percentile": 72.3333,
+      "logit": -0.49,
       "scales": {
        "site": {
-        "score": 5.5556,
-        "aggregate": 0.2887
+        "score": 9.2593,
+        "aggregate": 0.1915
        },
        "regional": {
-        "score": 94.4444,
-        "aggregate": 0.5843
+        "score": 24.0741,
+        "aggregate": 0.3324
        }
       },
       "breakdown": {
-       "base": 25.6566,
+       "base": 18.0033,
        "terms": {
-        "slope_mean": 0.023,
-        "rough_coarse": 10.8597,
-        "geo_convex": 5.0002,
-        "geo_concave": 1.3015,
-        "shadow_low": 17.6743,
-        "shadow_mid": 0.4551,
-        "norm_height": 0.2563,
-        "tpi_near": 2.3999,
-        "tpi_far": 0.456,
-        "d_relief": 0.4167,
-        "d_hurst": 2.2093,
-        "d_linearity": 0.952,
-        "d_depression_area": 1.392,
-        "d_depression_depth": 0.014,
-        "d_spec1": 0.0,
-        "d_spec2": -0.142,
-        "d_spec3": 0.0024,
+        "slope_mean": 0.4728,
+        "rough_coarse": 6.1716,
+        "geo_convex": 2.471,
+        "geo_concave": 0.6812,
+        "shadow_low": 7.0106,
+        "shadow_mid": 0.2659,
+        "norm_height": -0.0013,
+        "tpi_near": 0.1695,
+        "tpi_far": 0.2175,
+        "d_relief": 2.0154,
+        "d_hurst": 1.9943,
+        "d_linearity": -0.7597,
+        "d_depression_area": -0.022,
+        "d_depression_depth": 0.0082,
+        "d_spec1": 0.3738,
+        "d_spec2": -0.1085,
+        "d_spec3": 0.0028,
         "d_spec4": 0.0,
-        "d_spec5": -0.0534,
-        "d_spec6": -0.5766,
-        "d_bowl": -0.1973,
+        "d_spec5": -0.0312,
+        "d_spec6": 0.2628,
+        "d_bowl": 0.0926,
         "d_bowl_r": -0.0,
-        "d_cone": 0.0472,
-        "d_cone_r": -0.0723
+        "d_cone": 0.331,
+        "d_cone_r": -0.0423
        },
-       "common": -5.3343,
-       "earth": -1.3385,
-       "total": 61.4017
+       "common": -1.5895,
+       "earth": -8.4084,
+       "total": 29.5815
       },
-      "tag": "sinuous_rille",
-      "label": "sinuous rille",
-      "validated": false,
+      "tag": "crater_chain",
+      "label": "crater chain",
+      "validated": true,
       "matches": [
        {
-        "index": 175,
-        "name": "sinuous rille, 35 km from Pytheas G",
-        "lat": 22.7041,
-        "lon": -18.2044
+        "index": 266,
+        "name": "crater chain, 18 km from Reiner M",
+        "lat": 9.1648,
+        "lon": -55.9912
        },
        {
-        "index": 347,
-        "name": "sinuous rille, 41 km from Gruithuisen H",
-        "lat": 31.9974,
-        "lon": -38.1704
+        "index": 424,
+        "name": "crater chain, 46 km from Il'in",
+        "lat": -18.8193,
+        "lon": -98.848
        },
        {
-        "index": 415,
-        "name": "sinuous rille, 10 km from Plato KA",
-        "lat": 46.8396,
-        "lon": -4.0754
+        "index": 71,
+        "name": "crater chain, 39 km from Gambart D",
+        "lat": 3.081,
+        "lon": -18.9867
        }
       ],
-      "badge": false
+      "badge": false,
+      "overall": 43.4446
      },
      "landform_scores": {
-      "crater_chain": 21.074,
-      "crater_floor": 27.5635,
-      "massif": 45.8228,
-      "sinuous_rille": 61.4017,
-      "wrinkle_ridge": 37.1328
+      "crater_chain": 29.5815,
+      "crater_floor": 38.4446,
+      "massif": 53.6375,
+      "sinuous_rille": 58.5588,
+      "wrinkle_ridge": 28.9724
      },
-     "overall": 72.6959
+     "overall": 68.4836
     },
     {
      "region_id": 1,
@@ -3553,51 +3554,51 @@
       "total": 9.9176
      },
      "landform": {
-      "score": 20.0994,
-      "similarity": 30.5153,
-      "earth_percentile": 57.3333,
-      "logit": -0.8229,
+      "score": 22.8585,
+      "similarity": 32.5929,
+      "earth_percentile": 62.6667,
+      "logit": -0.7267,
       "scales": {
        "site": {
-        "score": 22.7273,
+        "score": 17.1875,
         "aggregate": 0.243
        },
        "regional": {
-        "score": 4.5455,
+        "score": 7.8125,
         "aggregate": 0.1583
        }
       },
       "breakdown": {
-       "base": 20.5244,
+       "base": 17.9622,
        "terms": {
-        "slope_mean": 0.3552,
-        "rough_coarse": 2.11,
-        "geo_convex": 0.7072,
-        "geo_concave": 0.0302,
-        "shadow_low": 1.2914,
-        "shadow_mid": 0.0883,
-        "norm_height": -0.0083,
-        "tpi_near": 0.3129,
-        "tpi_far": 0.1448,
-        "d_relief": 1.2577,
-        "d_hurst": 3.0878,
-        "d_linearity": 0.042,
-        "d_depression_area": 0.3401,
-        "d_depression_depth": 0.0019,
-        "d_spec1": 0.3301,
-        "d_spec2": -0.0375,
-        "d_spec3": 0.0006,
+        "slope_mean": 0.5185,
+        "rough_coarse": 3.1004,
+        "geo_convex": 1.0365,
+        "geo_concave": 0.0422,
+        "shadow_low": 1.8821,
+        "shadow_mid": 0.1298,
+        "norm_height": -0.0121,
+        "tpi_near": 0.4617,
+        "tpi_far": 0.2133,
+        "d_relief": 1.8359,
+        "d_hurst": 4.5254,
+        "d_linearity": 0.0635,
+        "d_depression_area": 0.4997,
+        "d_depression_depth": 0.0029,
+        "d_spec1": 0.4818,
+        "d_spec2": -0.0551,
+        "d_spec3": 0.0009,
         "d_spec4": 0.0,
-        "d_spec5": -0.0148,
-        "d_spec6": -0.0071,
-        "d_bowl": 0.0703,
+        "d_spec5": -0.0217,
+        "d_spec6": -0.0122,
+        "d_bowl": 0.1032,
         "d_bowl_r": -0.0,
-        "d_cone": 0.0706,
-        "d_cone_r": -0.0308
+        "d_cone": 0.1025,
+        "d_cone_r": -0.0452
        },
-       "common": -0.1521,
-       "earth": -10.4159,
-       "total": 20.0994
+       "common": -0.2234,
+       "earth": -9.7344,
+       "total": 22.8585
       },
       "tag": "sinuous_rille",
       "label": "sinuous rille",
@@ -3622,17 +3623,18 @@
         "lon": -30.6839
        }
       ],
-      "badge": false
+      "badge": false,
+      "overall": 36.7412
      },
      "landform_scores": {
-      "crater_floor": 15.5644,
-      "graben": 4.6124,
-      "massif": 16.4202,
-      "sinuous_rille": 20.0994,
-      "small_crater": 23.6929,
-      "wrinkle_ridge": 18.8633
+      "crater_floor": 11.6378,
+      "graben": 3.4804,
+      "massif": 12.5547,
+      "sinuous_rille": 22.8585,
+      "small_crater": 3.4804,
+      "wrinkle_ridge": 13.3829
      },
-     "overall": 29.6596
+     "overall": 21.352
     },
     {
      "region_id": 2,
@@ -4706,13 +4708,13 @@
          5.1937,
          11.365,
          0.588,
-         4.9364,
+         4.9365,
          1.8161,
          4.6085
         ],
         [
          0.3327,
-         9.1029,
+         9.103,
          4.9696,
          5.4753,
          4.952,
@@ -4748,7 +4750,7 @@
          4.6906,
          4.686,
          2.0403,
-         1.3756
+         1.3757
         ],
         [
          1.5205,
@@ -4837,7 +4839,7 @@
         61,
         39
        ],
-       "pair_score_raw": 49.0706,
+       "pair_score_raw": 49.0705,
        "contributions_logit": {
         "slope_mean": 0.0219,
         "rough_coarse": -0.0,
@@ -5036,7 +5038,7 @@
          0.6854,
          1.9693,
          10.8757,
-         5.766,
+         5.7659,
          4.7483,
          4.8423,
          9.6983
@@ -5344,22 +5346,22 @@
       "total": 3.4804
      },
      "landform": {
-      "score": 16.2326,
-      "similarity": 22.3795,
-      "earth_percentile": 65.6667,
-      "logit": -1.2437,
+      "score": 3.4804,
+      "similarity": 17.4019,
+      "earth_percentile": 0.0,
+      "logit": -1.5574,
       "scales": {
        "site": {
-        "score": 3.8462,
+        "score": 0.9091,
         "aggregate": 0.305
        },
        "regional": {
-        "score": 3.8462,
-        "aggregate": -0.537
+        "score": 0.9091,
+        "aggregate": -0.5952
        }
       },
       "breakdown": {
-       "base": 22.3795,
+       "base": 17.4019,
        "terms": {
         "slope_mean": 0.0,
         "rough_coarse": 0.0,
@@ -5387,12 +5389,12 @@
         "d_cone_r": 0.0
        },
        "common": 0.0,
-       "earth": -6.1469,
-       "total": 16.2326
+       "earth": -13.9215,
+       "total": 3.4804
       },
       "tag": "crater_floor",
       "label": "crater floor",
-      "validated": true,
+      "validated": false,
       "matches": [
        {
         "index": 1575,
@@ -5413,14 +5415,15 @@
         "lon": 5.2236
        }
       ],
-      "badge": false
+      "badge": false,
+      "overall": 10.8101
      },
      "landform_scores": {
-      "crater_floor": 16.2326,
-      "crater_rim": 20.8629,
-      "graben": 4.6124
+      "crater_floor": 3.4804,
+      "crater_rim": 3.4804,
+      "graben": 3.4804
      },
-     "overall": 17.5701
+     "overall": 10.8101
     },
     {
      "region_id": 3,
@@ -5530,10 +5533,10 @@
          1.3979,
          7.7352,
          101.5034,
-         70.0963,
+         70.0964,
          1.2945,
          0.7806,
-         2.296
+         2.2961
         ],
         [
          1.952,
@@ -5859,7 +5862,7 @@
         [
          1.0978,
          0.4956,
-         12.2992,
+         12.2993,
          88.5434,
          65.248,
          5.3735,
@@ -6533,7 +6536,7 @@
          0.2169,
          2.4951,
          7.7247,
-         2.4749,
+         2.475,
          0.4022,
          5.0663,
          2.8459
@@ -7132,22 +7135,22 @@
       "total": 3.4804
      },
      "landform": {
-      "score": 23.0347,
-      "similarity": 24.6801,
-      "earth_percentile": 91.6667,
-      "logit": -1.1157,
+      "score": 3.4804,
+      "similarity": 17.4019,
+      "earth_percentile": 0.0,
+      "logit": -1.5574,
       "scales": {
        "site": {
-        "score": 5.0,
+        "score": 1.3889,
         "aggregate": -0.2996
        },
        "regional": {
-        "score": 5.0,
+        "score": 1.3889,
         "aggregate": -0.4054
        }
       },
       "breakdown": {
-       "base": 24.6801,
+       "base": 17.4019,
        "terms": {
         "slope_mean": 0.0,
         "rough_coarse": 0.0,
@@ -7175,8 +7178,8 @@
         "d_cone_r": 0.0
        },
        "common": 0.0,
-       "earth": -1.6453,
-       "total": 23.0347
+       "earth": -13.9215,
+       "total": 3.4804
       },
       "tag": "crater_rim",
       "label": "crater rim",
@@ -7201,19 +7204,20 @@
         "lon": 16.3484
        }
       ],
-      "badge": false
+      "badge": false,
+      "overall": 10.8101
      },
      "landform_scores": {
-      "crater_rim": 23.0347,
-      "small_crater": 14.5297
+      "crater_rim": 3.4804,
+      "small_crater": 3.4804
      },
-     "overall": 17.5701
+     "overall": 10.8101
     }
    ],
    "best_region": "moon:maria",
    "landscape_score": 59.5796,
-   "overall": 72.6959,
-   "overall_percentile": 98.2,
+   "overall": 68.4836,
+   "overall_percentile": 98.4,
    "best_match": {
     "index": 440,
     "name": "lunar maria, 87 km from Ulugh Beigh B",
@@ -7310,7 +7314,7 @@
       0.0066,
       0.1505,
       0.9811,
-      14.3893,
+      14.3892,
       6.1002,
       0.2999,
       0.3959,
@@ -7583,7 +7587,7 @@
         "site": 0.0896,
         "regional": 0.7572
        },
-       "W": 9.6643,
+       "W": 9.6644,
        "contributions": {
         "slope_mean": 0.0924,
         "rough_coarse": -0.0,
@@ -9258,86 +9262,87 @@
       "total": 20.0622
      },
      "landform": {
-      "score": 23.2647,
-      "similarity": 36.2003,
-      "earth_percentile": 55.3333,
-      "logit": -0.5667,
+      "score": 27.5648,
+      "similarity": 35.8917,
+      "earth_percentile": 71.0,
+      "logit": -0.5801,
       "scales": {
        "site": {
-        "score": 3.5714,
-        "aggregate": -0.013
+        "score": 5.1724,
+        "aggregate": -0.0323
        },
        "regional": {
-        "score": 32.1429,
-        "aggregate": 0.5334
+        "score": 25.8621,
+        "aggregate": 0.4538
        }
       },
       "breakdown": {
-       "base": 20.702,
+       "base": 19.067,
        "terms": {
-        "slope_mean": 0.1765,
-        "rough_coarse": 4.6984,
-        "geo_convex": 1.7551,
-        "geo_concave": 0.6851,
-        "shadow_low": 5.2849,
-        "shadow_mid": 0.1864,
-        "norm_height": 0.1189,
-        "tpi_near": 0.8814,
-        "tpi_far": 0.3589,
-        "d_relief": 1.1621,
-        "d_hurst": 2.102,
-        "d_linearity": -0.5204,
-        "d_depression_area": 0.6898,
-        "d_depression_depth": 0.0057,
-        "d_spec1": -0.2045,
-        "d_spec2": -0.0361,
-        "d_spec3": 0.001,
+        "slope_mean": 0.1837,
+        "rough_coarse": 5.2626,
+        "geo_convex": 2.1703,
+        "geo_concave": 0.826,
+        "shadow_low": 6.9383,
+        "shadow_mid": 0.1961,
+        "norm_height": -0.0167,
+        "tpi_near": -1.0996,
+        "tpi_far": -0.1801,
+        "d_relief": 1.4908,
+        "d_hurst": 2.3639,
+        "d_linearity": 0.2969,
+        "d_depression_area": 0.0789,
+        "d_depression_depth": -0.0043,
+        "d_spec1": -0.5459,
+        "d_spec2": -0.0315,
+        "d_spec3": -0.009,
         "d_spec4": 0.0,
-        "d_spec5": -0.0219,
-        "d_spec6": -0.2822,
-        "d_bowl": 0.0366,
+        "d_spec5": -0.0265,
+        "d_spec6": -0.234,
+        "d_bowl": -0.114,
         "d_bowl_r": -0.0,
-        "d_cone": 0.1056,
-        "d_cone_r": -0.0372
+        "d_cone": 0.0743,
+        "d_cone_r": -0.0563
        },
-       "common": -1.6478,
-       "earth": -12.9356,
-       "total": 23.2647
+       "common": -0.7392,
+       "earth": -8.3269,
+       "total": 27.5648
       },
-      "tag": "yardang",
-      "label": "yardang",
+      "tag": "crater_rim",
+      "label": "crater rim",
       "validated": true,
       "matches": [
        {
-        "index": 4356,
-        "name": "yardang, 105 km from Aeolis Planum",
-        "lat": -1.9096,
-        "lon": 143.1716
+        "index": 4515,
+        "name": "rim of a 22 km crater, 252 km from Minio Vallis",
+        "lat": -0.1651,
+        "lon": -152.2826
        },
        {
-        "index": 4314,
-        "name": "yardang, 273 km from Aeolis Planum",
-        "lat": 1.8884,
-        "lon": 141.2875
+        "index": 4524,
+        "name": "rim of a 20 km crater, 225 km from Cerberus Fossae",
+        "lat": 9.9357,
+        "lon": 169.9944
        },
        {
-        "index": 4469,
-        "name": "yardang, 132 km from Memnonia Sulci",
-        "lat": -8.5861,
-        "lon": -174.1086
+        "index": 4364,
+        "name": "rim of a 26 km crater, 66 km from Marte Vallis",
+        "lat": 13.3203,
+        "lon": -177.9441
        }
       ],
-      "badge": false
+      "badge": false,
+      "overall": 41.4958
      },
      "landform_scores": {
-      "chaos": 19.5177,
-      "crater_rim": 32.7594,
-      "graben": 26.2343,
-      "mesa": 16.9799,
-      "wrinkle_ridge": 22.7976,
-      "yardang": 23.2647
+      "chaos": 12.5891,
+      "crater_rim": 27.5648,
+      "graben": 26.0307,
+      "mesa": 16.5516,
+      "wrinkle_ridge": 20.8906,
+      "yardang": 23.1989
      },
-     "overall": 42.1843
+     "overall": 33.7535
     },
     {
      "region_id": 6,
@@ -10402,7 +10407,7 @@
          1.0494,
          1.0078,
          1.2584,
-         1.6814,
+         1.6815,
          1.6571
         ],
         [
@@ -11049,86 +11054,87 @@
       "total": 18.4993
      },
      "landform": {
-      "score": 39.8229,
-      "similarity": 45.3909,
-      "earth_percentile": 84.6667,
-      "logit": -0.1849,
+      "score": 29.8114,
+      "similarity": 43.1632,
+      "earth_percentile": 61.3333,
+      "logit": -0.2752,
       "scales": {
        "site": {
-        "score": 4.1667,
-        "aggregate": 0.0725
+        "score": 11.2903,
+        "aggregate": 0.1452
        },
        "regional": {
-        "score": 62.5,
-        "aggregate": 0.6143
+        "score": 37.0968,
+        "aggregate": 0.5417
        }
       },
       "breakdown": {
-       "base": 21.3,
+       "base": 18.917,
        "terms": {
-        "slope_mean": 0.097,
-        "rough_coarse": 6.5344,
-        "geo_convex": 3.7773,
-        "geo_concave": 0.7866,
-        "shadow_low": 10.0377,
-        "shadow_mid": 0.2555,
-        "norm_height": -0.0148,
-        "tpi_near": -0.71,
-        "tpi_far": -0.0604,
-        "d_relief": 1.0972,
-        "d_hurst": 2.8339,
-        "d_linearity": 0.1733,
-        "d_depression_area": -0.1543,
-        "d_depression_depth": -0.0062,
-        "d_spec1": -0.1432,
-        "d_spec2": -0.1112,
-        "d_spec3": 0.0172,
+        "slope_mean": 0.2499,
+        "rough_coarse": 6.1508,
+        "geo_convex": 3.0143,
+        "geo_concave": 1.1781,
+        "shadow_low": 10.741,
+        "shadow_mid": 0.2479,
+        "norm_height": 0.0532,
+        "tpi_near": -0.9589,
+        "tpi_far": 0.019,
+        "d_relief": 1.32,
+        "d_hurst": 3.2551,
+        "d_linearity": 0.6508,
+        "d_depression_area": 0.0952,
+        "d_depression_depth": 0.0077,
+        "d_spec1": -0.1105,
+        "d_spec2": -0.0619,
+        "d_spec3": -0.002,
         "d_spec4": 0.0,
-        "d_spec5": -0.0304,
-        "d_spec6": -0.2584,
-        "d_bowl": 0.1211,
+        "d_spec5": -0.0294,
+        "d_spec6": -0.2265,
+        "d_bowl": -0.1534,
         "d_bowl_r": -0.0,
-        "d_cone": 0.0611,
-        "d_cone_r": -0.0647
+        "d_cone": 0.0219,
+        "d_cone_r": -0.0726
        },
-       "common": -0.1478,
-       "earth": -5.5679,
-       "total": 39.8229
+       "common": -1.1435,
+       "earth": -13.3518,
+       "total": 29.8114
       },
-      "tag": "volcanic_edifice",
-      "label": "volcanic edifice",
+      "tag": "wrinkle_ridge",
+      "label": "wrinkle ridge",
       "validated": true,
       "matches": [
        {
-        "index": 3524,
-        "name": "volcanic edifice (Albor Tholus), 34 km from Albor Tholus",
-        "lat": 18.7585,
-        "lon": 149.8644
+        "index": 3866,
+        "name": "wrinkle ridge, 83 km from Lassell",
+        "lat": -21.9614,
+        "lon": -62.8179
        },
        {
-        "index": 3707,
-        "name": "volcanic edifice (Hermes Patera), 3 km from Olympus Rupes",
-        "lat": 18.455,
-        "lon": -133.5915
+        "index": 3590,
+        "name": "wrinkle ridge, 103 km from Bam",
+        "lat": -25.3438,
+        "lon": 117.5325
        },
        {
-        "index": 3954,
-        "name": "volcanic edifice (Uranius Mons), 60 km from Uranius Fossae",
-        "lat": 25.9057,
-        "lon": -91.0269
+        "index": 3525,
+        "name": "wrinkle ridge, 50 km from Nia Fossae",
+        "lat": -14.2913,
+        "lon": -71.0285
        }
       ],
-      "badge": false
+      "badge": false,
+      "overall": 43.6638
      },
      "landform_scores": {
-      "canyon": 15.6636,
-      "channel": 21.5212,
-      "crater_rim": 35.1122,
-      "scarp": 5.6227,
-      "volcanic_edifice": 39.8229,
-      "wrinkle_ridge": 28.6399
+      "canyon": 11.1482,
+      "channel": 21.1516,
+      "crater_rim": 23.6343,
+      "scarp": 15.4676,
+      "volcanic_edifice": 22.6576,
+      "wrinkle_ridge": 29.8114
      },
-     "overall": 40.5078
+     "overall": 32.0202
     },
     {
      "region_id": 4,
@@ -11186,7 +11192,7 @@
         "d_spec3": 0.0,
         "d_spec4": 0.0,
         "d_spec5": 0.0,
-        "d_spec6": 0.4436,
+        "d_spec6": 0.4437,
         "d_bowl": 0.0,
         "d_bowl_r": -0.0,
         "d_cone": -0.0324,
@@ -11199,7 +11205,7 @@
          1.0306,
          1.7673,
          1.5969,
-         2.0074,
+         2.0075,
          1.5551,
          1.427
         ],
@@ -11549,7 +11555,7 @@
          1.8063,
          2.5074,
          17.5342,
-         15.8646,
+         15.8647,
          1.1229,
          1.2741,
          1.6939
@@ -12560,7 +12566,7 @@
         [
          2.0973,
          0.4554,
-         7.5978,
+         7.5979,
          109.8232,
          71.0616,
          2.6804,
@@ -12571,7 +12577,7 @@
          0.0827,
          0.9766,
          1.7239,
-         6.673,
+         6.6729,
          2.2432,
          3.0122,
          8.7855,
@@ -12840,51 +12846,51 @@
       "total": 16.6751
      },
      "landform": {
-      "score": 20.5196,
-      "similarity": 23.823,
-      "earth_percentile": 82.6667,
-      "logit": -1.1624,
+      "score": 16.3288,
+      "similarity": 21.7138,
+      "earth_percentile": 69.0,
+      "logit": -1.2824,
       "scales": {
        "site": {
-        "score": 4.5455,
+        "score": 1.7241,
         "aggregate": -0.0593
        },
        "regional": {
-        "score": 4.5455,
-        "aggregate": 0.269
+        "score": 5.1724,
+        "aggregate": 0.262
        }
       },
       "breakdown": {
-       "base": 23.823,
+       "base": 17.4818,
        "terms": {
-        "slope_mean": 0.0,
-        "rough_coarse": 0.0,
-        "geo_convex": 0.0,
-        "geo_concave": 0.0,
-        "shadow_low": 0.0,
-        "shadow_mid": 0.0,
-        "norm_height": 0.0,
-        "tpi_near": 0.0,
-        "tpi_far": 0.0,
-        "d_relief": 0.0,
-        "d_hurst": 0.0,
-        "d_linearity": 0.0,
-        "d_depression_area": 0.0,
-        "d_depression_depth": 0.0,
+        "slope_mean": 0.0043,
+        "rough_coarse": 2.0239,
+        "geo_convex": 0.1008,
+        "geo_concave": 0.1544,
+        "shadow_low": 0.7158,
+        "shadow_mid": 0.0702,
+        "norm_height": -0.0029,
+        "tpi_near": -0.0136,
+        "tpi_far": -0.0219,
+        "d_relief": 0.0153,
+        "d_hurst": 1.1663,
+        "d_linearity": 0.2341,
+        "d_depression_area": 0.019,
+        "d_depression_depth": -0.0003,
         "d_spec1": 0.0,
-        "d_spec2": 0.0,
-        "d_spec3": 0.0,
+        "d_spec2": 0.0018,
+        "d_spec3": 0.0034,
         "d_spec4": 0.0,
-        "d_spec5": 0.0,
-        "d_spec6": 0.0,
-        "d_bowl": 0.0,
-        "d_bowl_r": 0.0,
-        "d_cone": 0.0,
-        "d_cone_r": 0.0
+        "d_spec5": -0.0101,
+        "d_spec6": -0.1316,
+        "d_bowl": -0.037,
+        "d_bowl_r": -0.0,
+        "d_cone": 0.0913,
+        "d_cone_r": -0.0285
        },
-       "common": 0.0,
-       "earth": -3.3035,
-       "total": 20.5196
+       "common": -0.1226,
+       "earth": -5.385,
+       "total": 16.3288
       },
       "tag": "crater_rim",
       "label": "crater rim",
@@ -12909,16 +12915,17 @@
         "lon": -42.9296
        }
       ],
-      "badge": false
+      "badge": false,
+      "overall": 29.5252
      },
      "landform_scores": {
-      "crater_floor": 23.7988,
-      "crater_rim": 20.5196,
-      "mesa": 15.4851,
-      "volcanic_edifice": 4.6124,
-      "wrinkle_ridge": 29.2925
+      "crater_floor": 17.0557,
+      "crater_rim": 16.3288,
+      "mesa": 13.2434,
+      "volcanic_edifice": 3.4804,
+      "wrinkle_ridge": 17.1937
      },
-     "overall": 38.4588
+     "overall": 29.9308
     },
     {
      "region_id": 5,
@@ -13691,7 +13698,7 @@
          4.5675,
          12.2832,
          66.2268,
-         1.8193,
+         1.8194,
          0.1292,
          0.1434
         ],
@@ -14630,51 +14637,51 @@
       "total": 10.5389
      },
      "landform": {
-      "score": 18.3278,
-      "similarity": 28.6372,
-      "earth_percentile": 55.0,
-      "logit": -0.9131,
+      "score": 21.5944,
+      "similarity": 28.1177,
+      "earth_percentile": 71.0,
+      "logit": -0.9386,
       "scales": {
        "site": {
-        "score": 3.8462,
+        "score": 1.4286,
         "aggregate": 0.0767
        },
        "regional": {
-        "score": 11.5385,
+        "score": 15.7143,
         "aggregate": 0.5565
        }
       },
       "breakdown": {
-       "base": 20.6386,
+       "base": 15.7976,
        "terms": {
-        "slope_mean": 0.1078,
-        "rough_coarse": 1.9272,
-        "geo_convex": 0.8842,
-        "geo_concave": 0.4062,
-        "shadow_low": 3.3641,
-        "shadow_mid": 0.0759,
-        "norm_height": -0.0101,
-        "tpi_near": -0.5427,
-        "tpi_far": -0.0872,
-        "d_relief": 0.4462,
-        "d_hurst": 1.7645,
-        "d_linearity": 0.0002,
-        "d_depression_area": -0.1377,
-        "d_depression_depth": -0.0041,
-        "d_spec1": -0.1683,
-        "d_spec2": 0.0025,
-        "d_spec3": 0.0058,
+        "slope_mean": 0.1127,
+        "rough_coarse": 3.281,
+        "geo_convex": 1.3114,
+        "geo_concave": 0.5614,
+        "shadow_low": 5.0602,
+        "shadow_mid": 0.1292,
+        "norm_height": -0.0172,
+        "tpi_near": -0.5839,
+        "tpi_far": -0.1024,
+        "d_relief": 0.469,
+        "d_hurst": 2.6181,
+        "d_linearity": 0.0477,
+        "d_depression_area": -0.2344,
+        "d_depression_depth": -0.0069,
+        "d_spec1": -0.1719,
+        "d_spec2": 0.0043,
+        "d_spec3": 0.0099,
         "d_spec4": 0.0,
-        "d_spec5": -0.0091,
-        "d_spec6": 0.057,
-        "d_bowl": -0.0435,
+        "d_spec5": -0.0155,
+        "d_spec6": -0.0224,
+        "d_bowl": -0.074,
         "d_bowl_r": -0.0,
-        "d_cone": 0.0868,
-        "d_cone_r": -0.0158
+        "d_cone": 0.1269,
+        "d_cone_r": -0.0269
        },
-       "common": -0.1114,
-       "earth": -10.3094,
-       "total": 18.3278
+       "common": -0.1562,
+       "earth": -6.5233,
+       "total": 21.5944
       },
       "tag": "crater_rim",
       "label": "crater rim",
@@ -14699,18 +14706,19 @@
         "lon": -7.4783
        }
       ],
-      "badge": false
+      "badge": false,
+      "overall": 35.4074
      },
      "landform_scores": {
-      "crater_rim": 18.3278
+      "crater_rim": 21.5944
      },
-     "overall": 30.5744
+     "overall": 22.2121
     }
    ],
    "best_region": "mars:outflow",
    "landscape_score": 20.0622,
-   "overall": 42.1843,
-   "overall_percentile": 64.0,
+   "overall": 33.7535,
+   "overall_percentile": 47.76,
    "best_match": {
     "index": 3864,
     "name": "1.2 km crater, 102 km from Marte Vallis",
