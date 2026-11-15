@@ -260,6 +260,10 @@ class Model:
         self.earth_floor = float(z["earth_floor"]) if "earth_floor" in z else 1.0
         self.earth_ref = [np.sort(z[f"earth_ref__{r}"]) if f"earth_ref__{r}" in z else None for r in range(len(self.region_keys))]
         self.precip = z["precip_grid"]                        # mm per year, row 0 = 90 N, col 0 = 180 W
+        # v1.3.1 display scale: surface is shown out of its real maximum, overall is the geometric mean, and the
+        # overall percentile among random Earth land is stored per world. none of this changes any ranking
+        self.surface_max = float(z["surface_max"]) if "surface_max" in z else 100.0
+        self.overall_ref = {w: np.sort(z[f"overall_ref__{w}"]) for w in WORLDS if f"overall_ref__{w}" in z}
 
 
 def load(path) -> Model:
@@ -430,19 +434,22 @@ def score_click(model: Model, dems: dict, env: dict, worlds=WORLDS, n_best: int 
     ood = {s: bool(np.sqrt(((model.S[s]["earth_sketch"] - emb[s][2]) ** 2).sum(1).min()) > model.S[s]["ood_threshold"])
            for s in emb}
     blk = emb["site"][1] if "site" in emb else next(iter(emb.values()))[1]
-    cond = float(100 * expit(G))
-    discount = model.discount_floor + (1.0 - model.discount_floor) * cond / 100.0
+    raw = float(100 * expit(G))                                    # the conditions model's probability, at most surface_max
+    surface = float(min(100.0, 100.0 * raw / model.surface_max))   # shown out of 100: 100 = as bare and dry as the model allows
     out = dict(model_version=model.version, scales_used=list(emb), ood=any(ood.values()), ood_by_scale=ood,
-               conditions=dict(score=cond, logit=G, terms=terms, discount=discount),
+               conditions=dict(score=surface, raw=raw, logit=G, terms=terms, discount=surface / 100.0),
                block={n: float(v) for n, v in zip(BLOCK_FEATURES, blk)}, worlds={})
     for w in worlds:
         regs = region_scores(model, emb, w, n_best=n_best, with_cells=True)
         for reg in regs:
-            reg["overall"] = float(reg["score"] * discount)      # landscape always counts; conditions only lower it
+            # geometric mean: both terrain and surface have to be good, without squashing two good scores into a low one
+            reg["overall"] = float(np.sqrt(max(reg["score"], 0.0) * surface))
         regs.sort(key=lambda d: -d["overall"])
         best = max((b for reg in regs for b in reg["best"]), key=lambda b: b["logit"])
+        ref = model.overall_ref.get(w)
+        pct = float(100.0 * np.searchsorted(ref, regs[0]["overall"], side="right") / len(ref)) if ref is not None else None
         out["worlds"][w] = dict(regions=regs, best_region=regs[0]["region"], landscape_score=regs[0]["score"],
-                                overall=regs[0]["overall"], best_match=best)
+                                overall=regs[0]["overall"], overall_percentile=pct, best_match=best)
     return out
 
 
