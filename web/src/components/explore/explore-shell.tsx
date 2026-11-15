@@ -7,8 +7,10 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { alignedCell } from "@/lib/align";
 import { useAlignedLibraryGrid, useGrid, useTargets } from "@/lib/queries";
 import { cellPoints, type CellPoint } from "@/lib/regions";
+import { ApiError } from "@/lib/api";
+import { isLandCell } from "@/lib/land-mask";
 import { placeNear, placesOn } from "@/lib/places";
-import { siteHref } from "@/lib/sites";
+import { CHECK_SITES, siteHref } from "@/lib/sites";
 import { fmtAltitude, fmtLatLon } from "@/lib/format";
 import {
   pointTile,
@@ -37,8 +39,9 @@ const GlobeView = dynamic(() => import("@/components/globe/globe-view"), {
 
 // earth places the ml notebook lists as mars or moon analogs
 const ANALOG_PINS: Pin[] = analogSites.map((s) => ({ id: `analog-${s.id}`, name: s.name, lat: s.lat, lon: s.lon, kind: s.world as "mars" | "moon" }));
-// the check sites (lib/sites.ts) stay off the globe; How we know ranks them to check the model
-const EARTH_PINS = ANALOG_PINS;
+// the check sites float on the earth globe as named points, so the model can be checked by eye; no sidebar list
+const CHECK_PINS: Pin[] = CHECK_SITES.map((s) => ({ id: s.id, name: s.name, lat: s.lat, lon: s.lon, kind: "check" }));
+const EARTH_PINS = [...ANALOG_PINS, ...CHECK_PINS];
 
 const NO_POINTS: CellPoint[] = [];
 // a low sun for moon light, the library blocks carry no sun angle of their own
@@ -94,6 +97,10 @@ export function ExploreShell({ children }: { children: React.ReactNode }) {
   // the same cached result the panel shows
   const { q: score, match } = useMatch(selected);
   const result = score.data;
+  // water isn't scored: open sea never asks the api, a mostly-water coastal block comes back no_terrain
+  const water =
+    selected?.world === "earth" &&
+    (!isLandCell(selected.center.lat, selected.center.lon) || (score.error instanceof ApiError && score.error.code === "no_terrain"));
   const blockGrid = useGrid(result?.grid_url).data;
   // the matched block lined up with this one for display, the bottom pane exists only once its grid has loaded
   const { grid: matchedGrid, alignment } = useAlignedLibraryGrid(match?.site.index, blockGrid);
@@ -307,6 +314,7 @@ export function ExploreShell({ children }: { children: React.ReactNode }) {
             <MatchedBlock
               grid={matchedGrid}
               alignment={alignment}
+              blank={water}
               match={match}
               relief={world === "earth" ? relief : 1}
               moonSun={moonSun}

@@ -2,6 +2,7 @@
 
 import { useSearchParams } from "next/navigation";
 import { useMemo, useSyncExternalStore } from "react";
+import { isLandCell } from "@/lib/land-mask";
 import { useScore } from "@/lib/queries";
 import { pickMatch } from "@/lib/regions";
 import type { Tile } from "@/lib/tiles";
@@ -13,7 +14,8 @@ export function useMatch(tile: Tile | null) {
   const search = useSearchParams();
   // the server has no score cache, so read it only after hydration or the panel mismatches
   const hydrated = useSyncExternalStore(subscribe, () => true, () => false);
-  const q = useScore(hydrated && tile?.world === "earth" ? tile.id : null);
+  // open sea isn't sent to the api at all (no elevation tile there); coasts still are, and the api answers no_terrain
+  const q = useScore(hydrated && tile?.world === "earth" && isLandCell(tile.center.lat, tile.center.lon) ? tile.id : null);
   const [tab, region, site] = [search.get("tab"), search.get("region"), search.get("site")];
   const match = useMemo(() => (q.data ? pickMatch(q.data, tab, region, site) : null), [q.data, tab, region, site]);
   return { q, match };

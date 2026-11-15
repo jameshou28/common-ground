@@ -2,12 +2,15 @@
 
 import Link from "next/link";
 import { useParams } from "next/navigation";
+import { useEffect, useState } from "react";
 import { useExplore } from "@/components/explore/explore-context";
 import { WORLD_LABEL } from "@/components/globe/config";
-import { describeError } from "@/lib/api";
+import { ApiError, describeError } from "@/lib/api";
 import { env } from "@/lib/env";
 import { bars, conditionLabel, landformOf, landformPlural } from "@/lib/regions";
 import { placeNear } from "@/lib/places";
+import { isLandCell } from "@/lib/land-mask";
+import { useAlignedLibraryGrid, useGrid } from "@/lib/queries";
 import { CHECK_SITES } from "@/lib/sites";
 import { ChartsDialog } from "./charts-dialog";
 import { ContributionBars } from "./contribution-bars";
@@ -28,6 +31,9 @@ function Notice({ title, children, alert }: { title: string; children: React.Rea
   );
 }
 
+// longest the loader waits for the height grids once the score is in
+const WAIT_MS = 5000;
+
 // the right-hand panel for one scored block
 export function SiteResult() {
   const { tileId } = useParams<{ tileId: string }>();
@@ -40,6 +46,20 @@ export function SiteResult() {
   const name = site?.name ?? "This block";
   const r = q.data;
   const surface = r ? bars(r.conditions.terms, conditionLabel) : null;
+  // keep the loader up until the 3d side is ready too (the block's grid and the lined-up match), so the panel and the
+  // view appear together; at most WAIT_MS after the score. the queries are shared with the globe, so nothing loads twice
+  const blockGrid = useGrid(r?.grid_url).data;
+  const { grid: matchedGrid } = useAlignedLibraryGrid(match?.site.index, blockGrid);
+  const [waitedFor, setWaitedFor] = useState<string | null>(null);
+  useEffect(() => {
+    if (!r || !selected) return;
+    const id = selected.id;
+    const t = setTimeout(() => setWaitedFor(id), WAIT_MS);
+    return () => clearTimeout(t);
+  }, [r, selected]);
+  // water: open sea (no elevation tile) is never scored; a coastal block the api finds mostly water says no_terrain
+  const water = earth && !!selected && (!isLandCell(selected.center.lat, selected.center.lon) || (q.error instanceof ApiError && q.error.code === "no_terrain"));
+  const loading = earth && !water && (q.isPending || (!!r && !!match && !(blockGrid && matchedGrid) && waitedFor !== selected?.id));
   const landform = match ? landformOf(match.region) : null;
   // the selected region's overall; the api has it per region since v1.3
   const regionOverall = match ? (typeof match.region.overall === "number" ? match.region.overall : match.world.overall) : 0;
@@ -74,7 +94,13 @@ export function SiteResult() {
           {!env.liveScoring && !r && earth && !q.isError && (
             <Notice title="Live scoring is paused">Right now only places scored before will open. The check sites still work.</Notice>
           )}
-          {earth && q.isError && (
+          {water && (
+            <Notice title="Open water">
+              The model only knows land, and nothing on the Moon or Mars looks like a sea or a lake, so water blocks aren&apos;t scored. Try a nearby coast or
+              island.
+            </Notice>
+          )}
+          {earth && q.isError && !water && (
             <Notice alert title={describeError(q.error).title}>
               {describeError(q.error).body}
             </Notice>
@@ -84,13 +110,13 @@ export function SiteResult() {
           )}
         </div>
 
-        {earth && q.isPending && (
+        {loading && (
           <div className="p-4">
             <ScoreLoader name={site?.name ?? "New place"} />
           </div>
         )}
 
-        {r && match && (
+        {r && match && !loading && (
           <>
             <Section title="Region score" note={match.region.region === match.world.best_region ? `best region: ${match.region.title}` : match.region.title}>
               <ScoreGauge
@@ -105,7 +131,7 @@ export function SiteResult() {
               {landform ? (
                 <>
                   <ScoreGauge
-                    overall={Math.sqrt(Math.max(landform.score, 0) * r.conditions.score)}
+                    overall={typeof landform.overall === "number" ? landform.overall : Math.sqrt(Math.max(landform.score, 0) * r.conditions.score)}
                     terrain={landform.score}
                     surface={r.conditions.score}
                     standIn={`${/^[aeiou]/i.test(landform.label) ? "an" : "a"} ${landform.label.toLowerCase()} stand-in`}
