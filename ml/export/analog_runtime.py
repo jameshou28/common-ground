@@ -19,6 +19,9 @@ WINDOW_PX = BLOCK_PX + 2 * PAD_PX   # 256 px padded window
 CELL_PX = 16                        # 8 x 8 = 64 cells (tokens) per block
 LOWPASS_PX = 1.0                    # the same Gaussian blur on every world: one effective resolution
 ROUGH_FINE_PX, ROUGH_COARSE_PX, TPI_PX = 3, 11, 39      # filter window widths
+TPI_NEAR_PX, TPI_FAR_PX = 17, 97                         # v2.0 spatial context windows (the 64 px padding covers both)
+RING_PX, N_RINGS = 6, 10                                 # radial profile: 10 rings of 6 px around each candidate centre
+LF_SHORT, LF_K = 30, 5                                   # landform scores: shortlist and top-k
 SHADOW_PX, SVF_PX = 64, 32          # horizon search distances
 RADIUS_M = {"earth": 6_371_000.0, "moon": 1_737_400.0, "mars": 3_396_190.0}
 WORLDS = ("moon", "mars")
@@ -28,8 +31,12 @@ WORLDS = ("moon", "mars")
 TOKEN_FEATURES = (
     "slope_mean", "rough_coarse", "geo_convex", "geo_concave",
     "shadow_low", "shadow_mid", "norm_height",
+    "tpi_near", "tpi_far",          # v2.0: height against the surroundings ~0.5 and ~1.5 km out, over the block's relief
 )
-BLOCK_FEATURES = ("relief", "hurst", "linearity", "depression_area", "depression_depth")   # hypsometry ~ norm_height
+SPEC_BANDS = ((64, 128), (32, 64), (16, 32), (8, 16), (4, 8), (2, 4))   # wavelength bands in pixels for the power spectrum
+BLOCK_FEATURES = ("relief", "hurst", "linearity", "depression_area", "depression_depth",
+                  *(f"spec{k + 1}" for k in range(len(SPEC_BANDS))),   # v2.0: share of relief in each wavelength band
+                  "bowl", "bowl_r", "cone", "cone_r")                  # v2.0: best radially symmetric bowl / cone, and its radius
 INPUT_NAMES = TOKEN_FEATURES + tuple("d_" + b for b in BLOCK_FEATURES)
 N_TOK, N_IN = len(TOKEN_FEATURES), len(TOKEN_FEATURES) + len(BLOCK_FEATURES)
 ENV_NAMES = ("tree", "crop", "built", "water", "snow", "bare", "sparse", "precip")   # what the readers return for a click
@@ -137,6 +144,46 @@ def layout_features(zc: np.ndarray, z: np.ndarray, pad: int, relief: float):
     return float(linearity), hyps, dep_area, dep_depth
 
 
+def spectrum_bands(zc: np.ndarray) -> np.ndarray:
+    # radially averaged power spectrum: share of the block's (detrended, edge-tapered) relief in each wavelength band.
+    # direction-free, so rotating the block doesn't change it
+    n = zc.shape[0]
+    w = np.hanning(n)
+    F = np.abs(np.fft.fft2(detrend(zc) * w[:, None] * w[None, :])) ** 2
+    f = np.fft.fftfreq(n)
+    fr = np.hypot(f[:, None], f[None, :])
+    lam = np.divide(1.0, fr, out=np.full_like(fr, np.inf), where=fr > 0)
+    band = np.array([F[(lam > lo) & (lam <= hi)].sum() for lo, hi in SPEC_BANDS])
+    tot = band.sum()
+    return band / tot if tot > 0 else np.full(len(SPEC_BANDS), 1.0 / len(SPEC_BANDS))
+
+
+def radial_shapes(zc: np.ndarray, relief: float):
+    # best bowl (rim higher than centre) and best cone (centre higher than surroundings) over a 5 x 5 grid of centres.
+    # strength = height difference over relief x how much of the area's variance the ring profile explains
+    n = zc.shape[0]
+    zn = (zc - zc.mean()) / max(relief, 1.0)
+    yy, xx = np.mgrid[0:n, 0:n]
+    best_b, best_c = (0.0, 0.0), (0.0, 0.0)
+    for cy in range(n // 4, 3 * n // 4 + 1, n // 8):
+        for cx in range(n // 4, 3 * n // 4 + 1, n // 8):
+            ring = (np.hypot(yy - cy, xx - cx) / RING_PX).astype(int)
+            m = ring < N_RINGS
+            lab, v = ring[m], zn[m]
+            cnt = np.bincount(lab, minlength=N_RINGS)
+            if (cnt == 0).any():
+                continue
+            p = np.bincount(lab, v, minlength=N_RINGS) / cnt
+            sst = ((v - v.mean()) ** 2).sum()
+            r2 = 1.0 - ((v - p[lab]) ** 2).sum() / sst if sst > 0 else 0.0
+            b, c = max(0.0, p[1:].max() - p[0]) * r2, max(0.0, p[0] - p[1:].min()) * r2
+            if b > best_b[0]:
+                best_b = (b, (np.argmax(p[1:]) + 1.5) * RING_PX / (n / 2))
+            if c > best_c[0]:
+                best_c = (c, (np.argmin(p[1:]) + 1.5) * RING_PX / (n / 2))
+    return best_b[0], best_b[1], best_c[0], best_c[1]
+
+
 def to_cells(a: np.ndarray, cell_px: int) -> np.ndarray:
     # (H, H) map -> (n_cells, cell_px^2), cells in row-major order (cell index = i * n + j).
     n = a.shape[0] // cell_px
@@ -156,6 +203,8 @@ def compute_features(z_padded: np.ndarray, radius_m: float, scale: str = "site",
     rc = crop(z - ndimage.uniform_filter(z, ROUGH_COARSE_PX, mode="nearest"))
 
     tpi = crop(z - ndimage.uniform_filter(z, TPI_PX, mode="nearest"))
+    tpi_n = crop(z - ndimage.uniform_filter(z, TPI_NEAR_PX, mode="nearest"))
+    tpi_f = crop(z - ndimage.uniform_filter(z, TPI_FAR_PX, mode="nearest"))
     thr = 0.5 * (TPI_PX // 2) * res * np.tan(np.radians(cfg["flat_deg"]))
     flat = (np.abs(tpi) < thr).astype(float)
     convex = (tpi >= thr).astype(float)
@@ -170,7 +219,8 @@ def compute_features(z_padded: np.ndarray, radius_m: float, scale: str = "site",
     p2, p98 = np.percentile(zc, [2, 98])
     relief = p98 - p2
 
-    S, RC, CV, CC, SL, SM, ZC = (to_cells(a, cell_px) for a in (slope, rc, convex, concave, shadow_low, shadow_mid, zc))
+    S, RC, CV, CC, SL, SM, ZC, TN, TF = (to_cells(a, cell_px) for a in (slope, rc, convex, concave, shadow_low, shadow_mid, zc,
+                                                                        tpi_n / max(relief, 1.0), tpi_f / max(relief, 1.0)))
     tokens = np.stack([
         S.mean(1),
         np.sqrt((RC ** 2).mean(1)),
@@ -178,9 +228,10 @@ def compute_features(z_padded: np.ndarray, radius_m: float, scale: str = "site",
         SL.mean(1),
         SM.mean(1),
         (ZC.mean(1) - p2) / max(relief, 1.0),
+        TN.mean(1), TF.mean(1),
     ], axis=1)
     linearity, _, dep_area, dep_depth = layout_features(zc, z, pad, relief)
-    block = np.array([relief, hurst_exponent(zc), linearity, dep_area, dep_depth])
+    block = np.array([relief, hurst_exponent(zc), linearity, dep_area, dep_depth, *spectrum_bands(zc), *radial_shapes(zc, relief)])
     if return_maps:
         return tokens, block, dict(dem=zc, slope=slope, tpi=tpi, shadow_low=shadow_low, svf=svf)
     return tokens, block
@@ -236,6 +287,8 @@ class Model:
                 block=g("lib_block").astype(np.float64), sketch=g("lib_sketch").astype(np.float64),
                 earth_sketch=g("earth_sketch"), ood_threshold=float(g("ood_threshold")),
                 weight=float(g("combo_weight")),
+                logw=(z[f"{s}__lib_logw"].astype(np.float64) if f"{s}__lib_logw" in z else np.zeros(len(z["lib_world"]))),
+                block_mask=(z[f"{s}__block_mask"].astype(np.float64) if f"{s}__block_mask" in z else np.ones(len(BLOCK_FEATURES))),
             )
         # library: one row per Moon or Mars location, with tokens at every scale
         self.lib_world = z["lib_world"]
@@ -264,6 +317,19 @@ class Model:
         # overall percentile among random Earth land is stored per world. none of this changes any ranking
         self.surface_max = float(z["surface_max"]) if "surface_max" in z else 100.0
         self.overall_ref = {w: np.sort(z[f"overall_ref__{w}"]) for w in WORLDS if f"overall_ref__{w}" in z}
+        # v2.0 library weighting: a match against terrain that's common on Earth counts less
+        self.weight_lambda = float(z["weight_lambda"]) if "weight_lambda" in z else 0.0
+        # v2.0 landform scores: one per (region, landform tag) with enough blocks
+        self.lf_keys = [str(x) for x in z["lf_keys"]] if "lf_keys" in z else []
+        nl = len(self.lf_keys)
+        self.lf_region = np.asarray(z["lf_region"], int) if nl else np.zeros(0, int)
+        self.lf_tag = np.asarray(z["lf_tag"]).astype(str) if nl else np.zeros(0, str)
+        self.lf_label = [t.replace("_", " ") for t in self.lf_tag]
+        self.lf_valid = np.asarray(z["lf_valid"], bool) if "lf_valid" in z else np.zeros(nl, bool)
+        self.lf_members = [np.flatnonzero((self.lib_region == self.lf_region[i]) & (self.lib_tag.astype(str) == self.lf_tag[i])) for i in range(nl)]
+        self.lf_calib = {s: [np.sort(z[f"{s}__lfcal__{i}"]) if f"{s}__lfcal__{i}" in z else None for i in range(nl)] for s in self.scales}
+        self.lf_earth = [np.sort(z[f"lf_earth__{i}"]) if f"lf_earth__{i}" in z else None for i in range(nl)]
+        self.lf_badge_min = float(z["lf_badge_min"]) if "lf_badge_min" in z else 60.0
 
 
 def load(path) -> Model:
@@ -292,6 +358,7 @@ def embed(model: Model, dems: dict, radius_m: float) -> dict:
             continue
         P = model.S[s]
         tok_raw, blk = compute_features(dems[s], radius_m, s)
+        blk = blk * P["block_mask"]                 # block features that failed the planet check are switched off
         tok = tok_raw / P["scale"]
         out[s] = (tok, blk, (sketch_raw(tok) - P["pca_mean"]) @ P["pca_comp"].T)
     if not out:
@@ -336,8 +403,48 @@ def to_logit(score_0_100: float) -> float:
     return float(np.log(p / (1 - p)))
 
 
+def landform_aggregates(model: Model, emb: dict, ids, exclude: np.ndarray | None = None) -> dict:
+    # {landform id: {scale: dict(aggregate, top)}}: mean of the top LF_K weighted pair logits over the landform's blocks
+    out = {}
+    for i in ids:
+        memt = model.lf_members[i]
+        if exclude is not None:
+            memt = memt[~exclude[memt]]
+        if len(memt) < LF_K:
+            continue
+        per = {}
+        for s, (tok, blk, sk) in emb.items():
+            P = model.S[s]
+            sh = memt[np.argsort(((P["sketch"][memt] - sk) ** 2).sum(1))[:LF_SHORT]]
+            raw_t, _, _ = pair_inputs_many(tok, P["tokens"][sh], blk, P["block"][sh])
+            lg_t = pair_logit(model, s, raw_t)[0] + model.weight_lambda * P["logw"][sh]
+            o = np.argsort(-lg_t)
+            per[s] = dict(aggregate=float(lg_t[o[:LF_K]].mean()), top=[int(j) for j in sh[o[:3]]])
+        out[int(i)] = per
+    return out
+
+
+def landform_score(model: Model, i: int, per: dict) -> dict:
+    # same steps as the region score: calibrate per scale, combine the scales, then the Earth factor
+    w_all = sum(model.S[s]["weight"] for s in model.scales)
+    L, w_s, scales = model.combo_bias, 0.0, {}
+    for s, v in per.items():
+        cal = model.lf_calib.get(s, [None] * (i + 1))[i]
+        sc = 100.0 * calibrated(cal, v["aggregate"]) if cal is not None and len(cal) else 50.0
+        scales[s] = dict(score=sc, aggregate=v["aggregate"])
+        L += model.S[s]["weight"] * to_logit(sc)
+        w_s += model.S[s]["weight"]
+    if 0 < w_s < w_all:
+        L = model.combo_bias + (L - model.combo_bias) * w_all / w_s
+    sim = float(100 * expit(L))
+    ref = model.lf_earth[i] if i < len(model.lf_earth) else None
+    pct = float(np.searchsorted(ref, L, side="right") / len(ref)) if ref is not None and len(ref) else 1.0
+    f = model.earth_floor + (1.0 - model.earth_floor) * pct
+    return dict(score=sim * f, similarity=sim, earth_percentile=100.0 * pct, logit=float(L), scales=scales)
+
+
 def region_scores(model: Model, emb: dict, world: str, exclude: np.ndarray | None = None,
-                  n_best: int = 5, with_cells: bool = False):
+                  n_best: int = 5, with_cells: bool = False, landforms: bool = False):
     out = []
     for r, key in enumerate(model.region_keys):
         if model.region_world[r] != world:
@@ -354,6 +461,7 @@ def region_scores(model: Model, emb: dict, world: str, exclude: np.ndarray | Non
             short = mem[np.argsort(((P["sketch"][mem] - sk) ** 2).sum(1))[:model.shortlist]]
             raw, W, partner = pair_inputs_many(tok, P["tokens"][short], blk, P["block"][short])
             lg, contrib = pair_logit(model, s, raw)
+            lg = lg + model.weight_lambda * P["logw"][short]        # v2.0: matches against common terrain count less
             A = float(np.sort(lg)[::-1][:k].mean())
             score = 100.0 * calibrated(model.calib[s][r], A)
             per_scale[s] = dict(score=score, aggregate=A)
@@ -375,7 +483,7 @@ def region_scores(model: Model, emb: dict, world: str, exclude: np.ndarray | Non
             tok, blk, _ = emb[s]
             P = model.S[s]
             raw_o, _, _ = pair_inputs_many(tok, P["tokens"][c0["short"][top]], blk, P["block"][c0["short"][top]])
-            others[s] = pair_logit(model, s, raw_o)[0]
+            others[s] = pair_logit(model, s, raw_o)[0] + model.weight_lambda * P["logw"][c0["short"][top]]
             joint = joint + others[s]
         joint = joint / (1 + len(others))
         best = []
@@ -409,9 +517,22 @@ def region_scores(model: Model, emb: dict, world: str, exclude: np.ndarray | Non
             slope = 100.0 * p * (1.0 - p) * factor
             b["contributions_logit"] = b["contributions"]
             b["contributions"] = {n: v * slope for n, v in b["contributions"].items()}
+        lf, lf_all = None, []
+        if landforms and model.lf_keys:
+            for i, per in landform_aggregates(model, emb, np.flatnonzero(model.lf_region == r), exclude).items():
+                d = landform_score(model, i, per)
+                lead_ = "site" if "site" in per else next(iter(per))
+                d.update(tag=str(model.lf_tag[i]), label=model.lf_label[i], validated=bool(model.lf_valid[i]),
+                         matches=[dict(index=j, name=str(model.lib_name[j]), lat=float(model.lib_lat[j]), lon=float(model.lib_lon[j]))
+                                  for j in per[lead_]["top"]])
+                lf_all.append(d)
+            if lf_all:
+                lf = max(lf_all, key=lambda d: d["score"])
+                lf["badge"] = bool(lf["validated"] and lf["score"] >= model.lf_badge_min and lf["score"] >= sim * factor)
         out.append(dict(region_id=r, region=key, title=model.region_title[r], score=sim * factor, similarity=sim,
                         earth_percentile=100.0 * pct, earth_factor=factor,
-                        logit=float(L), scales=per_scale, n_members=int(len(mem)), best=best))
+                        logit=float(L), scales=per_scale, n_members=int(len(mem)), best=best,
+                        landform=lf, landform_scores={d["tag"]: float(d["score"]) for d in lf_all}))
     out.sort(key=lambda d: -d["score"])
     return out
 
@@ -454,7 +575,7 @@ def score_click(model: Model, dems: dict, env: dict, worlds=WORLDS, n_best: int 
                                       for n, v in terms.items()}),
                block={n: float(v) for n, v in zip(BLOCK_FEATURES, blk)}, worlds={})
     for w in worlds:
-        regs = region_scores(model, emb, w, n_best=n_best, with_cells=True)
+        regs = region_scores(model, emb, w, n_best=n_best, with_cells=True, landforms=True)
         for reg in regs:
             # geometric mean: both terrain and surface have to be good, without squashing two good scores into a low one
             reg["overall"] = float(np.sqrt(max(reg["score"], 0.0) * surface))
@@ -484,3 +605,12 @@ def region_logits_task(args):
             logit[reg["region_id"]] = reg["logit"]
             per[reg["region_id"]] = [reg["scales"].get(s, {}).get("score", np.nan) for s in m.scales]
     return logit, per
+
+
+def landform_task(args):
+    # (model path, embedding, landform ids, exclude mask) -> landform_aggregates, for process pools in the notebook
+    path, emb, ids, exclude = args
+    m = _WORKER_MODELS.get(path)
+    if m is None:
+        m = _WORKER_MODELS[path] = load(path)
+    return landform_aggregates(m, emb, ids, exclude)
