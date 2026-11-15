@@ -348,18 +348,29 @@ export function BlockPullOut({
     aim(handle, tile, (lo + hi) / 2);
     const closed = [...lifted.ring, lifted.ring[0]];
     const closedTops = [...tops, tops[0]];
-    const made = [
-      v.entities.add({
-        wall: {
-          positions: closed,
-          maximumHeights: closedTops,
-          minimumHeights: closed.map(() => base),
-          material: new C.ImageMaterialProperty({
+    // flat, so the walls facing away from the relief sun don't go black against the sky
+    const walls = scene.primitives.add(
+      new C.Primitive({
+        geometryInstances: new C.GeometryInstance({
+          geometry: new C.WallGeometry({
+            positions: closed,
+            maximumHeights: closedTops,
+            minimumHeights: closed.map(() => base),
+            ellipsoid,
+          }),
+        }),
+        appearance: new C.MaterialAppearance({
+          flat: true,
+          faceForward: true,
+          material: C.Material.fromType("Image", {
             image: strataTexture(WALL[world]),
             repeat: new C.Cartesian2(24, 1),
           }),
-        },
+        }),
+        asynchronous: false,
       }),
+    );
+    const made = [
       v.entities.add({
         polygon: {
           hierarchy: lifted.ring,
@@ -435,6 +446,7 @@ export function BlockPullOut({
       if (v.isDestroyed()) return;
       scene.postRender.removeEventListener(place);
       made.forEach((e) => v.entities.remove(e));
+      scene.primitives.remove(walls);
       exaggerate(scene, 1);
     };
   }, [handle, lifted, tile, relief]);
