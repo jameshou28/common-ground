@@ -16,6 +16,7 @@ from app.main import app
 from app.schemas import ScoreResult
 
 X, Y = local_xy()
+EXAMPLE = Path(__file__).resolve().parents[2] / "ml/export/example_response.json" # victors meteor crater response
 client = TestClient(app)
 
 
@@ -78,7 +79,7 @@ def fake_fetch(model, lat, lon, scales=None):
 
 def test_example_response_fits_the_contract():
     # victors meteor crater response plus our wrapper fields
-    r = json.loads((Path(__file__).parent / "example_response.json").read_text())
+    r = json.loads(EXAMPLE.read_text())
     r.update(tile_id="earth:g:974:-2527", center=dict(lat=35.027, lon=-111.022), cached=False,
              env=dict(bare=0.9, precip=None), grid_url="/grids/x.bin")
     out = ScoreResult(**r).model_dump()
@@ -87,6 +88,12 @@ def test_example_response_fits_the_contract():
 
 
 needs_model = pytest.mark.skipif(not scorer.MODEL_PATH.exists(), reason="set MODEL_PATH to victors model.npz")
+
+
+@needs_model
+def test_example_matches_model():
+    # the web build reads its model version from the example, so it has to be the served model's
+    assert json.loads(EXAMPLE.read_text())["model_version"] == scorer.model().version
 
 
 @needs_model
