@@ -2,12 +2,12 @@
 
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import { AddToCompare } from "@/components/compare/add-to-compare";
 import { useExplore } from "@/components/explore/explore-context";
 import { WORLD_LABEL } from "@/components/globe/config";
 import { describeError } from "@/lib/api";
 import { env } from "@/lib/env";
 import { bars, conditionLabel, landformOf, landformPlural } from "@/lib/regions";
+import { placeNear } from "@/lib/places";
 import { CHECK_SITES } from "@/lib/sites";
 import { ChartsDialog } from "./charts-dialog";
 import { ContributionBars } from "./contribution-bars";
@@ -35,6 +35,8 @@ export function SiteResult() {
   const earth = selected?.world === "earth";
   const { q, match } = useMatch(selected);
   const site = CHECK_SITES.find((s) => s.tileId === selected?.id);
+  // a moon or mars landmark opened from its pin
+  const place = selected && !earth ? placeNear(selected.world, selected.center.lat, selected.center.lon) : undefined;
   const name = site?.name ?? "This block";
   const r = q.data;
   const surface = r ? bars(r.conditions.terms, conditionLabel) : null;
@@ -49,8 +51,9 @@ export function SiteResult() {
           <Link href="/" className="text-xs text-text-2 hover:text-text">
             ← Back to the globe
           </Link>
-          <h1 className="mt-2 text-xl leading-tight font-semibold">{site?.name ?? "Clicked block"}</h1>
+          <h1 className="mt-2 text-xl leading-tight font-semibold">{site?.name ?? place?.name ?? "Clicked block"}</h1>
           {site && <p className="text-text-2">{site.region}</p>}
+          {place && <p className="text-text-2">{place.note}</p>}
           {selected && <FactsTable tile={selected} match={match} />}
 
           {!selected && (
@@ -59,8 +62,13 @@ export function SiteResult() {
             </Notice>
           )}
           {selected && !earth && (
-            <Notice alert title="Only Earth is scored live">
-              Click a place on Earth to score it.
+            <Notice title={`${WORLD_LABEL[selected.world]} blocks are for reference`}>
+              The model scores Earth blocks against regions of the Moon and Mars, so this block has no score of its own. To find Earth places like
+              this terrain, open{" "}
+              <Link href={`/best?tab=${selected.world}`} className="text-brand">
+                Best sites
+              </Link>{" "}
+              or click Earth.
             </Notice>
           )}
           {!env.liveScoring && !r && earth && !q.isError && (
@@ -126,8 +134,7 @@ export function SiteResult() {
         )}
       </div>
       {earth && r && match && (
-        <div className="flex gap-2 border-t border-line p-3">
-          <AddToCompare tileId={selected.id} tab={match.tab} />
+        <div className="flex justify-end gap-2 border-t border-line p-3">
           <ExportMenu tile={selected} name={site?.name ?? "Clicked block"} result={r} match={match} capture={capture} />
           <span className="sr-only">Showing the {WORLD_LABEL[match.tab]} result</span>
         </div>

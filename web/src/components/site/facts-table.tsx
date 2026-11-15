@@ -7,8 +7,9 @@ export function FactsTable({ tile, match }: { tile: Tile; match: Match | null })
   const rows: [string, React.ReactNode][] = [
     ["Block", `4 × 4 km, ${tile.id}`],
     ["Centre", fmtLatLon(tile.center.lat, tile.center.lon)],
-    ["Elevation", "Copernicus GLO-30, 30 m"],
   ];
+  // earth blocks are scored from glo-30; moon and mars blocks only show the globe's own terrain
+  if (tile.world === "earth") rows.push(["Elevation", "Copernicus GLO-30, 30 m"]);
   if (match)
     rows.push([
       "Closest match",

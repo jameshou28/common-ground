@@ -26,7 +26,7 @@ export function useScore(tileId: string | null) {
   return useQuery(scoreQuery(tileId));
 }
 
-// several blocks at once, for the compare page and the rank strip
+// several blocks at once, for the check-site rank strip
 export function useTileScores(tileIds: string[]) {
   return useQueries({ queries: tileIds.map((id) => scoreQuery(id)) });
 }

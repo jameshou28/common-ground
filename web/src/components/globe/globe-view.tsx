@@ -69,6 +69,21 @@ export default function GlobeView({ world, onStatus, onAltitude, onHover, onPick
     if (handle && focus) void flyToBlock(handle, focus);
   }, [handle, focus]);
 
+  // without our own ion token cesium adds a "default access token" warning to the credits. hide only that one; the
+  // data attribution stays. setting NEXT_PUBLIC_CESIUM_ION_TOKEN removes the warning at the source
+  useEffect(() => {
+    const box = credits.current;
+    if (!box) return;
+    const hide = () => {
+      for (const n of box.querySelectorAll<HTMLElement>(".cesium-credit-textContainer > *"))
+        if (/default ion access token/i.test(n.textContent ?? "")) n.style.display = "none";
+    };
+    hide();
+    const obs = new MutationObserver(hide);
+    obs.observe(box, { childList: true, subtree: true });
+    return () => obs.disconnect();
+  }, [handle]);
+
   useEffect(() => {
     if (!handle) return;
     return shareCapture(capture, () => {

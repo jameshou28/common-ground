@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { CheckOrder } from "@/components/compare/check-order";
+import { CheckOrder } from "@/components/check/check-order";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import v from "../../../public/data/validation.json";
 
