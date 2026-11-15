@@ -8,8 +8,8 @@ import { Button } from "@/components/ui/button";
 import { WORLD_LABEL } from "@/components/globe/config";
 import type { ScoreResult } from "@/lib/api";
 import { download, exportName, toCsv, toJson } from "@/lib/export";
-import { fmtLatLon, fmtSigned } from "@/lib/format";
-import { bars, conditionLabel, contributionLabel, type Bar, type Match } from "@/lib/regions";
+import { fmtLatLon, fmtPoints, fmtSigned } from "@/lib/format";
+import { bars, breakdownBars, breakdownOf, conditionLabel, contributionLabel, landformOf, type Bar, type Match } from "@/lib/regions";
 import type { Tile } from "@/lib/tiles";
 
 type Props = { tile: Tile; name: string; result: ScoreResult; match: Match; capture: () => string | null };
@@ -52,7 +52,7 @@ export function ExportMenu(p: Props) {
   );
 }
 
-function Rows({ rows }: { rows: Bar[] }) {
+function Rows({ rows, fmt = fmtSigned }: { rows: Bar[]; fmt?: (v: number) => string }) {
   const max = Math.max(...rows.map((c) => Math.abs(c.value)), 1e-9);
   return rows.map((c) => (
     <div key={c.key} className="grid grid-cols-[1fr_60mm_12mm] items-center gap-2 break-inside-avoid">
@@ -63,13 +63,15 @@ function Rows({ rows }: { rows: Bar[] }) {
           style={{ [c.value < 0 ? "right" : "left"]: "50%", width: `${(Math.abs(c.value) / max) * 50}%`, opacity: c.value < 0 ? 0.45 : 1 }}
         />
       </span>
-      <span className="text-right">{fmtSigned(c.value)}</span>
+      <span className="text-right">{fmt(c.value)}</span>
     </div>
   ));
 }
 
 function Sheet({ tile, name, result: r, match, image }: Props & { image: string | null }) {
   const { site, world, tab } = match;
+  const lf = landformOf(match.region);
+  const regionBd = breakdownOf(match.region);
   return (
     <article className="field-sheet hidden text-[11px] leading-snug text-black">
       <header className="flex items-baseline justify-between border-b-2 border-black pb-1">
@@ -93,13 +95,31 @@ function Sheet({ tile, name, result: r, match, image }: Props & { image: string 
           <dd>{match.region.title}</dd>
         </dl>
         <p>
-          <b className="text-3xl font-semibold">{Math.round(world.overall)}</b> out of 100 as a {WORLD_LABEL[tab]} stand-in
+          Region score <b className="text-3xl font-semibold">{Math.round(typeof match.region.overall === "number" ? match.region.overall : world.overall)}</b> out of 100 as a{" "}
+          {WORLD_LABEL[tab]} stand-in
           <br />
-          Terrain {Math.round(world.landscape_score)} · Surface {Math.round(r.conditions.score)}
+          Terrain {Math.round(match.region.score)} · Surface {Math.round(r.conditions.score)}
+          {lf && (
+            <>
+              <br />
+              Feature score <b className="font-semibold">{Math.round(Math.sqrt(Math.max(lf.score, 0) * r.conditions.score))}</b> as {lf.label.toLowerCase()}, terrain{" "}
+              {Math.round(lf.score)}
+              {lf.validated ? "" : " (not validated yet)"}
+            </>
+          )}
         </p>
       </div>
-      <h2 className="mt-3 border-b border-black font-semibold">Why it matches</h2>
-      <Rows rows={bars(site.contributions, contributionLabel).rows} />
+      <h2 className="mt-3 border-b border-black font-semibold">Why it matches{regionBd ? `: region score ${regionBd.total.toFixed(1)} from a starting point of ${regionBd.base.toFixed(1)}` : ""}</h2>
+      {regionBd ? <Rows
+          rows={
+            breakdownBars(regionBd, {
+              world: WORLD_LABEL[tab],
+              target: match.region.title.toLowerCase(),
+              earthPercentile: typeof match.region.earth_percentile === "number" ? match.region.earth_percentile : null,
+            }).rows
+          }
+          fmt={fmtPoints}
+        /> : <Rows rows={bars(site.contributions, contributionLabel).rows} />}
       <h2 className="mt-3 border-b border-black font-semibold">Surface and climate</h2>
       <Rows rows={bars(r.conditions.terms, conditionLabel).rows} />
       <p className="mt-3 border-t border-black pt-1">Dark bars help the match, light bars hurt it. This covers terrain and surface only. No Earth site has lunar or Martian gravity, air or radiation.</p>

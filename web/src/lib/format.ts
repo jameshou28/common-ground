@@ -18,3 +18,6 @@ export function fmtValue(v: number, unit: string): string {
 
 // +0.38 or −0.47, with a real minus sign
 export const fmtSigned = (v: number) => `${v < 0 ? "−" : "+"}${Math.abs(v).toFixed(2)}`;
+
+// score points, one decimal: +14.1 or −3.8
+export const fmtPoints = (v: number) => `${v < 0 ? "−" : "+"}${Math.abs(v).toFixed(1)}`;

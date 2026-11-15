@@ -50,7 +50,16 @@ export default function Page() {
             conditions that would get in the way of a real test site, like farmland or trees. The closest places inside the best region are listed with their own scores.
           </p>
           <p>
-            The numbered points on a block are the 500 m cells that matched best and worst. Green helped the score, red hurt it.
+            Some regions also have a feature score: how well the block matches one kind of landform inside that region, like wrinkle ridges in the lunar maria. It&apos;s worked out the same
+            way as the region score, against only the blocks mapped as that feature.
+          </p>
+          <p>
+            Why it matches splits each score into points that add up to it: a starting point for a typical match, one bar per measurement, and two adjustments for terrain that&apos;s
+            common on Earth.
+          </p>
+          <p>
+            The numbered points on a block are the 500 m cells that add the most and the least to the score against the closest match. Each cell&apos;s share comes from how well it lines
+            up with the cell it was paired with, weighted the way the model weighs each measurement. Green adds points, grey adds only a little, red takes points away.
           </p>
         </Section>
 
