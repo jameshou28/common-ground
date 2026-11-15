@@ -17,6 +17,7 @@ import {
 } from "@/lib/tiles";
 import { WORLD_LABEL, type GlobeStatus } from "@/components/globe/config";
 import type { Pin } from "@/components/globe/pins";
+import analogSites from "../../../public/data/analog_sites.json";
 import type { LatLon } from "@/components/globe/use-globe-controls";
 import { WorldSwitcher } from "@/components/globe/world-switcher";
 import { StatusItems } from "@/components/shell/status-bar";
@@ -40,6 +41,10 @@ const CHECK_PINS: Pin[] = CHECK_SITES.map((s) => ({
   lon: s.lon,
   kind: "check",
 }));
+
+// earth places the ml notebook lists as mars or moon analogs
+const ANALOG_PINS: Pin[] = analogSites.map((s) => ({ id: `analog-${s.id}`, name: s.name, lat: s.lat, lon: s.lon, kind: s.world as "mars" | "moon" }));
+const EARTH_PINS = [...ANALOG_PINS, ...CHECK_PINS];
 
 const NO_POINTS: CellPoint[] = [];
 // a low sun for moon light, the library blocks carry no sun angle of their own
@@ -105,7 +110,7 @@ export function ExploreShell({ children }: { children: React.ReactNode }) {
   const pins = useMemo<Pin[]>(
     () =>
       world === "earth"
-        ? CHECK_PINS
+        ? EARTH_PINS
         : (targets ?? [])
             .filter((t) => t.world === world)
             .map((t) => ({
