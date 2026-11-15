@@ -22,6 +22,18 @@ The click flow is the same: same call, same two live reads. The response and a f
 - `model.npz` grows to roughly 20–60 MB at v1. Measure memory on Render after the first deploy.
 - About-page credit to add: LOLA polar DEMs (NASA GSFC PGDA, Barker et al.).
 
+## What changes for James in v1.3.1 (display fix, `regions-1.3.1-v1`)
+
+Same trained model as v1.3; only the score scale changed. No ranking changes anywhere.
+
+- **Copy `ml/export/analog_runtime.py` over `api/analog_core/ml/analog_runtime.py`.** The backend loads `model.npz` from `ml/export` but runs its own runtime copy, so both have to change together. Ours now defaults to 5 best sites, like yours.
+- The model version changed, so cached Supabase rows from `regions-1.3-v1` stop being served and every tile re-scores. That also clears the stale rows for Haughton, McMurdo, Holuhraun and Utah, which were scored by the v1.1 runtime with the v1.3 model.
+- `conditions.score` is now out of 100 for real: 100 = as bare and dry as any place on Earth gets. The old probability is in `conditions.raw` (it maxed out at 72).
+- `regions[].overall` and `worlds.{w}.overall` = √(terrain score × surface score), the geometric mean, instead of the product. Good analog sites now read 60-80, typical land about 40, farmland about 13.
+- New `worlds.{w}.overall_percentile`: share of Earth's land this place beats, e.g. "better than 91% of Earth's land". Good as a subtitle under the score.
+- `regions[].best[].pair_score` (the "closest place" number) is a one-to-one block comparison, not on the same scale as the region score. Please label it "closest single block" so it isn't read against the region score.
+- `example_response.json` is regenerated (Meteor Crater, live read).
+
 ## What changes for James in v1.3 (trained, `regions-1.3-v1`)
 
 - Each region now has `score` (what to show and sort by), plus `similarity` (raw likeness to the Moon/Mars region), `earth_percentile` and `earth_factor`. `score = similarity x earth_factor`, and `overall = score x conditions.score / 100`.
