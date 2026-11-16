@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { CHECK_SITES } from "@/lib/sites";
+import { RepoLink } from "@/components/shell/repo-link";
 import { cn } from "@/lib/utils";
 
 // left: the app's own pages as a trail (Common Ground / Explore / Best sites). right: the reading pages
@@ -51,7 +52,7 @@ export function Header() {
         </Link>
         <Crumbs path={path} />
       </nav>
-      <nav aria-label="Main" className="ml-auto flex items-baseline gap-2.5 overflow-x-auto text-sm max-md:ml-0 max-md:w-full">
+      <nav aria-label="Main" className="ml-auto flex items-baseline gap-2.5 overflow-x-auto text-sm max-md:order-last max-md:ml-0 max-md:w-full">
         {NAV.map(({ href, label }, k) => {
           const on = path === href || path.startsWith(`${href}/`);
           return (
@@ -68,6 +69,7 @@ export function Header() {
           );
         })}
       </nav>
+      <RepoLink className="max-md:ml-auto" />
     </header>
   );
 }

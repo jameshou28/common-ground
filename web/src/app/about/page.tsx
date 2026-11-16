@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
+import { RepoLink } from "@/components/shell/repo-link";
 
 export const metadata: Metadata = { title: "About" };
 
@@ -32,6 +33,13 @@ export default function Page() {
         <p className="mt-2 text-text-2">
           Common Ground scores how much a place on Earth looks like the Moon or Mars. It was built for NASA Space Apps 2026.
         </p>
+        <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-2 rounded-lg border border-brand bg-raised px-4 py-3">
+          <p className="min-w-0 flex-1">
+            <b className="block font-semibold">The code is open source</b>
+            <span className="text-sm text-text-2">The app, the scoring API and the model notebooks are all on GitHub.</span>
+          </p>
+          <RepoLink />
+        </div>
 
         <Section title="Why">
           <p>
