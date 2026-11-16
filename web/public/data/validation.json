@@ -1,207 +1,117 @@
 {
-  "status": "measured",
-  "model_version": "regions-3.0-v1",
-  "written": "2026-11-15",
-  "note": "every figure is measured on areas the model never saw: sites and land in the same 6 degree cell are held out together (5 folds x 3 splits). sources: ml/model.ipynb, ml/diag.ipynb, ml/v3.0changes.md",
-  "training": {
-    "verified_sites": 56,
-    "random_land": 2500,
-    "library_blocks": 4636,
-    "regions": 8,
-    "measurements": 66
-  },
-  "finding_sites": {
-    "lower_is_better": true,
-    "unit": "median rank of verified analog sites among random land (0% = top, 50% = chance)",
-    "rows": [
-      {
-        "name": "Random order",
-        "value": 50.0
-      },
-      {
-        "name": "v2 similarity to Moon/Mars",
-        "value": 47.9
-      },
-      {
-        "name": "v2 landscape score",
-        "value": 43.4
-      },
-      {
-        "name": "v2.1 overall score",
-        "value": 22.3
-      },
-      {
-        "name": "v3 surface model alone",
-        "value": 13.1
-      },
-      {
-        "name": "v3 terrain model alone",
-        "value": 4.5
-      },
-      {
-        "name": "v3 overall score",
-        "value": 2.9,
-        "ours": true
-      }
-    ],
-    "top10": {
-      "v2": 12,
-      "v3": 73
+  "status": "placeholder",
+  "note": "same shape as the file the training run will write, every figure is null until it is measured",
+  "written": null,
+  "model_version": null,
+  "sites": null,
+  "recall": [
+    {
+      "title": "In the top 10",
+      "rows": [
+        {
+          "name": "Trained model",
+          "value": null,
+          "low": null,
+          "high": null,
+          "ours": true
+        },
+        {
+          "name": "Physics baseline",
+          "value": null,
+          "low": null,
+          "high": null
+        },
+        {
+          "name": "Aridity only",
+          "value": null,
+          "low": null,
+          "high": null
+        },
+        {
+          "name": "Latitude only",
+          "value": null,
+          "low": null,
+          "high": null
+        },
+        {
+          "name": "Random order",
+          "value": null,
+          "low": null,
+          "high": null
+        }
+      ]
     },
-    "top25": {
-      "v2": 55,
-      "v3": 84
+    {
+      "title": "In the top 50",
+      "rows": [
+        {
+          "name": "Trained model",
+          "value": null,
+          "low": null,
+          "high": null,
+          "ours": true
+        },
+        {
+          "name": "Physics baseline",
+          "value": null,
+          "low": null,
+          "high": null
+        },
+        {
+          "name": "Aridity only",
+          "value": null,
+          "low": null,
+          "high": null
+        },
+        {
+          "name": "Latitude only",
+          "value": null,
+          "low": null,
+          "high": null
+        },
+        {
+          "name": "Random order",
+          "value": null,
+          "low": null,
+          "high": null
+        }
+      ]
     }
-  },
-  "separation": {
-    "sites": {
-      "p10": 32,
-      "p50": 69,
-      "p90": 89
+  ],
+  "held_out": [
+    {
+      "programme": "ESA PANGAEA",
+      "sites": null,
+      "median_percentile": null,
+      "random_percentile": null
     },
-    "land": {
-      "p50": 26,
-      "p90": 54,
-      "p99": 77
+    {
+      "programme": "AMADEE, Austrian Space Forum",
+      "sites": null,
+      "median_percentile": null,
+      "random_percentile": null
     },
-    "best_block_within_4km": 75
-  },
-  "region_accuracy": {
-    "chance": 25,
-    "rows": [
-      {
-        "name": "4 km scale",
-        "value": 38.7
-      },
-      {
-        "name": "32 km scale",
-        "value": 49.6
-      },
-      {
-        "name": "Both scales",
-        "value": 49.4,
-        "ours": true
-      }
-    ],
-    "plus_minus": 1.3
-  },
+    {
+      "programme": "Europlanet field sites",
+      "sites": null,
+      "median_percentile": null,
+      "random_percentile": null
+    }
+  ],
   "planet_check": {
-    "chance": 33,
-    "rows": [
-      {
-        "name": "4 km scale",
-        "value": 65.7
-      },
-      {
-        "name": "32 km scale",
-        "value": 68.0
-      }
-    ]
-  },
-  "negative_set": {
-    "places": 16,
-    "in_top_quarter": 0
+    "ours": null,
+    "chance": 33.3,
+    "worlds": 3
   },
   "check_sites": {
-    "spearman": 0.78,
-    "rows": [
-      {
-        "name": "Dutch farmland",
-        "expected": "very bad",
-        "terrain": 15,
-        "surface": 0,
-        "overall": 5
-      },
-      {
-        "name": "Amazon rainforest",
-        "expected": "very bad",
-        "terrain": 7,
-        "surface": 4,
-        "overall": 6
-      },
-      {
-        "name": "Himalayan ridge",
-        "expected": "bad",
-        "terrain": 54,
-        "surface": 7,
-        "overall": 36
-      },
-      {
-        "name": "Utah near MDRS",
-        "expected": "average",
-        "terrain": 39,
-        "surface": 85,
-        "overall": 46
-      },
-      {
-        "name": "Holuhraun lava field",
-        "expected": "good",
-        "terrain": 62,
-        "surface": 85,
-        "overall": 66
-      },
-      {
-        "name": "Lanzarote Timanfaya",
-        "expected": "very good",
-        "terrain": 77,
-        "surface": 79,
-        "overall": 78
-      },
-      {
-        "name": "Meteor Crater",
-        "expected": "very good",
-        "terrain": 79,
-        "surface": 70,
-        "overall": 77
-      },
-      {
-        "name": "Haughton crater",
-        "expected": "best",
-        "terrain": 30,
-        "surface": 85,
-        "overall": 37
-      },
-      {
-        "name": "McMurdo Dry Valleys",
-        "expected": "best",
-        "terrain": 96,
-        "surface": 41,
-        "overall": 81
-      }
-    ]
+    "rank_correlation": null
   },
-  "expert_list": {
-    "sites": 20,
-    "spearman": 0.23,
-    "rated_80_scoring_70": 5,
-    "rated_80": 10,
-    "rated_80_scoring_70_nearby": 7
-  },
-  "landforms": {
-    "scored": 34,
-    "validated": 19
-  },
-  "discovery": {
-    "cells": 131957,
-    "sites_percentile": 94,
-    "sites_top_quarter": 73,
-    "negatives_near_picks": 0
-  },
-  "stability": {
-    "region_score_wobble_points": 4.7
-  },
-  "versions": [
-    {
-      "name": "v2.0",
-      "rank": 22.0
-    },
-    {
-      "name": "v2.1.1",
-      "rank": 21.7
-    },
-    {
-      "name": "v3.0",
-      "rank": 2.9
-    }
+  "limits": [
+    "This is a test model. Every score will change when the final one ships.",
+    "We only know a few lunar analog sites, so Moon results rest on a handful of them.",
+    "Only about 9% of the 5 m lunar elevation data is actually measured. The rest is filled in, and it's smoother than the real ground.",
+    "Earth uses 30 m elevation data. Anything smaller, like a boulder or a small crater, doesn't show up.",
+    "The bars show how much each measurement pushes the match up or down. They aren't score points.",
+    "Nowhere on Earth has the Moon's gravity, vacuum or radiation. The score only covers the ground and the surface."
   ]
 }

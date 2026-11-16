@@ -17,7 +17,7 @@ import { ChartsDialog } from "./charts-dialog";
 import { ContributionBars } from "./contribution-bars";
 import { FactsTable } from "./facts-table";
 import { ExportMenu } from "./export-menu";
-import { ExampleImage, RegionTitle } from "./example-image";
+import { ExampleImage } from "./example-image";
 import { MatchReasons } from "./match-reasons";
 import { ScoreGauge } from "./score-gauge";
 import { ScoreLoader } from "./score-loader";
@@ -69,7 +69,7 @@ export function SiteResult() {
   const regionOverall = match ? (typeof match.region.overall === "number" ? match.region.overall : match.world.overall) : 0;
 
   return (
-    <aside aria-label="Result" className="flex min-h-0 flex-col border-l border-line bg-panel max-md:border-t max-md:border-l-0 motion-safe:animate-in motion-safe:fade-in-0 motion-safe:duration-500 motion-safe:ease-out motion-safe:slide-in-from-right-12">
+    <aside aria-label="Result" className="flex min-h-0 flex-col border-l border-line bg-panel max-md:border-t max-md:border-l-0">
       <div className="min-h-0 flex-1 overflow-y-auto max-md:flex-none">
         <div className="border-b border-line p-4">
           <Link href="/" className="text-xs text-text-2 hover:text-text">
@@ -120,9 +120,6 @@ export function SiteResult() {
               {describeError(q.error).body}
             </Notice>
           )}
-          {r?.ood && (
-            <Notice title="Unlike anything the model has seen">No block the model learned from looks like this one, so take the score as a rough guide.</Notice>
-          )}
         </div>
 
         {loading && (
@@ -138,7 +135,7 @@ export function SiteResult() {
               note={
                 <>
                   {match.region.region === match.world.best_region ? "best region: " : ""}
-                  <RegionTitle region={match.region.region} title={match.region.title} />
+                  <ExampleImage k={match.region.region}>{match.region.title}</ExampleImage>
                 </>
               }
             >
@@ -182,7 +179,11 @@ export function SiteResult() {
                   />
                   {landform.badge ? (
                     <p className="mt-3 inline-block rounded-sm border border-help px-1.5 py-0.5 text-xs text-help">Checked feature match</p>
-                  ) : null}
+                  ) : (
+                    !landform.validated && (
+                      <p className="mt-3 text-xs text-text-2">The model can&apos;t yet reliably tell this feature apart from the rest of the region, so take it as a rough guide.</p>
+                    )
+                  )}
                 </>
               ) : (
                 <p className="text-xs text-text-2">The model has too few mapped features in {match.region.title.toLowerCase()} to score one.</p>
