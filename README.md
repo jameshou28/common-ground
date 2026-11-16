@@ -99,7 +99,3 @@ Checks: `npm run lint`, `npm run typecheck` and `npm test` in `web/`, and `uv ru
 - Cesium World Terrain, Cesium Moon and Cesium Mars; Bing Maps aerial imagery via Cesium ion
 - NASA Photojournal and NASA Image and Video Library photos, public domain
 - Space Grotesk font (Google Fonts, OFL)
-
-## Team
-
-<!-- names here -->
