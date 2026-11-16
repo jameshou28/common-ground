@@ -6,5 +6,6 @@ export const env = {
   supabaseUrl: (process.env.NEXT_PUBLIC_SUPABASE_URL ?? "").replace(/\/$/, ""),
   supabaseAnonKey: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? "",
   modelVersion: process.env.NEXT_PUBLIC_MODEL_VERSION ?? "stub-0.1",
+  commit: process.env.NEXT_PUBLIC_COMMIT ?? "",
   liveScoring: process.env.NEXT_PUBLIC_LIVE_SCORING !== "false",
 } as const;
