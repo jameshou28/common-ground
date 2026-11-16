@@ -25,6 +25,7 @@ import type { Pin } from "@/components/globe/pins";
 import analogSites from "../../../public/data/analog_sites.json";
 import type { LatLon } from "@/components/globe/use-globe-controls";
 import { WorldSwitcher } from "@/components/globe/world-switcher";
+import { HeroTitle } from "@/components/explore/hero-title";
 import { StatusItems } from "@/components/shell/status-bar";
 import { Toggle } from "@/components/ui/toggle";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
@@ -217,6 +218,8 @@ export function ExploreShell({ children }: { children: React.ReactNode }) {
             className="sky relative min-h-[260px] overflow-hidden"
             data-loading={status.state === "loading" || undefined}
           >
+            {/* the title rises once the globe is in, behind it; gone for the session after the first click */}
+            {!selected && status.state === "ready" && <HeroTitle />}
             <GlobeView
               world={world}
               onStatus={setStatus}
@@ -239,7 +242,7 @@ export function ExploreShell({ children }: { children: React.ReactNode }) {
               <div
                 role="toolbar"
                 aria-label="Block view"
-                className="absolute top-3 right-3 z-30 flex items-center gap-2 rounded-md border border-line bg-panel py-1 pr-1 pl-2.5 text-xs max-md:left-3 max-md:overflow-x-auto max-md:whitespace-nowrap max-md:[&>*]:shrink-0"
+                className="absolute top-3 right-3 z-30 flex items-center gap-2 rounded-md border border-line bg-panel py-1 pr-1 pl-2.5 text-xs motion-safe:animate-in motion-safe:fade-in-0 motion-safe:slide-in-from-top-2 motion-safe:duration-500 max-md:left-3 max-md:overflow-x-auto max-md:whitespace-nowrap max-md:[&>*]:shrink-0"
               >
                 {world === "earth" && (
                   <>

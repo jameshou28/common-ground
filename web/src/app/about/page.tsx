@@ -4,16 +4,57 @@ import { RepoLink } from "@/components/shell/repo-link";
 
 export const metadata: Metadata = { title: "About" };
 
-const DATA: [string, string, string][] = [
-  ["Copernicus GLO-30", "ESA / Airbus", "Earth terrain at 30 m, read live for every click"],
-  ["WorldCover 2021", "ESA", "Earth land cover at 10 m, for the conditions score"],
-  ["LOLA global and polar DEMs", "NASA GSFC (Barker et al.)", "Moon terrain, including the south pole"],
-  ["Kaguya (SELENE) terrain", "JAXA", "Moon terrain for the closest places"],
-  ["MOLA–HRSC blended DEM", "NASA / ESA / DLR", "Mars terrain at 200 m"],
-  ["CTX DTMs", "USGS Astrogeology", "Mars terrain for the closest places"],
-  ["Blue Marble", "NASA, via GIBS", "Earth imagery from far out"],
-  ["World Terrain and Moon / Mars tilesets", "Cesium ion", "The 3D globes"],
-  ["Loading photos", "NASA", "Public domain"],
+// every dataset the model, the site and the reference lists use
+type Row = [name: string, from: string, use: string, href?: string];
+const DATA: { group: string; rows: Row[] }[] = [
+  {
+    group: "Earth",
+    rows: [
+      ["Copernicus DEM GLO-30", "ESA / Airbus, AWS Open Data", "Earth terrain at 30 m, read live for every click", "https://registry.opendata.aws/copernicus-dem/"],
+      ["ESA WorldCover 2021 (v200)", "ESA, CC BY 4.0", "Land cover at 10 m, for the surface score", "https://esa-worldcover.org"],
+      ["WorldClim 2.1 precipitation", "Fick & Hijmans 2017", "Yearly rainfall, for the surface score", "https://www.worldclim.org"],
+      ["Global Aridity Index v3.1", "Zomer et al. 2022, CC BY 4.0", "Tested as a surface input in v2.1, not used in the current model", "https://doi.org/10.6084/m9.figshare.7504448"],
+    ],
+  },
+  {
+    group: "Moon",
+    rows: [
+      ["LRO LOLA global DEM, 118 m", "NASA GSFC, via USGS Astrogeology", "Moon terrain for the 32 km view", "https://planetarymaps.usgs.gov"],
+      ["LOLA south polar DEMs, 20 m and 80 m", "NASA GSFC PGDA (Barker et al.)", "Polar Moon terrain", "https://pgda.gsfc.nasa.gov"],
+      ["Kaguya (SELENE) Terrain Camera DTMs", "JAXA, via the USGS STAC catalogue", "Moon terrain for the 4 km view and the closest places", "https://stac.astrogeology.usgs.gov"],
+      ["LOLA 5 m site DEMs", "Barker et al. 2021", "The south polar target sites"],
+      ["Unified Geologic Map of the Moon", "USGS (Fortezzo et al. 2020)", "Drawing the Moon regions", "https://astrogeology.usgs.gov"],
+      ["Lunar crater database", "Robbins 2018", "Tagging crater features"],
+    ],
+  },
+  {
+    group: "Mars",
+    rows: [
+      ["CTX DTMs", "NASA MRO, via the USGS STAC catalogue", "Mars terrain for the 4 km view and the closest places", "https://stac.astrogeology.usgs.gov"],
+      ["HRSC–MOLA blended DEM, 200 m", "NASA / ESA / DLR, via USGS Astrogeology", "Mars terrain for the 32 km view", "https://planetarymaps.usgs.gov"],
+      ["Geologic Map of Mars (SIM 3292)", "USGS (Tanaka et al. 2014)", "Drawing the Mars regions", "https://pubs.usgs.gov/sim/3292/"],
+      ["Mars crater database", "Robbins 2020", "Tagging crater features"],
+    ],
+  },
+  {
+    group: "Reference lists",
+    rows: [
+      ["Verified analog sites (114)", "ESA CAFE catalogue, NASA SP-2015-626 and peer-reviewed papers", "Training and testing the analog model"],
+      ["Holocene volcanoes", "Smithsonian Global Volcanism Program", "Volcano examples, and places to search", "https://volcano.si.edu"],
+      ["Known terrestrial impact sites", "USGS (Hunter 2020, CC0), diameters from Wikidata", "Crater examples"],
+      ["Gazetteer of Planetary Nomenclature", "IAU / USGS", "Moon and Mars feature names and tags", "https://planetarynames.wr.usgs.gov"],
+      ["GeoNames cities1000", "GeoNames, CC BY 4.0", "Place names on the Best sites lists", "https://www.geonames.org"],
+      ["Landing sites", "NASA NSSDCA", "The Moon and Mars landmark pins"],
+    ],
+  },
+  {
+    group: "On the site",
+    rows: [
+      ["Cesium World Terrain and Moon / Mars tilesets", "Cesium ion", "The 3D globes"],
+      ["Blue Marble", "NASA, via GIBS", "Earth imagery from far out"],
+      ["NASA Image and Video Library", "NASA, public domain", "Photos in the hover cards and the loader", "https://images.nasa.gov"],
+    ],
+  },
 ];
 
 function Section({ title, children }: { title: string; children: ReactNode }) {
@@ -27,11 +68,11 @@ function Section({ title, children }: { title: string; children: ReactNode }) {
 
 export default function Page() {
   return (
-    <main className="flex-1 overflow-y-auto p-6">
+    <main className="flex-1 overflow-y-auto p-6 max-md:p-4">
       <div className="mx-auto max-w-3xl">
         <h1 className="text-xl leading-tight font-semibold">About</h1>
         <p className="mt-2 text-text-2">
-          Common Ground scores how much a place on Earth looks like the Moon or Mars. It was built for NASA Space Apps 2026.
+          Common Ground scores how much any place on Earth looks like the Moon or Mars, explains why, and lists the best places it found. It was built for NASA Space Apps 2026.
         </p>
         <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-2 rounded-lg border border-brand bg-raised px-4 py-3">
           <p className="min-w-0 flex-1">
@@ -41,72 +82,55 @@ export default function Page() {
           <RepoLink />
         </div>
 
-        <Section title="Why">
+        <Section title="How we approached it">
           <p>
-            Crews and rovers train on Earth before they fly. Meteor Crater, Iceland’s lava fields and the Atacama all got picked because they resemble somewhere else. Most of that
-            picking has been done by eye. We wanted a number you can check, and a way to find places nobody has looked at yet.
-          </p>
-        </Section>
-
-        <Section title="How a score is made">
-          <p>
-            When you click, the app cuts a 4 km block out of the Earth around that spot and reads its heights and land cover. The block gets described by its terrain: how much it rises and
-            falls, how rough it is, its slopes, its craters and hollows, and its ridges, each at a few scales.
+            Crews and rovers train on Earth before they fly, at places like Meteor Crater, Iceland&apos;s lava fields and the Atacama. Most of those were picked by eye. We wanted a number
+            anyone can check, and a way to find places nobody has looked at yet.
           </p>
           <p>
-            That description is compared to regions of the Moon and Mars that were prepared ahead of time. Each region gets a landscape score from 0 to 100. Then it’s lowered for
-            conditions that would get in the way of a real test site, like farmland or trees. The closest places inside the best region are listed with their own scores.
+            We cut the Earth, the Moon and Mars into the same 4 km blocks and describe each one by the shape of its ground: slopes, roughness, ridges, hollows, craters, at two scales.
+            A click compares your block with thousands of Moon and Mars blocks to find what it looks like, and a model trained on verified analog sites judges how good an analog it
+            is. Land cover and rainfall decide how usable the ground is. Every result shows why it scored the way it did, and the whole model is tested on places it never saw; see
+            How we know.
           </p>
-          <p>
-            Some regions also have a feature score: how well the block matches one kind of landform inside that region, like wrinkle ridges in the lunar maria. It&apos;s worked out the same
-            way as the region score, against only the blocks mapped as that feature.
-          </p>
-          <p>
-            Why it matches splits each score into points that add up to it: a starting point for a typical match, one bar per measurement, and two adjustments for terrain that&apos;s
-            common on Earth.
-          </p>
-          <p>
-            The numbered points on a block are the 500 m cells that add the most and the least to the score against the closest match. Each cell&apos;s share comes from how well it lines
-            up with the cell it was paired with, weighted the way the model weighs each measurement. Green adds points, grey adds only a little, red takes points away.
-          </p>
-        </Section>
-
-        <Section title="What it can't tell you">
-          <p>
-            The score is about the shape of the ground. It doesn’t know about rock type, dust, temperature, or whether you’d be allowed to drive a rover there. A high score is a place
-            worth a closer look, not a finished site survey.
-          </p>
-          <p>Scores are only as good as the terrain data. Some places, mostly near the poles and over water, have gaps.</p>
-          <ul className="list-disc space-y-1.5 pl-5">
-            <li>No place on Earth mirrors lunar or Martian gravity. Earth: 9.81 m/s². Moon: 1.62 m/s² (about 1/6). Mars: 3.71 m/s² (about 3/8).</li>
-            <li>Earth is scored from 30 m elevation data, so anything smaller than that, like boulders or small craters, is invisible to the model.</li>
-            <li>There weren&apos;t many analog sites for our model to train on, so the Moon result relies on a handful of them.</li>
-          </ul>
         </Section>
 
         <Section title="Data">
-          <table className="w-full text-left text-sm">
-            <thead className="text-xs text-text-2">
-              <tr className="border-b border-line">
-                <th className="py-1.5 pr-3 font-medium">Dataset</th>
-                <th className="py-1.5 pr-3 font-medium">From</th>
-                <th className="py-1.5 font-medium">Used for</th>
-              </tr>
-            </thead>
-            <tbody>
-              {DATA.map(([name, from, use]) => (
-                <tr key={name} className="border-b border-line align-top">
-                  <td className="py-1.5 pr-3 text-text">{name}</td>
-                  <td className="py-1.5 pr-3">{from}</td>
-                  <td className="py-1.5">{use}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+          {DATA.map((g) => (
+            <div key={g.group}>
+              <h3 className="mt-4 text-xs font-semibold tracking-wide text-text uppercase">{g.group}</h3>
+              <table className="mt-1 w-full text-left text-sm">
+                <thead className="text-xs text-text-2">
+                  <tr className="border-b border-line">
+                    <th className="w-[34%] py-1.5 pr-3 font-medium">Dataset</th>
+                    <th className="w-[30%] py-1.5 pr-3 font-medium">From</th>
+                    <th className="py-1.5 font-medium">Used for</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {g.rows.map(([name, from, use, href]) => (
+                    <tr key={name} className="border-b border-line align-top">
+                      <td className="py-1.5 pr-3 text-text">
+                        {href ? (
+                          <a href={href} target="_blank" rel="noreferrer" className="hover:text-brand">
+                            {name}
+                          </a>
+                        ) : (
+                          name
+                        )}
+                      </td>
+                      <td className="py-1.5 pr-3">{from}</td>
+                      <td className="py-1.5">{use}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          ))}
         </Section>
 
         <Section title="Built with">
-          <p>Next.js, Cesium and three.js on the site. FastAPI, NumPy and rasterio on the server. Scores are cached in Supabase and height grids are stored on Cloudflare R2.</p>
+          <p>Next.js, Cesium and three.js on the site. FastAPI, NumPy, SciPy and rasterio on the server. Scores are cached in Supabase and height grids are stored on Cloudflare R2.</p>
         </Section>
       </div>
     </main>

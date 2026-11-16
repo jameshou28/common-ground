@@ -49,7 +49,7 @@ export function MatchReasons({ match, landform }: { match: Match; landform: Land
       {view === "region" && regionBd && (
         <BreakdownBars breakdown={regionBd} context={regionCtx} total="Region score" note={
             regionBd.kind === "head"
-              ? `How the region score adds up: each measurement next to verified analog sites and ordinary land, then how well the ground matches ${region}. Bars to the right add points.`
+              ? `How we score a region: We compare each measurement against known analog sites and ordinary terrain, then factor in how closely the ground matches ${region}. Bars extending to the right add points.`
               : `How the region score adds up, over the blocks of ${region} that match best. Bars to the right add points.`
           } />
       )}
@@ -60,14 +60,14 @@ export function MatchReasons({ match, landform }: { match: Match; landform: Land
           total="Feature score"
           note={
             featureBd.kind === "head"
-              ? `How the feature score adds up: each measurement next to verified analog sites and ordinary land, then how well the ground matches the ${landformPlural(landform)} in ${region}. Bars to the right add points.`
+              ? `We compare each measurement against known analog sites and ordinary terrain, then factor in how closely the ground matches ${region} ${landformPlural(landform)}.`
               : `How the feature score adds up, over the ${landformPlural(landform)} in ${region} that match best. Bars to the right add points.`
           }
         />
       )}
       {view === "site" &&
         (siteBd ? (
-          <BreakdownBars breakdown={siteBd} context={regionCtx} total="Closest place" note={`Against ${match.site.name} alone. Bars to the right add points.`} />
+          <BreakdownBars breakdown={siteBd} context={regionCtx} total="Closest place" note={`Against ${match.site.name} alone.`} />
         ) : (
           <ContributionBars {...bars(match.site.contributions, contributionLabel)} note={`Measured against ${match.site.name}. Bars to the right help the match.`} />
         ))}

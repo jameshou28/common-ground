@@ -142,5 +142,11 @@
   "title": "Mars Volcanism: Large, Fluid Lava Flows",
   "credit": "NASA/JPL/Malin Space Science Systems",
   "nasa_id": "PIA01501"
+ },
+ "ejecta": {
+  "src": "/examples/crater_floor.jpg",
+  "title": "Ejecta in Tycho Crater",
+  "credit": "NASA/GSFC/Arizona State University",
+  "nasa_id": "PIA13694"
  }
 }

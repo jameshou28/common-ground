@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import type { CesiumNS } from "./cesium";
 import { FOOTPRINT_COLOR, PIN_NO_DEPTH_M } from "./config";
 import type { GlobeHandle } from "./use-cesium-viewer";
 
@@ -53,8 +54,18 @@ function marker(color: string, cssPx: number): HTMLCanvasElement {
   return c;
 }
 
+// how one pin looks, active or not
+function look(p: Pin, on: boolean) {
+  const analog = p.kind === "mars" || p.kind === "moon";
+  const css = on || p.kind === "target" ? FOOTPRINT_COLOR : (ANALOG_COLOR[p.kind] ?? "#ececea");
+  const px = on ? 11 : analog ? 6 : 8;
+  return { analog, css, px };
+}
+
 // check sites and targets as labelled markers, the active one larger
-// earth analogs of mars and moon are small markers in their own colour, named once you zoom in
+// earth analogs of mars and moon are small markers in their own colour, named once you zoom in.
+// the pins are made once per list; hovering a list row only restyles the pin it lights (re-making every pin on each
+// hover made them all flicker)
 export function Pins({ handle, pins, active }: { handle: GlobeHandle | null; pins: Pin[]; active: string | null }) {
   // the label font comes from --pin-font (globals.css); a font change anywhere on the page redraws the labels
   const [fontTick, setFontTick] = useState(0);
@@ -65,6 +76,15 @@ export function Pins({ handle, pins, active }: { handle: GlobeHandle | null; pin
     window.addEventListener("cg-font", bump);
     return () => window.removeEventListener("cg-font", bump);
   }, []);
+  // the entities by pin id, and the active id they were last styled for
+  const made = useRef<Map<string, CesiumNS.Entity>>(new Map());
+  const styled = useRef<string | null>(null);
+  const activeNow = useRef(active);
+  // kept in step with the prop for the effect below (effects run in order, so this one goes first)
+  useEffect(() => {
+    activeNow.current = active;
+  }, [active]);
+
   useEffect(() => {
     if (!handle || !pins.length) return;
     const { C, v, ellipsoid } = handle;
@@ -73,45 +93,73 @@ export function Pins({ handle, pins, active }: { handle: GlobeHandle | null; pin
     const family = getComputedStyle(document.documentElement).getPropertyValue("--pin-font").trim() || "system-ui, sans-serif";
     // a phone-sized globe cannot fit every name, so check sites wait for a zoom there too
     const narrow = window.matchMedia("(max-width: 767px)").matches;
-    const made = pins.map((p) => {
-      const on = p.id === active;
-      const analog = p.kind === "mars" || p.kind === "moon";
-      const css = on || p.kind === "target" ? FOOTPRINT_COLOR : (ANALOG_COLOR[p.kind] ?? "#ececea");
+    const map = new Map<string, CesiumNS.Entity>();
+    for (const p of pins) {
+      const on = p.id === activeNow.current;
+      const { analog, css, px } = look(p, on);
       const color = C.Color.fromCssColorString(css);
-      const px = on ? 14 : analog ? 8 : 10;
-      return v.entities.add({
-        id: PIN_PREFIX + p.id,
-        position: C.Cartesian3.fromDegrees(p.lon, p.lat, 0, ellipsoid),
-        billboard: {
-          image: marker(css, px),
-          scale: 1 / dpr,
-          heightReference: C.HeightReference.CLAMP_TO_GROUND,
-          disableDepthTestDistance: PIN_NO_DEPTH_M,
-        },
-        label: {
-          text: p.name,
-          font: `500 ${12 * LABEL_SCALE}px ${family}`,
-          scale: 1 / LABEL_SCALE,
-          fillColor: color,
-          showBackground: true,
-          backgroundColor: dark.withAlpha(0.8),
-          backgroundPadding: new C.Cartesian2(7 * LABEL_SCALE, 4 * LABEL_SCALE),
-          horizontalOrigin: C.HorizontalOrigin.LEFT,
-          verticalOrigin: C.VerticalOrigin.CENTER,
-          pixelOffset: new C.Cartesian2(px / 2 + 8, 0),
-          // 114 analog names at once would bury the globe
-          distanceDisplayCondition: (analog || narrow) && !on ? new C.DistanceDisplayCondition(0, ANALOG_LABEL_BELOW_M) : undefined,
-          heightReference: C.HeightReference.CLAMP_TO_GROUND,
-          disableDepthTestDistance: PIN_NO_DEPTH_M,
-        },
-      });
-    });
+      map.set(
+        p.id,
+        v.entities.add({
+          id: PIN_PREFIX + p.id,
+          position: C.Cartesian3.fromDegrees(p.lon, p.lat, 0, ellipsoid),
+          billboard: {
+            image: marker(css, px),
+            scale: 1 / dpr,
+            heightReference: C.HeightReference.CLAMP_TO_GROUND,
+            disableDepthTestDistance: PIN_NO_DEPTH_M,
+          },
+          label: {
+            text: p.name,
+            font: `500 ${12 * LABEL_SCALE}px ${family}`,
+            scale: 1 / LABEL_SCALE,
+            fillColor: color,
+            showBackground: true,
+            backgroundColor: dark.withAlpha(0.8),
+            backgroundPadding: new C.Cartesian2(7 * LABEL_SCALE, 4 * LABEL_SCALE),
+            horizontalOrigin: C.HorizontalOrigin.LEFT,
+            verticalOrigin: C.VerticalOrigin.CENTER,
+            pixelOffset: new C.Cartesian2(px / 2 + 8, 0),
+            // 114 analog names at once would bury the globe
+            distanceDisplayCondition: (analog || narrow) && !on ? new C.DistanceDisplayCondition(0, ANALOG_LABEL_BELOW_M) : undefined,
+            heightReference: C.HeightReference.CLAMP_TO_GROUND,
+            disableDepthTestDistance: PIN_NO_DEPTH_M,
+          },
+        }),
+      );
+    }
+    made.current = map;
+    styled.current = activeNow.current;
     v.scene.requestRender();
     return () => {
+      made.current = new Map();
       if (v.isDestroyed()) return;
-      made.forEach((e) => v.entities.remove(e));
+      map.forEach((e) => v.entities.remove(e));
       v.scene.requestRender();
     };
-  }, [handle, pins, active, fontTick]);
+  }, [handle, pins, fontTick]);
+
+  // restyle only the pin that stops being active and the one that becomes active
+  useEffect(() => {
+    if (!handle || styled.current === active) return;
+    const { C, v } = handle;
+    const dpr = Math.min(3, Math.max(1, window.devicePixelRatio || 1));
+    const narrow = window.matchMedia("(max-width: 767px)").matches;
+    for (const id of [styled.current, active]) {
+      if (!id) continue;
+      const e = made.current.get(id);
+      const p = pins.find((x) => x.id === id);
+      if (!e || !p || !e.billboard || !e.label) continue;
+      const on = id === active;
+      const { analog, css, px } = look(p, on);
+      e.billboard.image = new C.ConstantProperty(marker(css, px));
+      e.billboard.scale = new C.ConstantProperty(1 / dpr);
+      e.label.fillColor = new C.ConstantProperty(C.Color.fromCssColorString(css));
+      e.label.pixelOffset = new C.ConstantProperty(new C.Cartesian2(px / 2 + 8, 0));
+      e.label.distanceDisplayCondition = new C.ConstantProperty((analog || narrow) && !on ? new C.DistanceDisplayCondition(0, ANALOG_LABEL_BELOW_M) : undefined);
+    }
+    styled.current = active;
+    v.scene.requestRender();
+  }, [handle, pins, active]);
   return null;
 }
