@@ -4,6 +4,7 @@ import localFont from "next/font/local";
 import { Suspense } from "react";
 import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
+import { DemoDirector } from "@/components/demo/demo-director";
 import { Header } from "@/components/shell/header";
 import { Providers } from "@/components/shell/providers";
 import { StatusBar } from "@/components/shell/status-bar";
@@ -30,6 +31,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           </Suspense>
           <div className="flex min-h-0 flex-1 flex-col">{children}</div>
           <StatusBar />
+          {/* the recorded tour, local only (see components/demo) */}
+          <DemoDirector />
         </Providers>
         <Analytics />
       </body>

@@ -315,3 +315,9 @@
   .hero-title { animation: none; }
   .hero-title.hero-leave { animation: hero-out 0.01s forwards; }
 }
+
+/* the recorded tour draws its own cursor */
+html.cg-demo,
+html.cg-demo * {
+  cursor: none !important;
+}
