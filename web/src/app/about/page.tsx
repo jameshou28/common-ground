@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
+import { RepoLink } from "@/components/shell/repo-link";
 
 export const metadata: Metadata = { title: "About" };
 
@@ -32,6 +33,13 @@ export default function Page() {
         <p className="mt-2 text-text-2">
           Common Ground scores how much a place on Earth looks like the Moon or Mars. It was built for NASA Space Apps 2026.
         </p>
+        <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-2 rounded-lg border border-brand bg-raised px-4 py-3">
+          <p className="min-w-0 flex-1">
+            <b className="block font-semibold">The code is open source</b>
+            <span className="text-sm text-text-2">The app, the scoring API and the model notebooks are all on GitHub.</span>
+          </p>
+          <RepoLink />
+        </div>
 
         <Section title="Why">
           <p>
@@ -69,6 +77,11 @@ export default function Page() {
             worth a closer look, not a finished site survey.
           </p>
           <p>Scores are only as good as the terrain data. Some places, mostly near the poles and over water, have gaps.</p>
+          <ul className="list-disc space-y-1.5 pl-5">
+            <li>No place on Earth mirrors lunar or Martian gravity. Earth: 9.81 m/s². Moon: 1.62 m/s² (about 1/6). Mars: 3.71 m/s² (about 3/8).</li>
+            <li>Earth is scored from 30 m elevation data, so anything smaller than that, like boulders or small craters, is invisible to the model.</li>
+            <li>There weren&apos;t many analog sites for our model to train on, so the Moon result relies on a handful of them.</li>
+          </ul>
         </Section>
 
         <Section title="Data">
