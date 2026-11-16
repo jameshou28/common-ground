@@ -7,7 +7,7 @@ import { WORLD_LABEL } from "@/components/globe/config";
 import { fmtLatLon } from "@/lib/format";
 import { TABS } from "@/lib/regions";
 import { siteHref } from "@/lib/sites";
-import { ExampleImage } from "./example-image";
+import { RegionTitle } from "./example-image";
 import { useMatch } from "./use-match";
 
 const link = "hover:no-underline";
@@ -29,7 +29,7 @@ export function RegionList() {
   const tileId = selected?.id ?? "";
 
   return (
-    <aside aria-labelledby="regions-h" className="flex min-h-0 flex-col overflow-y-auto border-r border-line bg-panel p-3 max-lg:col-span-full max-lg:border-r-0 max-lg:border-b max-md:order-last max-md:border-t">
+    <aside aria-labelledby="regions-h" className="motion-safe:animate-in motion-safe:fade-in-0 motion-safe:duration-500 motion-safe:ease-out motion-safe:slide-in-from-left-12 flex min-h-0 flex-col overflow-y-auto border-r border-line bg-panel p-3 max-lg:col-span-full max-lg:border-r-0 max-lg:border-b max-md:order-last max-md:border-t">
       <h2 id="regions-h" className="sr-only">
         Moon and Mars regions
       </h2>
@@ -56,7 +56,7 @@ export function RegionList() {
       {match && (
         <>
           <h3 className="mt-5 text-xs font-semibold tracking-wider text-text-2 uppercase">Terrain match by region</h3>
-          <p className="mt-1 text-xs text-text-2">Pick a region to see its closest real places.</p>
+          <p className="mt-1 text-xs text-text-2">The closest matches are under each region.</p>
           <ul className="mt-3 space-y-1">
             {match.world.regions.map((g) => {
               const on = g.region === match.region.region;
@@ -75,7 +75,7 @@ export function RegionList() {
                   >
                     <span className="flex items-center gap-2">
                       <span className={`min-w-0 break-words ${on ? "font-semibold" : ""}`}>
-                        <ExampleImage k={g.region}>{g.title}</ExampleImage>
+                        <RegionTitle region={g.region} title={g.title} />
                       </span>
                       {best && <span className="rounded bg-warn/15 px-1.5 py-0.5 text-[11px] font-semibold text-warn">Best</span>}
                       <b className="ml-auto shrink-0 font-semibold">{Math.round(g.score)}</b>
@@ -120,7 +120,6 @@ export function RegionList() {
               );
             })}
           </ul>
-          <p className="mt-auto pt-6 text-xs text-text-2">Bars show terrain match, 0 to 100. The world score above also counts surface.</p>
         </>
       )}
     </aside>

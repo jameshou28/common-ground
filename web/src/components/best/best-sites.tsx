@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { HoverCard } from "radix-ui";
+import { ExampleImage, RegionTitle } from "@/components/site/example-image";
 import { useSearchParams } from "next/navigation";
 import { WORLD_LABEL } from "@/components/globe/config";
 import { fmtLatLon } from "@/lib/format";
@@ -42,11 +43,11 @@ const cap = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
 // what each region is, shown above its ranking
 const REGION_INFO: Record<string, string> = {
   "moon:maria":
-    "The dark patches you see on the Moon from Earth. They're old impact basins that filled with basalt lava more than 3 billion years ago, so the ground is mostly flat, with small craters and low ridges here and there.",
+    "The dark, flat plains visible on the Moon from Earth. Formed over 3 billion years ago when basalt lava flooded ancient impact basins, leaving behind smooth terrain dotted with small craters and low ridges.",
   "moon:highlands":
     "The bright, older crust that covers most of the Moon. Lava never reached it, so it's rough and hilly, craters on top of craters.",
   "moon:basins":
-    "Mountain rings and debris blankets around the Moon's biggest impacts, like Orientale. Expect steep ridges in circles with broken, rubbly ground between them.",
+    "Concentric mountain rings and debris blankets surrounding the Moon's largest impact sites, like Mare Orientale. The terrain features steep, circular ridges separated by rough, rubbly ground.",
   "moon:south_pole":
     "Where Artemis plans to land. The Sun never gets far above the horizon here, so some crater floors are always in shadow and may hold water ice.",
   "mars:highlands":
@@ -54,9 +55,9 @@ const REGION_INFO: Record<string, string> = {
   "mars:lowlands":
     "Smooth plains in the north, a few kilometres lower than the southern highlands. Some scientists think an ocean once filled them.",
   "mars:volcanic":
-    "Tharsis and Elysium, where Olympus Mons and the other big shield volcanoes sit, surrounded by wide lava plains and long flows.",
+    "Massive volcanic regions like Tharsis and Elysium, home to Olympus Mons and other giant shield volcanoes. Surrounded by expansive lava plains and long, solidified flows.",
   "mars:outflow":
-    "Channels cut by sudden, enormous floods, plus the collapsed \"chaos\" ground the water burst out of. Look for teardrop-shaped islands and wide scoured floors.",
+    "Giant flood-carved channels and collapsed \"chaos\" terrain left behind where underground water erupted. Marked by wide, scoured floors and teardrop-shaped islands.",
 };
 
 // what each feature is, the region it's in is named in the list title
@@ -193,9 +194,8 @@ export function BestSites() {
           </nav>
         </div>
         <p className="mt-2 max-w-prose text-text-2">
-          The places on Earth whose ground comes closest to each kind of {WORLD_LABEL[tab]} terrain, found by scoring all of Earth&apos;s dry land ahead of time. Each list is
-          ranked by overall score (terrain and surface together, the number a click shows), with each place only in the list of the region it matches best and at
-          most four per country. Open one to see why it scored the way it did.
+          Top Earth analogs by {tab === "moon" ? "lunar" : "Martian"} region. Ranked by combined terrain and surface scores across all dry land on Earth. Each place is
+          listed once under its closest {tab === "moon" ? "lunar" : "Martian"} match (up to four per country). Click a site to see its score and why it ranked.
         </p>
 
         {!lists.length ? (
@@ -220,7 +220,7 @@ export function BestSites() {
                             aria-current={l === open ? "true" : undefined}
                             className={`block rounded-md border-l-2 px-2 py-1.5 hover:bg-hover hover:no-underline max-md:border max-md:whitespace-nowrap ${l === open ? "border-brand bg-raised" : "border-transparent max-md:border-line"}`}
                           >
-                            {l.title}
+                            {l.feature && l.tag ? <ExampleImage k={l.tag}>{l.title}</ExampleImage> : l.overall ? l.title : <RegionTitle region={l.region} title={l.title} />}
                           </Link>
                         </li>
                       ))}
@@ -231,7 +231,9 @@ export function BestSites() {
             </div>
             {open && (
               <div>
-                <h2 className="text-lg leading-tight font-semibold">{open.title}</h2>
+                <h2 className="text-lg leading-tight font-semibold">
+                  {open.feature && open.tag ? <ExampleImage k={open.tag}>{open.title}</ExampleImage> : open.overall ? open.title : <RegionTitle region={open.region} title={open.title} />}
+                </h2>
                 {info && <p className="mt-1.5 max-w-prose text-sm text-text-2">{info}</p>}
                 <p className="mt-4 mb-2 text-xs text-text-2">
                   {open.overall

@@ -16,7 +16,7 @@ export function ExampleSites() {
       <h1 id="examples" className="text-xl leading-tight font-semibold">
         Example sites
       </h1>
-      <p className="mt-1 text-text-2">Click any land on the globe, or start from one of these.</p>
+      <p className="mt-1 text-text-2">Click anything on the globe, or start from one of these examples.</p>
       <ul className="-mx-2 mt-3">
         {EXAMPLES.map((e) => {
           const b = bandOf(e.band);
@@ -51,7 +51,7 @@ export function ExampleSites() {
           </span>
         ))}
       </p>
-      <p className="mt-1 text-xs text-text-2">How well each place stands in for the Moon or Mars, by the model&apos;s overall score.</p>
+      <p className="mt-1 text-xs text-text-2">How well each place serves as a model of the Moon or Mars.</p>
     </section>
   );
 }

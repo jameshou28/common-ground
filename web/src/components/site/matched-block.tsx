@@ -27,24 +27,24 @@ export function MatchedBlock({
   // water: nothing to match, the pane stays empty
   blank?: boolean;
 }) {
-  if (blank) return <section aria-hidden className="relative min-h-[180px] border-t border-line bg-space" />;
+  if (blank) return <section aria-hidden className="relative min-h-[180px] border-t border-line bg-space motion-safe:animate-in motion-safe:fade-in-0 motion-safe:duration-500 motion-safe:slide-in-from-bottom-12" />;
   if (!grid || !match)
     return (
-      <section aria-label="Matched block" aria-busy className="relative grid min-h-[180px] place-items-center border-t border-line bg-space">
+      <section aria-label="Matched block" aria-busy className="relative grid min-h-[180px] place-items-center border-t border-line bg-space motion-safe:animate-in motion-safe:fade-in-0 motion-safe:duration-500 motion-safe:ease-out motion-safe:slide-in-from-bottom-12">
         <p className="animate-pulse text-xs text-text-2">Finding the closest match…</p>
       </section>
     );
   const { site, region, tab } = match;
   const moved = alignment ? describeAlignment(alignment, grid.cellM) : null;
   return (
-    <section aria-label="Matched block" className="relative min-h-[180px] overflow-hidden border-t border-line bg-space">
+    <section aria-label="Matched block" className="relative min-h-[180px] overflow-hidden border-t border-line bg-space motion-safe:animate-in motion-safe:fade-in-0 motion-safe:duration-500 motion-safe:ease-out motion-safe:slide-in-from-bottom-12">
       <GridBlock grid={grid} relief={relief} tone={tab} moonSun={moonSun} label={`${site.name} as a 4 km block of terrain`} />
       <p className="pointer-events-none absolute top-3 left-3 max-w-[calc(100%-1.5rem)] rounded-md border border-line bg-panel px-2.5 py-1.5 text-xs">
         <b className="mr-2 font-semibold">Closest match</b>
         <span className="text-text-2 first-letter:uppercase">
           {site.name} · {region.title} · relief {fmtNum(terrainStats(grid).reliefM)} m
         </span>
-        {moved && <span className="block text-text-2">View {moved}. The score is for the block as the model cut it.</span>}
+        {moved && <span className="block text-text-2">View moved to line up the landscape.</span>}
       </p>
     </section>
   );

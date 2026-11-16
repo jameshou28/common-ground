@@ -104,6 +104,7 @@
   --font-sans: var(--font-space-grotesk), system-ui, -apple-system, "Segoe UI", sans-serif;
   --font-heading: var(--font-sans);
   --font-mono: ui-monospace, "SF Mono", Menlo, monospace;
+  --font-display: var(--font-anurati), var(--font-sans);
 
   --radius-sm: calc(var(--radius) * 0.6);
   --radius-md: calc(var(--radius) * 0.8);
@@ -266,4 +267,51 @@
 }
 @media (prefers-reduced-motion: reduce) {
   .score-loader-photo { transition: opacity 0.5s ease; transform: none; }
+}
+
+/* the title that rises behind the globe once it has loaded: brushed silver, lit from the upper left, with one
+   sweep of light across the letters as it settles */
+.hero-wrap {
+  container-type: inline-size;
+}
+.hero-title {
+  font-family: var(--font-anurati), var(--font-space-grotesk), system-ui, sans-serif;
+  /* sized to the globe pane: "common ground" spans about two thirds of it */
+  font-size: clamp(2rem, 7.5cqw, 7.5rem);
+  line-height: 1.15;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: transparent;
+  background-image:
+    linear-gradient(100deg, transparent 38%, rgb(255 255 255 / 0.9) 48%, transparent 58%),
+    linear-gradient(165deg, #ffffff 0%, #e6e8ec 22%, #b9bdc4 45%, #8a8e96 68%, #5d6068 86%, #3e4046 100%);
+  background-size: 250% 100%, 100% 100%;
+  background-repeat: no-repeat;
+  background-position: 130% 0, 0 0;
+  -webkit-background-clip: text;
+  background-clip: text;
+  filter: drop-shadow(0 0 24px rgb(200 210 225 / 0.18)) drop-shadow(0 2px 2px rgb(0 0 0 / 0.6));
+  animation:
+    hero-rise 1.8s cubic-bezier(0.16, 1, 0.3, 1) 0.4s both,
+    hero-sun 2.6s ease-in-out 1.3s both;
+}
+@keyframes hero-rise {
+  from { opacity: 0; transform: translateY(70%); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes hero-sun {
+  from { background-position: 130% 0, 0 0; }
+  to { background-position: -30% 0, 0 0; }
+}
+/* the first click anywhere: gone fast */
+.hero-title.hero-leave {
+  animation: hero-out 0.18s ease-in forwards;
+}
+@keyframes hero-out {
+  to { opacity: 0; transform: translateY(-0.15em); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .hero-title { animation: none; }
+  .hero-title.hero-leave { animation: hero-out 0.01s forwards; }
 }

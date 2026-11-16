@@ -47,7 +47,7 @@ export function Header() {
   return (
     <header className="flex h-12 shrink-0 items-center gap-6 border-b border-line bg-panel px-5 max-md:h-auto max-md:flex-wrap max-md:gap-y-1 max-md:px-4 max-md:py-2">
       <nav aria-label="Breadcrumb" className="flex min-w-0 items-baseline gap-2.5 text-sm whitespace-nowrap">
-        <Link href="/" className="font-semibold text-text hover:no-underline">
+        <Link href="/" className="font-display text-[15px] tracking-[0.12em] text-text uppercase hover:no-underline">
           Common Ground
         </Link>
         <Crumbs path={path} />

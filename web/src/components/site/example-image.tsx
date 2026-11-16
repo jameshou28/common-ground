@@ -32,6 +32,7 @@ const ABOUT: Record<string, { name: string; text: string }> = {
   canyon: { name: "Canyon", text: "A deep, steep-walled valley. Valles Marineris runs about 4,000 km and is up to 7 km deep." },
   scarp: { name: "Scarp", text: "A steep step in the ground. Lobate scarps are faults where the crust was pushed together." },
   channel: { name: "Channel", text: "A valley carved by flowing water, including the giant flood channels that drained into the northern plains." },
+  ejecta: { name: "Ejecta", text: "Rock and dust thrown out by an impact, spread in blankets and bright rays around the crater." },
   volcanic_edifice: { name: "Volcano", text: "A volcano's cone or shield, built up layer by layer from lava." },
   lava_flow: { name: "Lava flow", text: "A sheet of cooled lava with lobed edges, ridges and a rough or ropy surface." },
 };
@@ -71,4 +72,23 @@ export function ExampleImage({ k, children }: { k: string | null | undefined; ch
       </HoverCard.Portal>
     </HoverCard.Root>
   );
+}
+
+// a region's title with each part on its own photo: "Impact basin rings and ejecta" shows the basin on "Impact basin
+// rings" and an ejecta blanket on "ejecta", "Outflow channels and chaos" the channels and the chaos terrain
+const SPLIT: Record<string, [first: string, second: string, secondKey: string]> = {
+  "moon:basins": ["Impact basin rings", "ejecta", "ejecta"],
+  "mars:outflow": ["Outflow channels", "chaos", "chaos"],
+};
+
+export function RegionTitle({ region, title }: { region: string; title: string }) {
+  const split = SPLIT[region];
+  if (split && title.toLowerCase() === `${split[0]} and ${split[1]}`.toLowerCase())
+    return (
+      <>
+        <ExampleImage k={region}>{title.slice(0, split[0].length)}</ExampleImage> and{" "}
+        <ExampleImage k={split[2]}>{title.slice(split[0].length + 5)}</ExampleImage>
+      </>
+    );
+  return <ExampleImage k={region}>{title}</ExampleImage>;
 }

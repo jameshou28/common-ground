@@ -48,6 +48,8 @@ data/*
 !ml/export/model.npz
 !ml/export/regions.npz
 
-# anurati is a demo / trial licence: local font preview only, never shipped
+# anurati (befonts demo licence, ok for this hackathon project) ships from web/src/fonts via next/font; the zip and
+# the old public copy stay local
+anurati-font.zip
 web/public/anurati-font.zip
 web/public/fonts/Anurati*
