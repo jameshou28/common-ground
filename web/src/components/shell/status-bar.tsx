@@ -5,6 +5,7 @@ import { useSyncExternalStore } from "react";
 import { useIsFetching, useQueryClient } from "@tanstack/react-query";
 import { ApiError } from "@/lib/api";
 import { env } from "@/lib/env";
+import { REPO_URL } from "./repo-link";
 
 export const STATUS_SLOT = "status-slot";
 const subscribe = () => () => {};
@@ -24,6 +25,11 @@ export function StatusBar() {
     <footer className="flex h-[26px] shrink-0 items-center gap-4 border-t border-line bg-panel px-3.5 text-xs text-text-2">
       <div id={STATUS_SLOT} className="flex min-w-0 items-center empty:hidden gap-4 overflow-hidden whitespace-nowrap" />
       <span className="ml-auto whitespace-nowrap max-md:hidden">Model {env.modelVersion}</span>
+      {env.commit && (
+        <a href={`${REPO_URL}/commit/${env.commit}`} target="_blank" rel="noreferrer" className="font-mono whitespace-nowrap hover:text-text max-md:hidden">
+          {env.commit.slice(0, 7)}
+        </a>
+      )}
       <LiveScoring />
     </footer>
   );

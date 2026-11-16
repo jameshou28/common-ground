@@ -1,3 +1,4 @@
+import { execSync } from "node:child_process";
 import { readFileSync } from "node:fs";
 import type { NextConfig } from "next";
 
@@ -11,8 +12,17 @@ function modelVersion(): string | undefined {
   }
 }
 
+// vercel sets the sha, a local build asks git
+function commit(): string {
+  try {
+    return process.env.VERCEL_GIT_COMMIT_SHA || execSync("git rev-parse HEAD", { encoding: "utf8" }).trim();
+  } catch {
+    return "";
+  }
+}
+
 const nextConfig: NextConfig = {
-  env: { NEXT_PUBLIC_MODEL_VERSION: modelVersion() ?? "stub-0.1" },
+  env: { NEXT_PUBLIC_MODEL_VERSION: modelVersion() ?? "stub-0.1", NEXT_PUBLIC_COMMIT: commit() },
   cacheComponents: true,
   partialPrefetching: true,
   turbopack: {

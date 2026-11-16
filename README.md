@@ -1,9 +1,12 @@
+<div align="center">
+
 # Common Ground
 
-![Common Ground](docs/screenshot.png)
-<!-- screenshot goes here -->
+<img src="docs/screenshot.png" alt="Common Ground" width="100%">
 
 Click a spot on Earth and see how much the ground there looks like the Moon or Mars, and why.
+
+</div>
 
 Built for NASA Space Apps 2026.
 
