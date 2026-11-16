@@ -61,14 +61,40 @@ Checks: `npm run lint`, `npm run typecheck` and `npm test` in `web/`, and `uv ru
 
 ## Data credits
 
-- Copernicus GLO-30 DEM, ESA / Airbus
+**Earth**
+- Copernicus DEM GLO-30, ESA / Airbus (AWS Open Data)
 - ESA WorldCover 2021
-- LOLA global and polar DEMs, NASA GSFC (Barker et al.)
-- Kaguya (SELENE) terrain, JAXA
-- MOLA–HRSC blended DEM, NASA / ESA / DLR
-- CTX DTMs, USGS Astrogeology
-- NASA Blue Marble via GIBS, Cesium World Terrain
-- Loader photos: NASA, public domain
+- WorldClim 2.1 rainfall (Fick and Hijmans 2017)
+
+**Moon**
+- LRO LOLA global DEM 118 m, NASA GSFC via USGS Astrogeology
+- LRO LOLA south polar DEMs 20 m and 80 m, and 5 m site DEMs, NASA GSFC PGDA (Barker et al.)
+- Kaguya (SELENE) Terrain Camera DTMs, JAXA, processed by USGS
+- Unified Geologic Map of the Moon (USGS, Fortezzo et al. 2020)
+- Robbins lunar crater database
+- Artemis III candidate landing regions, NASA
+
+**Mars**
+- MRO CTX DTMs, USGS Astrogeology
+- MRO HiRISE Jezero DTM mosaic, USGS Astrogeology
+- MGS MOLA and Mars Express HRSC blended DEM 200 m, NASA / ESA / DLR
+- Geologic Map of Mars, SIM 3292 (USGS, Tanaka et al. 2014)
+- Robbins Mars crater database
+
+**Reference lists**
+- IAU Gazetteer of Planetary Nomenclature (USGS)
+- NASA SP-2015-626 analog sites, USGS Known Terrestrial Analog Sites (Hunter 2020)
+- ESA CAFE analog catalogue, ESA PANGAEA, AMADEE (Austrian Space Forum), Europlanet, PTAL
+- Smithsonian Global Volcanism Program
+- Wikidata (crater diameters) and Wikipedia (site coordinates)
+- GeoNames (CC BY 4.0)
+- NASA NSSDCA landing sites
+
+**On the site**
+- NASA Blue Marble via GIBS
+- Cesium World Terrain, Cesium Moon and Cesium Mars; Bing Maps aerial imagery via Cesium ion
+- NASA Photojournal and NASA Image and Video Library photos, public domain
+- Space Grotesk font (Google Fonts, OFL)
 
 ## Team
 

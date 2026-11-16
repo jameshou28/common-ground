@@ -25,6 +25,7 @@ const DATA: { group: string; rows: Row[] }[] = [
       ["LOLA 5 m site DEMs", "Barker et al. 2021", "The south polar target sites"],
       ["Unified Geologic Map of the Moon", "USGS (Fortezzo et al. 2020)", "Drawing the Moon regions", "https://astrogeology.usgs.gov"],
       ["Lunar crater database", "Robbins 2018", "Tagging crater features"],
+      ["Artemis III candidate landing regions", "NASA", "Describing the south polar region"],
     ],
   },
   {
@@ -34,6 +35,7 @@ const DATA: { group: string; rows: Row[] }[] = [
       ["HRSC–MOLA blended DEM, 200 m", "NASA / ESA / DLR, via USGS Astrogeology", "Mars terrain for the 32 km view", "https://planetarymaps.usgs.gov"],
       ["Geologic Map of Mars (SIM 3292)", "USGS (Tanaka et al. 2014)", "Drawing the Mars regions", "https://pubs.usgs.gov/sim/3292/"],
       ["Mars crater database", "Robbins 2020", "Tagging crater features"],
+      ["HiRISE Jezero DTM mosaic", "NASA MRO, via USGS Astrogeology", "The Jezero target view"],
     ],
   },
   {
@@ -45,6 +47,8 @@ const DATA: { group: string; rows: Row[] }[] = [
       ["Gazetteer of Planetary Nomenclature", "IAU / USGS", "Moon and Mars feature names and tags", "https://planetarynames.wr.usgs.gov"],
       ["GeoNames cities1000", "GeoNames, CC BY 4.0", "Place names on the Best sites lists", "https://www.geonames.org"],
       ["Landing sites", "NASA NSSDCA", "The Moon and Mars landmark pins"],
+      ["Wikipedia", "Wikimedia", "Analog site coordinates"],
+      ["Field site lists", "ESA PANGAEA, AMADEE (Austrian Space Forum), Europlanet, PTAL", "More analog sites, and the held-out tests"],
     ],
   },
   {
@@ -53,6 +57,9 @@ const DATA: { group: string; rows: Row[] }[] = [
       ["Cesium World Terrain and Moon / Mars tilesets", "Cesium ion", "The 3D globes"],
       ["Blue Marble", "NASA, via GIBS", "Earth imagery from far out"],
       ["NASA Image and Video Library", "NASA, public domain", "Photos in the hover cards and the loader", "https://images.nasa.gov"],
+      ["NASA Photojournal", "NASA / JPL, public domain", "Region and landform example photos"],
+      ["Aerial imagery", "Bing Maps, via Cesium ion", "Earth imagery up close"],
+      ["Space Grotesk", "Google Fonts, OFL", "The site font"],
     ],
   },
 ];
@@ -130,7 +137,11 @@ export default function Page() {
         </Section>
 
         <Section title="Built with">
-          <p>Next.js, Cesium and three.js on the site. FastAPI, NumPy, SciPy and rasterio on the server. Scores are cached in Supabase and height grids are stored on Cloudflare R2.</p>
+          <p>
+            Next.js, React, CesiumJS, three.js with react-three-fiber and drei, TanStack Query, Recharts, Tailwind CSS, shadcn/ui, Radix UI and Lucide icons on the site. FastAPI,
+            NumPy, SciPy, rasterio and pyproj on the server, with the model trained in Jupyter. The site runs on Vercel and the API on Render. Scores are cached in Supabase, height
+            grids are stored on Cloudflare R2, and Earth data is read from AWS Open Data. Built with help from Claude Code.
+          </p>
         </Section>
       </div>
     </main>
