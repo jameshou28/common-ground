@@ -77,6 +77,11 @@ export default function Page() {
             worth a closer look, not a finished site survey.
           </p>
           <p>Scores are only as good as the terrain data. Some places, mostly near the poles and over water, have gaps.</p>
+          <ul className="list-disc space-y-1.5 pl-5">
+            <li>No place on Earth mirrors lunar or Martian gravity. Earth: 9.81 m/s². Moon: 1.62 m/s² (about 1/6). Mars: 3.71 m/s² (about 3/8).</li>
+            <li>Earth is scored from 30 m elevation data, so anything smaller than that, like boulders or small craters, is invisible to the model.</li>
+            <li>There weren&apos;t many analog sites for our model to train on, so the Moon result relies on a handful of them.</li>
+          </ul>
         </Section>
 
         <Section title="Data">
