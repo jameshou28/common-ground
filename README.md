@@ -5,10 +5,11 @@
 <img src="docs/screenshot.png" alt="Common Ground" width="100%">
 
 Click a spot on Earth and see how much the ground there looks like the Moon or Mars, and why.
+Built for NASA Space Apps 2026.
 
 </div>
 
-Built for NASA Space Apps 2026.
+
 
 ## What it does
 
